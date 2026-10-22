@@ -25,6 +25,7 @@ LADDER = [tuple(x) for x in MANIFEST["ladder"]]
 OPUS_E4 = MANIFEST["opus_e4"]
 E4_REP = MANIFEST["e4_repeats"]
 QWEN = MANIFEST["local_model_100"]
+QWEN500 = MANIFEST["local_model_500"]
 CACHE = MANIFEST["cache_bench"]
 
 
@@ -96,6 +97,18 @@ def main() -> None:
             "std": round(statistics.stdev(exs), 4),
         }
     final["opus"] = {**stats(rows(OPUS_E4)), "runs": None, "contamination_note": True}
+    # 本地开源模型 500 题（1 次），与 Haiku E4 首次运行逐题配对
+    # （compare 按 model 字段配对，先把本地模型的行改标成 haiku）
+    q500 = rows(QWEN500)
+    c = compare(e4, [{**x, "model": "haiku"} for x in q500], "haiku")
+    final["qwen"] = {
+        **stats(q500),
+        "runs": None,
+        "run_id": QWEN500,
+        "paired_n": c["n"],
+        "haiku_paired_ex": round(c["ex_a"], 4),
+        "p_vs_haiku": float(f"{c['mcnemar_p']:.3g}"),
+    }
     data["final"] = final
 
     # 同 100 题：本地开源模型 vs Claude
@@ -154,6 +167,10 @@ def main() -> None:
         final["sonnet"]["mean"],
         "Opus:",
         final["opus"]["ex"],
+        "qwen 500:",
+        final["qwen"]["ex"],
+        "p vs Haiku:",
+        final["qwen"]["p_vs_haiku"],
     )
 
 

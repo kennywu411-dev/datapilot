@@ -2,14 +2,16 @@
 
 用中文提问，系统读表结构、写 SQL、在只读库上执行，出错时带着报错自动修正，最后给出答案、SQL、可排序表格和自动选择的图表，支持追问。附带一个评测看板，展示在 BIRD Mini-Dev 上的完整实验结果。
 
-![问数界面](docs/images/chat.jpg)
+![问数界面：柱状图、追问与饼图](docs/images/chat.png)
 
 | Haiku 执行准确率 | 失败题中标准答案错 | 缓存命中延迟（P50） |
 |---|---|---|
 | **63.0% → 68.0%** | **56%** | **0.9 ms**（未命中 3.71 s） |
 | 取值核对 + 执行纠错，McNemar p=0.008，3 次均值 | 50 道失败题分层抽样、人工判定；审计论文报告 52.8% | 构造请求下重复问题命中 98.3% |
 
-![评测看板](docs/images/eval.jpg)
+![评测看板](docs/images/eval.png)
+
+![失败分析：单题回放](docs/images/eval-failure.png)
 
 ## 诚实边界
 
@@ -57,7 +59,7 @@ BIRD Mini-Dev 500 题，指标为执行准确率（EX），评测器与官方 `e
 | Agent（模型自主调用工具） | 72.0% | 65.8% | 与 E4 无差别，成本 +56%、延迟 +55% |
 | Schema 检索（消融） | 70.0%（373 题） | | 显著变差 p=0.013，成本 ×2.9 |
 
-同 100 题的模型对比：本地 qwen2.5-coder:7b **56%**、Haiku **66%**、Sonnet **76%**、Opus **88%**（疑似污染）。
+模型对比（最终配置 E4，500 题）：本地 qwen2.5-coder:7b **53.8%**（1 次）、Haiku **68.0%**、Sonnet **72.4%**、Opus **86.4%**（疑似污染）；本地模型比 Haiku（3 次均值）低约 14 个百分点；与 Haiku 首次运行逐题配对（67.4% vs 53.8%）p<0.001，单题 P50 延迟 5.5 s。
 
 结论：改进对较弱模型显著；这个场景不需要自主 Agent；schema 放得下时不需要检索。全部数字和运行 ID 见 [docs/numbers.md](docs/numbers.md)。
 
@@ -86,6 +88,17 @@ redis-server --save "" &          # 可选
 uv run uvicorn datapilot.api:app --port 8000
 npm --prefix web run dev          # 打开 http://localhost:3000
 ```
+
+也可以用 Docker 一键启动（后端 + 前端 + Redis；数据目录只读挂载，不进镜像）：
+
+```bash
+uv run python scripts/download_data.py   # 先下载数据
+docker compose up --build                # 打开 http://localhost:3000
+```
+
+> 前端构建时把后端地址写成 `http://localhost:8000`，后端 CORS 也只放行 `localhost:3000`，所以只能在运行 Docker 的这台机器上用浏览器访问；要从别的机器访问，需用 `--build-arg NEXT_PUBLIC_API_BASE=...` 重建前端并调整 CORS。
+>
+> 已实测（colima + Docker 29，2026-10-22）：首次构建约 5 分钟；镜像后端 783MB、前端 281MB（Next.js standalone）；容器内问数、SSE、Redis 会话与缓存命中均正常。
 
 跑付费实验（不加 `--yes` 只打印预估花费）：
 

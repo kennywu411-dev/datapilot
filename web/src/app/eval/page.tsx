@@ -105,7 +105,7 @@ function Ladder() {
 }
 
 function Models() {
-  const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null }>;
+  const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null; p_vs_haiku?: number; haiku_paired_ex?: number }>;
   const s100 = data.same100 as unknown as Record<string, Stats>;
   return (
     <div className="grid gap-8">
@@ -114,16 +114,18 @@ function Models() {
         <Table
           head={["模型", "EX", "simple", "moderate", "challenging", "单题成本"]}
           align={["l", "r", "r", "r", "r", "r"]}
-          rows={(["haiku", "sonnet", "opus"] as const).map((m) => [
-            m === "opus" ? "Opus（疑似污染）" : m[0].toUpperCase() + m.slice(1),
+          rows={(["haiku", "sonnet", "opus", "qwen"] as const).map((m) => [
+            m === "opus" ? "Opus（疑似污染）" : m === "qwen" ? "qwen2.5-coder:7b（本地）" : m[0].toUpperCase() + m.slice(1),
             f[m].mean !== undefined ? `${pct(f[m].mean!)} ± ${(f[m].std! * 100).toFixed(2)}` : pct(f[m].ex),
             pct(f[m].by_difficulty.simple, 0),
             pct(f[m].by_difficulty.moderate, 0),
             pct(f[m].by_difficulty.challenging, 0),
-            `$${f[m].cost_per_q.toFixed(4)}`,
+            m === "qwen" ? "本地" : `$${f[m].cost_per_q.toFixed(4)}`,
           ])}
         />
-        <p className="text-xs text-muted-foreground">Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）。</p>
+        <p className="text-xs text-muted-foreground">
+          Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）；本地模型跑 1 次，与 Haiku 首次运行逐题配对：{pct(f.qwen.haiku_paired_ex!)} vs {pct(f.qwen.ex)}，{pval(f.qwen.p_vs_haiku!)}。
+        </p>
       </div>
       <div className="space-y-2">
         <h3 className="text-sm text-muted-foreground">同 100 题（分层抽样），含本地开源模型</h3>
