@@ -96,6 +96,14 @@ uv run python scripts/download_data.py   # 先下载数据
 docker compose up --build                # 打开 http://localhost:3000
 ```
 
+macOS 上还可以生成一个双击启动的应用（没运行就启动并打开页面；已运行就选择打开页面或关闭服务）：
+
+```bash
+bash scripts/app/make_app.sh             # 生成 ~/Applications/DataPilot.app，可拖进程序坞
+```
+
+终端里也可以直接用 `bash scripts/app.sh start | stop | status`。
+
 > 前端构建时把后端地址写成 `http://localhost:8000`，后端 CORS 也只放行 `localhost:3000`，所以只能在运行 Docker 的这台机器上用浏览器访问；要从别的机器访问，需用 `--build-arg NEXT_PUBLIC_API_BASE=...` 重建前端并调整 CORS。
 >
 > 已实测（colima + Docker 29，2026-10-22）：首次构建约 5 分钟；镜像后端 783MB、前端 281MB（Next.js standalone）；容器内问数、SSE、Redis 会话与缓存命中均正常。
