@@ -64,13 +64,15 @@ export async function ask(
   let gotDone = false;
 
   while (true) {
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("idle")), IDLE_TIMEOUT_MS),
-    );
-    let chunk: ReadableStreamReadResult<Uint8Array>;
-    try {
-      chunk = await Promise.race([reader.read(), timeout]);
-    } catch {
+    // 每次读之前挂一个空闲计时器，读到数据就清掉；否则每个数据块都会留下一个 60 秒后
+    // 无人处理的 reject（控制台 Uncaught in promise），计时器也会堆积
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<"idle">((resolve) => {
+      timer = setTimeout(() => resolve("idle"), IDLE_TIMEOUT_MS);
+    });
+    const chunk = await Promise.race([reader.read(), timeout]);
+    clearTimeout(timer);
+    if (chunk === "idle") {
       reader.cancel().catch(() => {});
       return false;
     }
@@ -88,7 +90,15 @@ export async function ask(
         else if (line.startsWith("data:")) data.push(line.slice(5).trimStart());
       }
       if (!event) continue;
-      const parsed = { event, data: JSON.parse(data.join("\n")) } as AskEvent;
+      let payload: unknown;
+      try {
+        payload = JSON.parse(data.join("\n"));
+      } catch {
+        // 单条事件格式异常时如实报告，而不是让整个请求被当成"无法连接后端"
+        onEvent({ event: "error", data: { message: `收到无法解析的 ${event} 事件` } });
+        continue;
+      }
+      const parsed = { event, data: payload } as AskEvent;
       if (parsed.event === "done") gotDone = true;
       onEvent(parsed);
     }

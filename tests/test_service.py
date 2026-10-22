@@ -154,3 +154,53 @@ async def test_unknown_db_is_error(shop_db_dir):
     svc, _ = make_service([])
     events = await collect(svc.ask("s1", "nope", "q"))
     assert events[0]["event"] == "error"
+
+
+async def test_final_sql_executed_once_and_pipeline_rows_reused(shop_db_dir, monkeypatch):
+    """流程里已经执行过最终 SQL，服务层不应再执行一遍（慢查询延迟会翻倍）。"""
+    import datapilot.sql_guard as guard
+
+    calls = []
+    real = guard.run_readonly
+
+    def counting(path, sql, **kw):
+        calls.append(sql)
+        return real(path, sql, **kw)
+
+    monkeypatch.setattr("datapilot.pipeline.run_readonly", counting)
+    # 服务层已不再自己执行 SQL（没有 run_readonly 引用），只需统计流程里的执行次数
+    svc, _ = make_service(
+        [SQLAnswer(sql="SELECT city, count(*) AS n FROM users GROUP BY city"), "好。"]
+    )
+    events = await collect(svc.ask("s1", "shop", "各城市多少人"))
+    assert calls.count("SELECT city, count(*) AS n FROM users GROUP BY city") == 1
+    table = next(e for e in events if e["event"] == "table")["data"]
+    assert len(table["rows"]) == 2
+
+
+async def test_failed_turn_is_remembered_for_follow_up(shop_db_dir):
+    svc, llm = make_service(
+        [SQLAnswer(sql=f"SELECT bad{i} FROM users") for i in range(4)]
+        + [SQLAnswer(sql="SELECT count(*) FROM users"), "3 人。"]
+    )
+    await collect(svc.ask("s1", "shop", "第一问"))
+    await collect(svc.ask("s1", "shop", "刚才报错了，换个写法"))
+    follow_up = llm.calls[4]["messages"][0]["content"]
+    assert "第一问" in follow_up and "failed" in follow_up
+
+
+async def test_concurrent_asks_in_same_session_keep_all_turns(shop_db_dir):
+    import asyncio
+
+    svc, _ = make_service([SQLAnswer(sql="SELECT 1"), "一。", SQLAnswer(sql="SELECT 2"), "二。"])
+    await asyncio.gather(
+        collect(svc.ask("s1", "shop", "问一")), collect(svc.ask("s1", "shop", "问二"))
+    )
+    session = await svc.store.get_json("dp:session:s1")
+    assert sorted(t["question"] for t in session["turns"]) == ["问一", "问二"]
+
+
+def test_default_factory_shares_one_client(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    svc = ChatService(MemoryStore())
+    assert svc.llm_factory().client is svc.llm_factory().client

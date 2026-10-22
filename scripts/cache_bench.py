@@ -16,7 +16,6 @@ import json
 import random
 import sys
 import time
-import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,10 +65,10 @@ def build_requests() -> list[dict]:
             i for i, x in enumerate(order) if x["kind"] == "first" and x["question"] == r["src"]
         )
         order.insert(rng.randint(pos + 1, len(order)), r)
-    assert (
-        all(unicodedata.normalize("NFKC", r["question"]) for r in order)
-        and len(order) == UNIQUE + REPEAT
-    )
+    # 核心前提：每次重复都排在它的首问之后，否则必然未命中，命中率被低估
+    first_pos = {r["question"]: i for i, r in enumerate(order) if r["kind"] == "first"}
+    assert len(order) == UNIQUE + REPEAT
+    assert all(first_pos[r["src"]] < i for i, r in enumerate(order) if r["kind"] == "repeat")
     return order
 
 

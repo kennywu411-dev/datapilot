@@ -32,6 +32,11 @@ class GenerationResult:
     llm_calls: list[LLMResult] = field(default_factory=list)
     first_sql: str = ""  # 纠错前的第一版 SQL，用于统计"改对 / 改错"
     trace: list[dict] = field(default_factory=list)
+    # 流程最后一次执行的结果（服务层直接复用，不再执行第二遍）
+    exec_error: str = ""
+    columns: list[str] | None = None
+    rows: list | None = None
+    truncated: bool = False
 
 
 def build_prompt(db_path: str | Path, question: str, evidence: str) -> str:

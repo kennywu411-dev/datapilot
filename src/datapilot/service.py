@@ -11,15 +11,14 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import re
-import sqlite3
 import time
 import unicodedata
+from collections import OrderedDict
 from collections.abc import AsyncIterator, Callable
 
 from datapilot import config, tools
 from datapilot.llm import LLM, ClaudeLLM
 from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.sql_guard import SQLRejected, run_readonly
 from datapilot.store import Store
 
 CONFIG_VERSION = "e4-v4"  # 流程或提示词改了就升版本，旧缓存自然失效
@@ -30,7 +29,12 @@ CONTEXT_TURNS = 2
 TABLE_MAX_ROWS = 500
 ANSWER_PREVIEW_ROWS = 100  # 给回答模型看的行数；20 行时 68 行的趋势被误判为数据不全（P11）
 
-PIPELINE = FixedPipeline(PipelineConfig(schema="enhanced", value_check=True, max_corrections=3))
+PIPELINE = FixedPipeline(
+    PipelineConfig(
+        schema="enhanced", value_check=True, max_corrections=3, result_rows=TABLE_MAX_ROWS
+    )
+)
+LOCKS_MAX = 10_000
 
 STEP_LABELS = {
     "generate": "生成 SQL",
@@ -116,7 +120,25 @@ class ChatService:
     ):
         self.store = store
         self.model = model
-        self.llm_factory = llm_factory or (lambda: ClaudeLLM(config.MODELS[model]))
+        self._client = None  # 共享一个 Anthropic 客户端，复用连接池
+        self.llm_factory = llm_factory or self._default_llm
+        # 同一会话的请求排队：会话读改写不是原子的，并发时后写会覆盖先写。
+        # 只在单进程内有效；多进程部署需要换成 Redis 原子操作（RPUSH + LTRIM）
+        self._locks: OrderedDict[str, asyncio.Lock] = OrderedDict()
+
+    def _default_llm(self) -> LLM:
+        if self._client is None:
+            import anthropic
+
+            self._client = anthropic.AsyncAnthropic(max_retries=6)
+        return ClaudeLLM(config.MODELS[self.model], client=self._client)
+
+    def _lock(self, session_id: str) -> asyncio.Lock:
+        lock = self._locks.pop(session_id, None) or asyncio.Lock()
+        self._locks[session_id] = lock
+        while len(self._locks) > LOCKS_MAX:
+            self._locks.popitem(last=False)
+        return lock
 
     def _cache_key(self, db_id: str, question: str, context: str) -> str:
         digest = hashlib.sha256(f"{normalize_question(question)}\n{context}".encode()).hexdigest()
@@ -127,6 +149,11 @@ class ChatService:
         return await self.store.delete_prefix(f"dp:cache:{db_id}:")
 
     async def ask(self, session_id: str, db_id: str, question: str) -> AsyncIterator[dict]:
+        async with self._lock(session_id):
+            async for e in self._ask(session_id, db_id, question):
+                yield e
+
+    async def _ask(self, session_id: str, db_id: str, question: str) -> AsyncIterator[dict]:
         start = time.perf_counter()
         if db_id not in tools.list_databases():
             yield {"event": "error", "data": {"message": f"未知数据库：{db_id}"}}
@@ -137,7 +164,13 @@ class ChatService:
         session = await self.store.get_json(session_key) or {"db_id": db_id, "turns": []}
         history = session["turns"][-CONTEXT_TURNS:] if session.get("db_id") == db_id else []
         context = "".join(
-            f"-- Previous question: {t['question']}\n-- Previous SQL: {t['sql']}\n" for t in history
+            f"-- Previous question: {t['question']}\n"
+            + (
+                f"-- Previous SQL (failed: {t['error']}): {t['sql']}\n"
+                if t.get("error")
+                else f"-- Previous SQL: {t['sql']}\n"
+            )
+            for t in history
         )
         cache_key = self._cache_key(db_id, question, context)
 
@@ -145,7 +178,7 @@ class ChatService:
         if cached:
             for e in cached["events"]:
                 yield e
-            await self._remember(session_key, session, db_id, question, cached["sql"], cached)
+            await self._remember(session_key, session, db_id, question, cached["sql"])
             yield {"event": "done", "data": self._done(start, True, 0.0)}
             return
 
@@ -170,22 +203,27 @@ class ChatService:
         cost += sum(c.cost_usd for c in result.llm_calls)
 
         if not result.sql:
-            yield {"event": "error", "data": {"message": "模型没有生成 SQL，请换个问法再试。"}}
+            message = "模型没有生成 SQL，请换个问法再试。"
+            yield {"event": "error", "data": {"message": message}}
+            await self._remember(session_key, session, db_id, question, "", error=message)
             yield {"event": "done", "data": self._done(start, False, cost)}
             return
 
         events = [{"event": "sql", "data": {"sql": result.sql}}]
         yield events[-1]
-        try:
-            res = await asyncio.to_thread(run_readonly, path, result.sql, max_rows=TABLE_MAX_ROWS)
-        except (SQLRejected, TimeoutError, sqlite3.Error) as e:
-            yield {"event": "error", "data": {"message": f"SQL 执行失败：{e}", "sql": result.sql}}
+        if result.exec_error or result.rows is None:
+            # 流程已经执行过这条 SQL 并确认失败（纠错次数用完），直接用那次的报错，不再执行一遍
+            message = f"SQL 执行失败：{result.exec_error}"
+            yield {"event": "error", "data": {"message": message, "sql": result.sql}}
+            await self._remember(
+                session_key, session, db_id, question, result.sql, error=result.exec_error
+            )
             yield {"event": "done", "data": self._done(start, False, cost)}
             return
 
-        rows = [[_jsonable(v) for v in r] for r in res.rows]
-        table = {"columns": res.columns, "rows": rows, "truncated": res.truncated}
-        chart = choose_chart(res.columns, [tuple(r) for r in rows], question)
+        rows = [[_jsonable(v) for v in r] for r in result.rows]
+        table = {"columns": result.columns, "rows": rows, "truncated": result.truncated}
+        chart = choose_chart(result.columns, [tuple(r) for r in rows], question)
         events += [{"event": "table", "data": table}, {"event": "chart", "data": chart}]
         yield events[-2]
         yield events[-1]
@@ -200,7 +238,7 @@ class ChatService:
         yield events[-1]
 
         await self.store.set_json(cache_key, {"sql": result.sql, "events": events}, CACHE_TTL_S)
-        await self._remember(session_key, session, db_id, question, result.sql, table)
+        await self._remember(session_key, session, db_id, question, result.sql)
         yield {"event": "done", "data": self._done(start, False, cost)}
 
     @staticmethod
@@ -215,9 +253,12 @@ class ChatService:
             )
         return f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果（{scope}）：{preview}"
 
-    async def _remember(self, key, session, db_id, question, sql, table) -> None:
-        turns = session["turns"] if session.get("db_id") == db_id else []
-        turns = (turns + [{"question": question, "sql": sql}])[-KEEP_TURNS:]
+    async def _remember(self, key, session, db_id, question, sql, error: str = "") -> None:
+        # 重新读一次：锁保证同一会话串行，但 session 是请求开始时读的
+        latest = await self.store.get_json(key) or session
+        turns = latest["turns"] if latest.get("db_id") == db_id else []
+        turn = {"question": question, "sql": sql, **({"error": error} if error else {})}
+        turns = (turns + [turn])[-KEEP_TURNS:]
         await self.store.set_json(key, {"db_id": db_id, "turns": turns}, SESSION_TTL_S)
 
     def _done(self, start: float, cached: bool, cost: float) -> dict:
