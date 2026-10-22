@@ -55,3 +55,10 @@
 [54/500] qwen7b r0 q1378 ✓
 [55/500] qwen7b r0 q1380 ✓
 [56/500] qwen7b r0 q1381 ✓
+[57/500] qwen7b r0 q1387 ✗ ok
+[58/500] qwen7b r0 q1389 ✗ pred_error
+[59/500] qwen7b r0 q1390 ✗ pred_error
+[60/500] qwen7b r0 q1392 ✓
+[61/500] qwen7b r0 q1394 ✓
+[62/500] qwen7b r0 q1398 ✓
+[63/500] qwen7b r0 q1399 ✗ ok
