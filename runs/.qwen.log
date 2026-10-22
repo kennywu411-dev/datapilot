@@ -43,3 +43,15 @@
 [42/500] qwen7b r0 q1351 ✓
 [43/500] qwen7b r0 q1350 ✗ pred_error
 [44/500] qwen7b r0 q1352 ✓
+[45/500] qwen7b r0 q1356 ✓
+[46/500] qwen7b r0 q1357 ✓
+[47/500] qwen7b r0 q1359 ✓
+[48/500] qwen7b r0 q1361 ✓
+[49/500] qwen7b r0 q1362 ✓
+[50/500] qwen7b r0 q1368 ✓
+[51/500] qwen7b r0 q1371 ✓
+[52/500] qwen7b r0 q1375 ✓
+[53/500] qwen7b r0 q1376 ✓
+[54/500] qwen7b r0 q1378 ✓
+[55/500] qwen7b r0 q1380 ✓
+[56/500] qwen7b r0 q1381 ✓
