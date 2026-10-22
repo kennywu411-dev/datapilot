@@ -62,3 +62,18 @@
 [61/500] qwen7b r0 q1394 ✓
 [62/500] qwen7b r0 q1398 ✓
 [63/500] qwen7b r0 q1399 ✗ ok
+[64/500] qwen7b r0 q1401 ✗ pred_error
+[65/500] qwen7b r0 q1403 ✓
+[66/500] qwen7b r0 q1405 ✓
+[67/500] qwen7b r0 q1404 ✗ pred_error
+[68/500] qwen7b r0 q1409 ✓
+[69/500] qwen7b r0 q1410 ✓
+[70/500] qwen7b r0 q1411 ✓
+[71/500] qwen7b r0 q1422 ✓
+[72/500] qwen7b r0 q1426 ✓
+[73/500] qwen7b r0 q1427 ✗ ok
+[74/500] qwen7b r0 q1432 ✓
+[75/500] qwen7b r0 q1435 ✓
+[76/500] qwen7b r0 q1457 ✓
+[77/500] qwen7b r0 q1460 ✓
+[78/500] qwen7b r0 q1464 ✓
