@@ -89,6 +89,15 @@ uv run uvicorn datapilot.api:app --port 8000
 npm --prefix web run dev          # 打开 http://localhost:3000
 ```
 
+也可以用 Docker 一键启动（后端 + 前端 + Redis；数据目录只读挂载，不进镜像）：
+
+```bash
+uv run python scripts/download_data.py   # 先下载数据
+docker compose up --build                # 打开 http://localhost:3000
+```
+
+> 注：docker-compose 配置**尚未在本机实测**（开发机没有安装 Docker），以上面的手动步骤为准。
+
 跑付费实验（不加 `--yes` 只打印预估花费）：
 
 ```bash

@@ -6,3 +6,7 @@
 [5/500] qwen7b r0 q1479 ✗ ok
 [6/500] qwen7b r0 q1480 ✗ ok
 [7/500] qwen7b r0 q1481 ✗ ok
+[8/500] qwen7b r0 q1482 ✗ pred_error
+[9/500] qwen7b r0 q1483 ✓
+[10/500] qwen7b r0 q1484 ✓
+[11/500] qwen7b r0 q1486 ✗ ok

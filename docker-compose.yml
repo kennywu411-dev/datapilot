@@ -1,0 +1,25 @@
+# 一键启动：docker compose up --build   →   http://localhost:3000
+# 前提：已运行 scripts/download_data.py 下载数据；.env 里有 ANTHROPIC_API_KEY。
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./data:/app/data:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
