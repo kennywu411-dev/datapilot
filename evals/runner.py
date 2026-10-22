@@ -327,6 +327,13 @@ def main(argv=None) -> None:
         return
 
     run_dir.mkdir(parents=True, exist_ok=True)
+    prev_cfg = run_dir / "config.json"
+    if args.resume and prev_cfg.exists():
+        prev_ids = json.loads(prev_cfg.read_text()).get("question_ids")
+        if prev_ids is not None and prev_ids != [q["question_id"] for q in questions]:
+            raise SystemExit(
+                "续跑的题集与原运行不一致（--questions / --sample / --ids 要与原来相同）"
+            )
     (run_dir / "config.json").write_text(
         json.dumps({**vars(args), "question_ids": [q["question_id"] for q in questions]}, indent=2)
     )

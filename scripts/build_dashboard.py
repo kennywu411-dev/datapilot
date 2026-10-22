@@ -19,18 +19,13 @@ from evals.report import load_rows, pct, wilson  # noqa: E402
 RUNS = ROOT / "runs"
 OUT = ROOT / "web" / "src" / "data" / "eval.json"
 
-LADDER = [
-    ("E0", "基线（官方提示词）", "baseline-20261022-144835-8314"),
-    ("E1", "提示缓存", "e1-20261022-161608-d69f"),
-    ("E2", "+ Schema 增强", "e2-20261022-162100-555b"),
-    ("E3", "+ 值核对", "e3-20261022-162602-47f5"),
-    ("E4", "+ 执行纠错（最终）", "e4-20261022-163051-724f"),
-    ("Agent", "自主调用工具", "agent-20261022-163640-2775"),
-]
-OPUS_E4 = "e4opus-20261022-175535-704b"
-E4_REP = "e4rep-20261022-174522-183a"
-QWEN = "qwen100-20261022-175906-933f"
-CACHE = "cache-bench-20261022-183428"
+# 运行 ID 集中在 runs/MANIFEST.json，重跑实验后只改那里
+MANIFEST = json.loads((RUNS / "MANIFEST.json").read_text(encoding="utf-8"))
+LADDER = [tuple(x) for x in MANIFEST["ladder"]]
+OPUS_E4 = MANIFEST["opus_e4"]
+E4_REP = MANIFEST["e4_repeats"]
+QWEN = MANIFEST["local_model_100"]
+CACHE = MANIFEST["cache_bench"]
 
 
 def rows(run: str) -> list[dict]:
@@ -147,9 +142,7 @@ def main() -> None:
     }
 
     data["cache"] = json.loads((RUNS / CACHE / "summary.json").read_text())
-    data["selfcheck"] = json.loads(
-        (RUNS / "gold-check-20261022-145326" / "summary.json").read_text()
-    )
+    data["selfcheck"] = json.loads((RUNS / MANIFEST["gold_check"] / "summary.json").read_text())
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1))

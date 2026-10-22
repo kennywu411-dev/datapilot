@@ -1,6 +1,7 @@
 """接入一个新的 SQLite 数据库：复制到 data/dev_databases/<db_id>/，并生成列说明草稿。
 
-- 只复制，不修改源库；目标已存在时拒绝覆盖
+- 用 SQLite backup API 做一致性拷贝（源库在 WAL 模式或正被写入时，直接复制文件会漏数据）；
+  只读打开源库，不修改；目标已存在时拒绝覆盖
 - 列说明草稿：从建表语句的行尾注释（如 `tier TEXT -- normal / vip`）提取取值说明，
   写成 BIRD 格式的 database_description/<table>.csv，之后人工补全
 - 系统会把这些说明放进增强 schema（取值说明对"取值写错"类错误最有用）
@@ -13,7 +14,6 @@ from __future__ import annotations
 
 import csv
 import re
-import shutil
 import sqlite3
 import sys
 from pathlib import Path
@@ -50,7 +50,13 @@ def add_database(db_id: str, source: Path) -> Path:
     if target.exists():
         raise FileExistsError(f"{target} 已存在，不覆盖")
     target_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, target)
+    src = sqlite3.connect(f"{Path(source).resolve().as_uri()}?mode=ro", uri=True)
+    dst = sqlite3.connect(target)
+    try:
+        src.backup(dst)
+    finally:
+        dst.close()
+        src.close()
 
     desc_dir = target_dir / "database_description"
     desc_dir.mkdir(exist_ok=True)

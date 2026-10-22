@@ -91,19 +91,23 @@ def extract_sqlite(zip_path: Path) -> None:
 
 
 def main() -> int:
-    """可选参数 --zip <路径>：使用本机已有的 minidev.zip（复现时免重复下载 800MB）。"""
+    """可选参数 --zip <路径>：直接使用本机已有的 minidev.zip（复现时免重复下载 800MB）。"""
     RAW.mkdir(parents=True, exist_ok=True)
+    zip_path = ZIP_PATH
     if "--zip" in sys.argv:
-        local = Path(sys.argv[sys.argv.index("--zip") + 1]).resolve()
-        if not ZIP_PATH.exists():
-            shutil.copy(local, ZIP_PATH)
+        i = sys.argv.index("--zip")
+        if i + 1 >= len(sys.argv):
+            print("用法：--zip <minidev.zip 路径>")
+            return 2
+        zip_path = Path(sys.argv[i + 1]).resolve()
     hf_raw = RAW / "mini_dev_sqlite_hf.json"
     download(HF_FILE, hf_raw)
     questions = load_questions(hf_raw)
     QUESTIONS.write_text(json.dumps(questions, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    download(ZIP_URL, ZIP_PATH)
-    extract_sqlite(ZIP_PATH)
+    if zip_path == ZIP_PATH:
+        download(ZIP_URL, ZIP_PATH)
+    extract_sqlite(zip_path)
 
     db_ids = sorted({q["db_id"] for q in questions})
     missing = [d for d in db_ids if not (DB_DIR / d / f"{d}.sqlite").exists()]

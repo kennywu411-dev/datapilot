@@ -194,6 +194,7 @@ function Failures() {
   const [filter, setFilter] = useState<string | null>(null);
   const cases = useMemo(() => f.cases.filter((c) => !filter || c.category === filter), [f.cases, filter]);
   const order = Object.keys(names).sort((a, b) => counts[b] - counts[a]);
+  const total = f.cases.length;
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
@@ -201,7 +202,7 @@ function Failures() {
           onClick={() => setFilter(null)}
           className={cn("rounded-lg border px-3 py-1.5 text-sm", !filter ? "border-primary/50 text-foreground" : "text-muted-foreground")}
         >
-          全部 <span className="font-mono">50</span>
+          全部 <span className="font-mono">{total}</span>
         </button>
         {order.map((k) => (
           <button
@@ -213,7 +214,7 @@ function Failures() {
             )}
           >
             {names[k]} <span className="font-mono">{counts[k]}</span>
-            <span className="ml-1 text-xs text-muted-foreground">{pct(counts[k] / 50, 0)}</span>
+            <span className="ml-1 text-xs text-muted-foreground">{pct(counts[k] / total, 0)}</span>
           </button>
         ))}
       </div>
@@ -260,7 +261,11 @@ export default function EvalPage() {
             label="Haiku 执行准确率"
             sub={`取值核对 + 执行纠错，McNemar p=${data.haiku_e0_to_e4_p}，3 次均值`}
           />
-          <Kpi value={pct(data.failure.counts.B / 50, 0)} label="失败题中标准答案错" sub="50 道分层抽样，人工判定；审计论文报告 52.8%" />
+          <Kpi
+            value={pct(data.failure.counts.B / data.failure.cases.length, 0)}
+            label="失败题中标准答案错"
+            sub={`${data.failure.cases.length} 道分层抽样，人工判定；审计论文报告 52.8%`}
+          />
           <Kpi
             value={`${(cache.hit_latency_p50 * 1000).toFixed(1)} ms`}
             label="缓存命中延迟（P50）"
