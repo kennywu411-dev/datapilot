@@ -49,6 +49,20 @@ class LLM(Protocol):
     ) -> LLMResult: ...
 
 
+async def retry_on_max_tokens(once) -> LLMResult:
+    """撞到 max_tokens 时重试一次，usage 两次累计（P8）。ClaudeLLM 与 LocalLLM 共用。"""
+    start = time.perf_counter()
+    first = await once()
+    if first.stop_reason != "max_tokens":
+        first.latency_s = time.perf_counter() - start
+        return first
+    second = await once()
+    second.usage = {k: first.usage.get(k, 0) + v for k, v in second.usage.items()}
+    second.retried = True
+    second.latency_s = time.perf_counter() - start
+    return second
+
+
 @cache
 def _json_schema(output_format: type[BaseModel]) -> dict:
     return anthropic.transform_schema(output_format)
@@ -87,16 +101,7 @@ class ClaudeLLM:
         tools: list[dict],
         output_format: type[BaseModel] | None = None,
     ) -> LLMResult:
-        start = time.perf_counter()
-        first = await self._once(system, messages, tools, output_format)
-        if first.stop_reason != "max_tokens":
-            first.latency_s = time.perf_counter() - start
-            return first
-        second = await self._once(system, messages, tools, output_format)
-        second.usage = {k: first.usage.get(k, 0) + v for k, v in second.usage.items()}
-        second.retried = True
-        second.latency_s = time.perf_counter() - start
-        return second
+        return await retry_on_max_tokens(lambda: self._once(system, messages, tools, output_format))
 
     async def _once(
         self,
@@ -184,11 +189,20 @@ class LocalLLM:
     ) -> LLMResult:
         if tools:
             raise ValueError("LocalLLM 只用于固定流程，不支持工具调用")
-        start = time.perf_counter()
+        chat = [{"role": "system", "content": system}] + [
+            {"role": m["role"], "content": self._text(m["content"])} for m in messages
+        ]
+        # 超过 num_ctx 时 Ollama 只保留开头 4 个 token、静默丢掉之后的开头部分——schema 正好在开头。
+        # 按 3 字符/token 保守估算，宁可报错也不让模型在看不到 schema 的情况下作答（代码审查发现）。
+        est = sum(len(m["content"]) for m in chat) / 3
+        if est + self.max_tokens > self.num_ctx:
+            raise ValueError(f"提示约 {est:.0f} token，加输出上限超过 num_ctx={self.num_ctx}")
+        return await retry_on_max_tokens(lambda: self._once(chat, output_format))
+
+    async def _once(self, chat: list[dict], output_format: type[BaseModel] | None) -> LLMResult:
         body: dict = {
             "model": self.model,
-            "messages": [{"role": "system", "content": system}]
-            + [{"role": m["role"], "content": self._text(m["content"])} for m in messages],
+            "messages": chat,
             "stream": False,
             "options": {"temperature": 0, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
         }
@@ -213,7 +227,6 @@ class LocalLLM:
                 "input_tokens": data.get("prompt_eval_count", 0),
                 "output_tokens": data.get("eval_count", 0),
             },
-            latency_s=time.perf_counter() - start,
             parsed=parsed,
         )
 

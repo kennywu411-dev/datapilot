@@ -232,6 +232,18 @@ def estimate(questions: list[dict], configs: list[Config]) -> float:
     return total
 
 
+def validate(models: list[str], pipeline: str) -> None:
+    """开跑前拦住不可能成功的配置：否则每题都记成 llm_error，续跑时还会被无限重试。"""
+    if models == ["gold"]:
+        return
+    known = set(config.MODELS) | set(config.LOCAL_MODELS)
+    unknown = [m for m in models if m not in known]
+    if unknown:
+        raise SystemExit(f"未知模型：{unknown}，可选：{sorted(known)}")
+    if pipeline == "agent" and any(m in config.LOCAL_MODELS for m in models):
+        raise SystemExit("本地模型不支持工具调用，不能跑 agent 流程")
+
+
 def make_factory(mock: bool):
     if mock:
 
@@ -244,14 +256,16 @@ def make_factory(mock: bool):
 
         return mock
     import anthropic
+    import httpx2
 
     from datapilot.llm import ClaudeLLM, LocalLLM
 
     client = anthropic.AsyncAnthropic(max_retries=6)
+    local_client = httpx2.AsyncClient(timeout=600)  # 与 Claude 一样共用一个客户端，不每题新建
 
     def factory(cfg, q):
         if cfg.model in config.LOCAL_MODELS:
-            return LocalLLM(config.LOCAL_MODELS[cfg.model])
+            return LocalLLM(config.LOCAL_MODELS[cfg.model], client=local_client)
         return ClaudeLLM(config.MODELS[cfg.model], effort=cfg.effort, client=client)
 
     return factory
@@ -287,6 +301,7 @@ def main(argv=None) -> None:
     if args.sample:
         questions = stratified_sample(questions, args.sample, args.seed)
     models = args.models.split(",")
+    validate(models, args.pipeline)
     mock = models == ["gold"]
     configs = [
         Config(m, args.pipeline, args.effort, r)

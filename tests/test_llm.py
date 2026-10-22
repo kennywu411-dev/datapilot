@@ -190,3 +190,50 @@ def test_local_llm_truncated_output_is_max_tokens():
         )
     )
     assert res.stop_reason == "max_tokens" and res.parsed is None
+
+
+def test_local_llm_rejects_prompt_over_context():
+    """提示超过 num_ctx 时 Ollama 会静默截掉开头（schema 就在开头），必须提前报错。"""
+    import pytest
+
+    from datapilot.llm import LocalLLM
+
+    called = []
+
+    def handler(request):
+        called.append(1)
+        return httpx.Response(200, json={})
+
+    llm = LocalLLM(
+        "m", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)), num_ctx=100
+    )
+    with pytest.raises(ValueError, match="num_ctx"):
+        asyncio.run(llm.complete("x" * 1000, [{"role": "user", "content": "q"}], [], SQLAnswer))
+    assert called == []
+
+
+def test_local_llm_retries_once_on_length():
+    from datapilot.llm import LocalLLM
+
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) == 1:
+            return httpx.Response(
+                200,
+                json={"message": {"content": '{"sql'}, "done_reason": "length", "eval_count": 9},
+            )
+        return httpx.Response(
+            200,
+            json={
+                "message": {"content": '{"sql": "SELECT 1"}'},
+                "done_reason": "stop",
+                "eval_count": 5,
+            },
+        )
+
+    llm = LocalLLM("m", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    res = asyncio.run(llm.complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer))
+    assert len(seen) == 2 and res.retried and res.parsed == SQLAnswer(sql="SELECT 1")
+    assert res.usage["output_tokens"] == 14
