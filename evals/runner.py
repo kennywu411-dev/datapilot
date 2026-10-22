@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from datapilot import config  # noqa: E402
+from datapilot.agent import SQLAgent  # noqa: E402
 from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
 from datapilot.ex import evaluate_one  # noqa: E402
 from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
@@ -48,6 +49,7 @@ PIPELINES = {
     "e4_correct": FixedPipeline(
         PipelineConfig(schema="enhanced", value_check=True, max_corrections=3)
     ),
+    "agent": SQLAgent(max_steps=10),
     "abl_retrieval": FixedPipeline(
         PipelineConfig(schema="enhanced", retrieval_k=3, value_check=True, max_corrections=3)
     ),
@@ -232,8 +234,15 @@ def estimate(questions: list[dict], configs: list[Config]) -> float:
 
 def make_factory(mock: bool):
     if mock:
-        # 纠错流程可能追问，多备几份同样的答案；返回同一 SQL 时流程会结束
-        return lambda cfg, q: ScriptedLLM([SQLAnswer(sql=q["SQL"])] * 4, model="gold")
+
+        def mock(cfg, q):
+            if cfg.pipeline == "agent":
+                submit = {"name": "submit_answer", "input": {"sql": q["SQL"]}}
+                return ScriptedLLM([submit], model="gold")
+            # 纠错流程可能追问，多备几份同样的答案；返回同一 SQL 时流程会结束
+            return ScriptedLLM([SQLAnswer(sql=q["SQL"])] * 4, model="gold")
+
+        return mock
     import anthropic
 
     from datapilot.llm import ClaudeLLM
