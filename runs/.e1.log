@@ -841,3 +841,168 @@
 [840/1000] haiku r0 q683 ✗ ok
 [841/1000] haiku r0 q705 ✓
 [842/1000] haiku r0 q707 ✓
+[843/1000] haiku r0 q340 ✗ ok
+[844/1000] haiku r0 q710 ✗ ok
+[845/1000] haiku r0 q344 ✗ ok
+[846/1000] haiku r0 q345 ✓
+[847/1000] haiku r0 q716 ✗ ok
+[848/1000] haiku r0 q346 ✓
+[849/1000] haiku r0 q341 ✗ ok
+[850/1000] haiku r0 q358 ✓
+[851/1000] haiku r0 q356 ✓
+[852/1000] haiku r0 q349 ✗ ok
+[853/1000] haiku r0 q347 ✗ ok
+[854/1000] haiku r0 q352 ✗ ok
+[855/1000] haiku r0 q366 ✗ ok
+[856/1000] haiku r0 q368 ✓
+[857/1000] haiku r0 q377 ✓
+[858/1000] haiku r0 q383 ✗ ok
+[859/1000] haiku r0 q379 ✓
+[860/1000] haiku r0 q391 ✓
+[861/1000] haiku r0 q405 ✗ ok
+[862/1000] haiku r0 q397 ✓
+[863/1000] haiku r0 q408 ✗ ok
+[864/1000] haiku r0 q371 ✓
+[865/1000] haiku r0 q409 ✓
+[866/1000] haiku r0 q407 ✗ ok
+[867/1000] haiku r0 q402 ✗ ok
+[868/1000] haiku r0 q414 ✓
+[869/1000] haiku r0 q415 ✗ ok
+[870/1000] haiku r0 q412 ✗ ok
+[871/1000] haiku r0 q422 ✓
+[872/1000] haiku r0 q440 ✓
+[873/1000] haiku r0 q427 ✓
+[874/1000] haiku r0 q424 ✓
+[875/1000] haiku r0 q416 ✓
+[876/1000] haiku r0 q459 ✗ ok
+[877/1000] haiku r0 q462 ✓
+[878/1000] haiku r0 q466 ✓
+[879/1000] haiku r0 q468 ✓
+[880/1000] haiku r0 q465 ✗ ok
+[881/1000] haiku r0 q469 ✗ ok
+[882/1000] haiku r0 q472 ✓
+[883/1000] haiku r0 q474 ✗ ok
+[884/1000] haiku r0 q477 ✓
+[885/1000] haiku r0 q480 ✓
+[886/1000] haiku r0 q473 ✗ ok
+[887/1000] haiku r0 q479 ✓
+[888/1000] haiku r0 q1014 ✗ ok
+[889/1000] haiku r0 q483 ✓
+[890/1000] haiku r0 q484 ✗ ok
+[891/1000] haiku r0 q522 ✓
+[892/1000] haiku r0 q486 ✓
+[893/1000] haiku r0 q529 ✗ ok
+[894/1000] haiku r0 q195 ✓
+[895/1000] haiku r0 q530 ✗ ok
+[896/1000] haiku r0 q487 ✓
+[897/1000] haiku r0 q528 ✓
+[898/1000] haiku r0 q200 ✓
+[899/1000] haiku r0 q206 ✓
+[900/1000] haiku r0 q197 ✗ ok
+[901/1000] haiku r0 q207 ✗ ok
+[902/1000] haiku r0 q198 ✗ ok
+[903/1000] haiku r0 q201 ✓
+[904/1000] haiku r0 q208 ✓
+[905/1000] haiku r0 q213 ✓
+[906/1000] haiku r0 q212 ✓
+[907/1000] haiku r0 q220 ✓
+[908/1000] haiku r0 q226 ✓
+[909/1000] haiku r0 q215 ✗ ok
+[910/1000] haiku r0 q227 ✓
+[911/1000] haiku r0 q219 ✗ ok
+[912/1000] haiku r0 q228 ✗ ok
+[913/1000] haiku r0 q230 ✓
+[914/1000] haiku r0 q232 ✓
+[915/1000] haiku r0 q234 ✗ ok
+[916/1000] haiku r0 q236 ✓
+[917/1000] haiku r0 q218 ✗ ok
+[918/1000] haiku r0 q231 ✗ ok
+[919/1000] haiku r0 q240 ✓
+[920/1000] haiku r0 q239 ✓
+[921/1000] haiku r0 q242 ✓
+[922/1000] haiku r0 q247 ✗ ok
+[923/1000] haiku r0 q245 ✓
+[924/1000] haiku r0 q248 ✓
+[925/1000] haiku r0 q244 ✗ ok
+[926/1000] haiku r0 q243 ✓
+[927/1000] haiku r0 q253 ✓
+[928/1000] haiku r0 q255 ✗ ok
+[929/1000] haiku r0 q249 ✓
+[930/1000] haiku r0 q282 ✓
+[931/1000] haiku r0 q260 ✓
+[932/1000] haiku r0 q701 ✗ timeout
+[933/1000] haiku r0 q281 ✗ ok
+[934/1000] haiku r0 q273 ✓
+[935/1000] haiku r0 q268 ✓
+[936/1000] haiku r0 q327 ✓
+[937/1000] haiku r0 q11 ✗ ok
+[938/1000] haiku r0 q263 ✗ ok
+[939/1000] haiku r0 q5 ✓
+[940/1000] haiku r0 q17 ✗ ok
+[941/1000] haiku r0 q23 ✗ ok
+[942/1000] haiku r0 q12 ✓
+[943/1000] haiku r0 q24 ✗ ok
+[944/1000] haiku r0 q25 ✗ ok
+[945/1000] haiku r0 q27 ✗ ok
+[946/1000] haiku r0 q26 ✗ ok
+[947/1000] haiku r0 q28 ✗ ok
+[948/1000] haiku r0 q31 ✓
+[949/1000] haiku r0 q39 ✓
+[950/1000] haiku r0 q37 ✗ ok
+[951/1000] haiku r0 q40 ✓
+[952/1000] haiku r0 q36 ✗ ok
+[953/1000] haiku r0 q47 ✓
+[954/1000] haiku r0 q32 ✗ ok
+[955/1000] haiku r0 q45 ✓
+[956/1000] haiku r0 q41 ✗ ok
+[957/1000] haiku r0 q48 ✓
+[958/1000] haiku r0 q46 ✗ ok
+[959/1000] haiku r0 q72 ✓
+[960/1000] haiku r0 q50 ✓
+[961/1000] haiku r0 q62 ✓
+[962/1000] haiku r0 q79 ✓
+[963/1000] haiku r0 q77 ✗ ok
+[964/1000] haiku r0 q82 ✓
+[965/1000] haiku r0 q89 ✓
+[966/1000] haiku r0 q83 ✓
+[967/1000] haiku r0 q92 ✓
+[968/1000] haiku r0 q85 ✓
+[969/1000] haiku r0 q93 ✓
+[970/1000] haiku r0 q87 ✗ ok
+[971/1000] haiku r0 q112 ✓
+[972/1000] haiku r0 q518 ✓
+[973/1000] haiku r0 q99 ✗ ok
+[974/1000] haiku r0 q95 ✓
+[975/1000] haiku r0 q100 ✓
+[976/1000] haiku r0 q98 ✓
+[977/1000] haiku r0 q94 ✗ ok
+[978/1000] haiku r0 q117 ✓
+[979/1000] haiku r0 q115 ✗ ok
+[980/1000] haiku r0 q118 ✗ ok
+[981/1000] haiku r0 q137 ✓
+[982/1000] haiku r0 q138 ✓
+[983/1000] haiku r0 q129 ✗ ok
+[984/1000] haiku r0 q128 ✗ ok
+[985/1000] haiku r0 q136 ✗ ok
+[986/1000] haiku r0 q159 ✗ ok
+[987/1000] haiku r0 q116 ✗ ok
+[988/1000] haiku r0 q125 ✗ ok
+[989/1000] haiku r0 q152 ✗ ok
+[990/1000] haiku r0 q145 ✗ ok
+[991/1000] haiku r0 q149 ✗ ok
+[992/1000] haiku r0 q194 ✗ ok
+[993/1000] haiku r0 q169 ✗ ok
+[994/1000] haiku r0 q192 ✓
+[995/1000] haiku r0 q168 ✗ ok
+[996/1000] haiku r0 q186 ✗ ok
+[997/1000] haiku r0 q119 ✓
+[998/1000] haiku r0 q173 ✓
+[999/1000] haiku r0 q189 ✗ ok
+[1000/1000] haiku r0 q120 ✓
+本次实际花费 $1.4080
+
+run_id=e1-20261022-161608-d69f
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| haiku | e1_cached | medium | 500 | 64.2% | 59.9%–68.3% | 115/148 | 149/250 | 57/102 | $0.0002 | $0.089 | 1.7s / 3.8s | {'ok': 499, 'timeout': 1} |
+| sonnet | e1_cached | medium | 500 | 70.8% | 66.7%–74.6% | 120/148 | 171/250 | 63/102 | $0.0026 | $1.320 | 1.7s / 2.8s | {'ok': 497, 'timeout': 1, 'no_sql': 2} |

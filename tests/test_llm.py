@@ -105,6 +105,30 @@ def test_refusal_is_reported_not_raised():
     assert res.stop_reason == "refusal" and res.parsed is None
 
 
+def test_max_tokens_retries_once_and_sums_usage():
+    """Sonnet 偶发生成失控（P8）：撞到 max_tokens 时重试一次，花费按两次累计。"""
+    seen = []
+
+    def handler(request):
+        seen.append(json.loads(request.content))
+        if len(seen) == 1:
+            return httpx.Response(
+                200, json=_response([{"type": "text", "text": '{"sql'}], "max_tokens")
+            )
+        return httpx.Response(
+            200, json=_response([{"type": "text", "text": '{"sql": "SELECT 5"}'}])
+        )
+
+    llm = ClaudeLLM("claude-haiku-5-5", client=_client(handler))
+    res = asyncio.run(
+        llm.complete("s", [{"role": "user", "content": "q"}], [], output_format=SQLAnswer)
+    )
+    assert len(seen) == 2 and seen[0]["max_tokens"] == 4096
+    assert res.parsed == SQLAnswer(sql="SELECT 5")
+    assert res.usage["output_tokens"] == 200  # 两次各 100
+    assert res.retried is True
+
+
 def test_scripted_llm_structured():
     llm = ScriptedLLM([SQLAnswer(sql="SELECT 3"), "完成"])
     r1 = asyncio.run(llm.complete("s", [], [], output_format=SQLAnswer))
