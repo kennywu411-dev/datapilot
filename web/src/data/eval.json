@@ -299,6 +299,25 @@
    },
    "runs": null,
    "contamination_note": true
+  },
+  "qwen": {
+   "n": 500,
+   "ex": 0.538,
+   "ci": [
+    0.4942,
+    0.5812
+   ],
+   "cost_per_q": 0.0,
+   "p50": 5.45,
+   "p95": 18.16,
+   "by_difficulty": {
+    "simple": 0.6824,
+    "moderate": 0.512,
+    "challenging": 0.3922
+   },
+   "runs": null,
+   "run_id": "qwen500-20261022-215451-f53b",
+   "p_vs_haiku": 5.8e-09
   }
  },
  "same100": {

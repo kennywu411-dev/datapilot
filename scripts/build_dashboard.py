@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from evals.compare import compare  # noqa: E402
+from evals.compare import compare, mcnemar_exact  # noqa: E402
 from evals.report import load_rows, pct, wilson  # noqa: E402
 
 RUNS = ROOT / "runs"
@@ -25,6 +25,7 @@ LADDER = [tuple(x) for x in MANIFEST["ladder"]]
 OPUS_E4 = MANIFEST["opus_e4"]
 E4_REP = MANIFEST["e4_repeats"]
 QWEN = MANIFEST["local_model_100"]
+QWEN500 = MANIFEST["local_model_500"]
 CACHE = MANIFEST["cache_bench"]
 
 
@@ -96,6 +97,17 @@ def main() -> None:
             "std": round(statistics.stdev(exs), 4),
         }
     final["opus"] = {**stats(rows(OPUS_E4)), "runs": None, "contamination_note": True}
+    # 本地开源模型 500 题（1 次），与 Haiku E4 首次运行逐题配对
+    q500 = rows(QWEN500)
+    haiku = {x["question_id"]: x["correct"] for x in e4 if x["model"] == "haiku"}
+    q_only = sum(1 for x in q500 if x["correct"] and not haiku[x["question_id"]])
+    h_only = sum(1 for x in q500 if haiku[x["question_id"]] and not x["correct"])
+    final["qwen"] = {
+        **stats(q500),
+        "runs": None,
+        "run_id": QWEN500,
+        "p_vs_haiku": float(f"{mcnemar_exact(h_only, q_only):.3g}"),
+    }
     data["final"] = final
 
     # 同 100 题：本地开源模型 vs Claude
@@ -154,6 +166,10 @@ def main() -> None:
         final["sonnet"]["mean"],
         "Opus:",
         final["opus"]["ex"],
+        "qwen 500:",
+        final["qwen"]["ex"],
+        "p vs Haiku:",
+        final["qwen"]["p_vs_haiku"],
     )
 
 

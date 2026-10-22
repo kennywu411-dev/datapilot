@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.1 — 补全：本地模型全量、docker compose、高清截图（2026-10-22）
+
+### 新增
+- 本地模型 qwen2.5-coder:7b 跑完 500 题全量，接入看板模型对比（runs/MANIFEST.json 的 local_model_500）
+- docker compose 一键启动（后端 + 前端 + Redis），实测通过；前端镜像改 Next.js standalone（1.44GB → 281MB）
+- README 截图换成 2 倍清晰度（scripts/screenshots.py：Chrome 无头模式 + CDP 自动问数后截图）
+
+### 数字
+- 本地 qwen2.5-coder:7b 500 题 EX 53.8%（49.4–58.1%），比 Haiku 68.0% 低 14.2 个百分点，逐题配对 p<0.001；语法错误 8.2%，P50 5.5 s（qwen500-20261022-215451-f53b）
+- 此前 100 题抽样 56%（与 Haiku 差距不显著），全量后结论变为显著
+
 ## v1.0 — D5：评测看板、README、交付（2026-10-22）
 
 ### 新增
