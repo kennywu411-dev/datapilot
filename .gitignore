@@ -1,0 +1,23 @@
+# 密钥
+.env
+*.env
+!.env.example
+
+# 数据与数据库（用 scripts/download_data.py 下载）
+data/
+*.sqlite
+*.db
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# 前端
+node_modules/
+.next/
+
+.DS_Store
