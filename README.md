@@ -124,6 +124,17 @@ uv run python scripts/build_dashboard.py                        # 重新生成�
 uv run python scripts/mcp_smoke.py   # 按 .mcp.json 的命令拉起服务，列工具、查询、验证 DROP 被拒
 ```
 
+
+要求删表时的表现（下图）：Claude 自己拒绝了，没有调用工具。删表的防护是分层的，越往后越不依赖模型：
+
+| 层 | 谁负责 | 能否依赖 |
+|---|---|---|
+| 1. 模型拒绝 | Claude 自身判断（下图） | 不能：可能被数据里的提示注入带偏 |
+| 2. Agent 产品的安全检查 | Agent 产品的权限模式拦截破坏性调用 | 不能：别的 Agent 产品不一定有 |
+| 3. MCP 服务三道防线 | sqlglot 单条 SELECT 白名单 → 只读连接 → SQLite 授权回调 | 能：在数据库一侧，冒烟脚本实测 DROP 返回 `rejected` |
+
+![要求删表时 Claude 拒绝](docs/images/mcp-drop-refused.png)
+
 ## 接入新数据库
 
 流程写成了 Agent Skill：[skills/chatbi-add-database/SKILL.md](skills/chatbi-add-database/SKILL.md)（复制库 → 补列说明 → 写评测题 → 空跑校验 → 报预算后评测 → 失败分析 → 登记）。
