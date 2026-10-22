@@ -96,7 +96,7 @@ uv run python scripts/download_data.py   # 先下载数据
 docker compose up --build                # 打开 http://localhost:3000
 ```
 
-> 注：docker-compose 配置**尚未在本机实测**（开发机没有安装 Docker），以上面的手动步骤为准。
+> 已实测（colima + Docker 29，2026-10-22）：首次构建约 5 分钟；镜像后端 783MB、前端 281MB（Next.js standalone）；容器内问数、SSE、Redis 会话与缓存命中均正常。
 
 跑付费实验（不加 `--yes` 只打印预估花费）：
 

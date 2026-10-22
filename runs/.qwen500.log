@@ -10,3 +10,120 @@
 [9/500] qwen7b r0 q1483 ✓
 [10/500] qwen7b r0 q1484 ✓
 [11/500] qwen7b r0 q1486 ✗ ok
+[12/500] qwen7b r0 q1490 ✓
+[13/500] qwen7b r0 q1493 ✓
+[14/500] qwen7b r0 q1498 ✗ ok
+[15/500] qwen7b r0 q1500 ✗ ok
+[16/500] qwen7b r0 q1501 ✗ ok
+[17/500] qwen7b r0 q1505 ✗ ok
+[18/500] qwen7b r0 q1506 ✓
+[19/500] qwen7b r0 q1507 ✓
+[20/500] qwen7b r0 q1509 ✓
+[21/500] qwen7b r0 q1514 ✓
+[22/500] qwen7b r0 q1515 ✓
+[23/500] qwen7b r0 q1521 ✓
+[24/500] qwen7b r0 q1524 ✗ ok
+[25/500] qwen7b r0 q1525 ✓
+[26/500] qwen7b r0 q1526 ✗ ok
+[27/500] qwen7b r0 q1528 ✗ ok
+[28/500] qwen7b r0 q1529 ✗ ok
+[29/500] qwen7b r0 q1531 ✗ ok
+[30/500] qwen7b r0 q1533 ✓
+[31/500] qwen7b r0 q1312 ✓
+[32/500] qwen7b r0 q1317 ✓
+[33/500] qwen7b r0 q1322 ✗ ok
+[34/500] qwen7b r0 q1323 ✓
+[35/500] qwen7b r0 q1331 ✓
+[36/500] qwen7b r0 q1334 ✓
+[37/500] qwen7b r0 q1338 ✗ pred_error
+[38/500] qwen7b r0 q1339 ✓
+[39/500] qwen7b r0 q1340 ✓
+[40/500] qwen7b r0 q1344 ✓
+[41/500] qwen7b r0 q1346 ✓
+[42/500] qwen7b r0 q1350 ✗ pred_error
+[43/500] qwen7b r0 q1351 ✓
+[44/500] qwen7b r0 q1352 ✓
+[45/500] qwen7b r0 q1356 ✓
+[46/500] qwen7b r0 q1357 ✓
+[47/500] qwen7b r0 q1359 ✓
+[48/500] qwen7b r0 q1361 ✓
+[49/500] qwen7b r0 q1362 ✓
+[50/500] qwen7b r0 q1368 ✓
+[51/500] qwen7b r0 q1371 ✓
+[52/500] qwen7b r0 q1375 ✓
+[53/500] qwen7b r0 q1376 ✓
+[54/500] qwen7b r0 q1378 ✓
+[55/500] qwen7b r0 q1380 ✓
+[56/500] qwen7b r0 q1381 ✓
+[57/500] qwen7b r0 q1387 ✗ ok
+[58/500] qwen7b r0 q1389 ✗ pred_error
+[59/500] qwen7b r0 q1390 ✗ pred_error
+[60/500] qwen7b r0 q1392 ✓
+[61/500] qwen7b r0 q1394 ✓
+[62/500] qwen7b r0 q1398 ✓
+[63/500] qwen7b r0 q1399 ✗ ok
+[64/500] qwen7b r0 q1401 ✗ pred_error
+[65/500] qwen7b r0 q1403 ✓
+[66/500] qwen7b r0 q1404 ✗ pred_error
+[67/500] qwen7b r0 q1405 ✓
+[68/500] qwen7b r0 q1409 ✓
+[69/500] qwen7b r0 q1410 ✓
+[70/500] qwen7b r0 q1411 ✓
+[71/500] qwen7b r0 q1422 ✓
+[72/500] qwen7b r0 q1426 ✓
+[73/500] qwen7b r0 q1427 ✗ ok
+[74/500] qwen7b r0 q1432 ✓
+[75/500] qwen7b r0 q1435 ✓
+[76/500] qwen7b r0 q1457 ✓
+[77/500] qwen7b r0 q1460 ✓
+[78/500] qwen7b r0 q1464 ✓
+[79/500] qwen7b r0 q1149 ✗ ok
+[80/500] qwen7b r0 q1150 ✓
+[81/500] qwen7b r0 q1152 ✓
+[82/500] qwen7b r0 q1153 ✗ ok
+[83/500] qwen7b r0 q1155 ✗ pred_error
+[84/500] qwen7b r0 q1156 ✓
+[85/500] qwen7b r0 q1157 ✗ pred_error
+[86/500] qwen7b r0 q1162 ✓
+[87/500] qwen7b r0 q1164 ✓
+[88/500] qwen7b r0 q1166 ✗ ok
+[89/500] qwen7b r0 q1168 ✗ ok
+[90/500] qwen7b r0 q1169 ✓
+[91/500] qwen7b r0 q1171 ✗ ok
+[92/500] qwen7b r0 q1175 ✗ pred_error
+[93/500] qwen7b r0 q1179 ✗ ok
+[94/500] qwen7b r0 q1185 ✓
+[95/500] qwen7b r0 q1187 ✓
+[96/500] qwen7b r0 q1189 ✗ ok
+[97/500] qwen7b r0 q1192 ✓
+[98/500] qwen7b r0 q1195 ✓
+[99/500] qwen7b r0 q1198 ✓
+[100/500] qwen7b r0 q1201 ✓
+[101/500] qwen7b r0 q1205 ✗ ok
+[102/500] qwen7b r0 q1208 ✓
+[103/500] qwen7b r0 q1209 ✓
+[104/500] qwen7b r0 q1220 ✓
+[105/500] qwen7b r0 q1225 ✗ pred_error
+[106/500] qwen7b r0 q1227 ✗ ok
+[107/500] qwen7b r0 q1229 ✓
+[108/500] qwen7b r0 q1231 ✓
+[109/500] qwen7b r0 q1232 ✓
+[110/500] qwen7b r0 q1235 ✗ pred_error
+[111/500] qwen7b r0 q1238 ✗ pred_error
+[112/500] qwen7b r0 q1239 ✗ ok
+[113/500] qwen7b r0 q1241 ✗ ok
+[114/500] qwen7b r0 q1242 ✗ ok
+[115/500] qwen7b r0 q1243 ✗ ok
+[116/500] qwen7b r0 q1247 ✗ pred_error
+[117/500] qwen7b r0 q1251 ✗ ok
+[118/500] qwen7b r0 q1252 ✗ pred_error
+[119/500] qwen7b r0 q1254 ✗ pred_error
+[120/500] qwen7b r0 q1255 ✗ ok
+[121/500] qwen7b r0 q1256 ✗ pred_error
+[122/500] qwen7b r0 q1257 ✗ ok
+[123/500] qwen7b r0 q1265 ✗ ok
+[124/500] qwen7b r0 q1267 ✗ pred_error
+[125/500] qwen7b r0 q1270 ✗ pred_error
+[126/500] qwen7b r0 q1275 ✗ pred_error
+[127/500] qwen7b r0 q1281 ✗ ok
+[128/500] qwen7b r0 q1302 ✗ ok
