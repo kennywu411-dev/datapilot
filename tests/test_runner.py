@@ -228,3 +228,50 @@ def test_validate_rejects_unknown_model_and_local_agent():
         validate(["qwen7b"], "agent")
     validate(["haiku", "qwen7b"], "e4_correct")
     validate(["gold"], "agent")
+
+
+def test_main_accepts_custom_question_file(tmp_path, monkeypatch, shop_db_dir):
+    """--questions 指向自定义题集：接入新库时用标准答案空跑全管线必须 100%。"""
+    import json as _json
+
+    from evals import runner as runner_mod
+
+    qfile = tmp_path / "shop.json"
+    qfile.write_text(
+        _json.dumps(
+            [
+                {
+                    "question_id": 1,
+                    "db_id": "shop",
+                    "question": "多少用户",
+                    "evidence": "",
+                    "SQL": "SELECT count(*) FROM users",
+                    "difficulty": "simple",
+                },
+                {
+                    "question_id": 2,
+                    "db_id": "shop",
+                    "question": "女性用户",
+                    "evidence": "",
+                    "SQL": "SELECT name FROM users WHERE gender = 'F'",
+                    "difficulty": "simple",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path / "runs")
+    runner_mod.main(
+        [
+            "--models",
+            "gold",
+            "--pipeline",
+            "e4_correct",
+            "--questions",
+            str(qfile),
+            "--tag",
+            "custom",
+        ]
+    )
+    run_dir = next((tmp_path / "runs").iterdir())
+    summary = _json.loads((run_dir / "summary.json").read_text())
+    assert summary[0]["n"] == 2 and summary[0]["ex"] == 1.0
