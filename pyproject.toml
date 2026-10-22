@@ -5,8 +5,10 @@ description = "DataPilot：面向 ChatBI 场景的智能问数系统（BIRD Mini
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "anthropic>=2.1.0",
+    "langgraph>=1.2.16",
     "mcp>=2",
     "python-dotenv>=1.2.4",
+    "rank-bm25>=0.2.2",
     "sqlglot>=30.24.0",
 ]
 

@@ -34,9 +34,24 @@ from datapilot import config  # noqa: E402
 from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
 from datapilot.ex import evaluate_one  # noqa: E402
 from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
+from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
-PIPELINES = {"baseline": generate_sql}
+# 实验序列见 docs/adr/002-D2实验设计.md
+PIPELINES = {
+    "baseline": generate_sql,  # E0：官方提示词，schema 在 user 消息里
+    "e1_cached": FixedPipeline(PipelineConfig(schema="ddl")),
+    "e2_enhanced": FixedPipeline(PipelineConfig(schema="enhanced")),
+    "e3_values": FixedPipeline(
+        PipelineConfig(schema="enhanced", value_check=True, max_corrections=1)
+    ),
+    "e4_correct": FixedPipeline(
+        PipelineConfig(schema="enhanced", value_check=True, max_corrections=3)
+    ),
+    "abl_retrieval": FixedPipeline(
+        PipelineConfig(schema="enhanced", retrieval_k=3, value_check=True, max_corrections=3)
+    ),
+}
 # 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
@@ -122,6 +137,14 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
             status, correct, detail = out.status, out.correct, out.detail
         except Exception as e:  # 评测器意外错误：记为失败并保留 SQL，不中断整次运行
             status, correct, detail = "eval_error", False, f"{type(e).__name__}: {e}"
+    # 纠错改过 SQL 时，单独评测第一版，统计"改对 / 改错"
+    first_correct = correct
+    if gen.first_sql and gen.first_sql != gen.sql:
+        try:
+            first = await asyncio.to_thread(evaluate_one, path, gen.first_sql, q["SQL"])
+            first_correct = first.correct
+        except Exception:
+            first_correct = False
     return {
         **row,
         "pred_sql": gen.sql,
@@ -133,6 +156,9 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
         "usage": usage,
         "latency_s": gen_latency,
         "llm_calls": len(gen.llm_calls),
+        "first_sql": gen.first_sql,
+        "first_correct": first_correct,
+        "trace": gen.trace,
     }
 
 
@@ -191,17 +217,23 @@ def estimate(questions: list[dict], configs: list[Config]) -> float:
         if cfg.model not in config.MODELS:
             continue
         inp, out, _ = config.PRICING[config.MODELS[cfg.model]]
+        pipe = PIPELINES[cfg.pipeline]
         for q in questions:
-            in_tok = (
-                len(build_prompt(config.db_path(q["db_id"]), q["question"], q["evidence"])) / 3.5
+            path = config.db_path(q["db_id"])
+            chars = (
+                pipe.input_chars(path, q["question"], q["evidence"])
+                if hasattr(pipe, "input_chars")
+                else len(build_prompt(path, q["question"], q["evidence"]))
             )
+            in_tok = chars / 3.5
             total += (in_tok * inp + EST_OUTPUT_TOKENS * out) / 1e6
     return total
 
 
 def make_factory(mock: bool):
     if mock:
-        return lambda cfg, q: ScriptedLLM([SQLAnswer(sql=q["SQL"])], model="gold")
+        # 纠错流程可能追问，多备几份同样的答案；返回同一 SQL 时流程会结束
+        return lambda cfg, q: ScriptedLLM([SQLAnswer(sql=q["SQL"])] * 4, model="gold")
     import anthropic
 
     from datapilot.llm import ClaudeLLM

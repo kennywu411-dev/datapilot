@@ -30,6 +30,8 @@ class GenerationResult:
     sql: str
     stop_reason: str
     llm_calls: list[LLMResult] = field(default_factory=list)
+    first_sql: str = ""  # 纠错前的第一版 SQL，用于统计"改对 / 改错"
+    trace: list[dict] = field(default_factory=list)
 
 
 def build_prompt(db_path: str | Path, question: str, evidence: str) -> str:
@@ -57,4 +59,4 @@ async def generate_sql(
         SYSTEM, [{"role": "user", "content": prompt}], [], output_format=SQLAnswer
     )
     sql = clean_sql(res.parsed.sql) if res.parsed else ""
-    return GenerationResult(sql=sql, stop_reason=res.stop_reason, llm_calls=[res])
+    return GenerationResult(sql=sql, stop_reason=res.stop_reason, llm_calls=[res], first_sql=sql)
