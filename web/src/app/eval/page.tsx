@@ -105,7 +105,7 @@ function Ladder() {
 }
 
 function Models() {
-  const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null; p_vs_haiku?: number }>;
+  const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null; p_vs_haiku?: number; haiku_paired_ex?: number }>;
   const s100 = data.same100 as unknown as Record<string, Stats>;
   return (
     <div className="grid gap-8">
@@ -124,7 +124,7 @@ function Models() {
           ])}
         />
         <p className="text-xs text-muted-foreground">
-          Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）；本地模型跑 1 次，比 Haiku 低 {((f.haiku.mean! - f.qwen.ex) * 100).toFixed(1)} 个百分点，逐题配对检验 {pval(f.qwen.p_vs_haiku!)}。
+          Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）；本地模型跑 1 次，与 Haiku 首次运行逐题配对：{pct(f.qwen.haiku_paired_ex!)} vs {pct(f.qwen.ex)}，{pval(f.qwen.p_vs_haiku!)}。
         </p>
       </div>
       <div className="space-y-2">

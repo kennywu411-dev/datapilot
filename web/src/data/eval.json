@@ -317,6 +317,8 @@
    },
    "runs": null,
    "run_id": "qwen500-20261022-215451-f53b",
+   "paired_n": 500,
+   "haiku_paired_ex": 0.674,
    "p_vs_haiku": 5.8e-09
   }
  },

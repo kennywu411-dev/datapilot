@@ -59,7 +59,7 @@ BIRD Mini-Dev 500 题，指标为执行准确率（EX），评测器与官方 `e
 | Agent（模型自主调用工具） | 72.0% | 65.8% | 与 E4 无差别，成本 +56%、延迟 +55% |
 | Schema 检索（消融） | 70.0%（373 题） | | 显著变差 p=0.013，成本 ×2.9 |
 
-模型对比（最终配置 E4，500 题）：本地 qwen2.5-coder:7b **53.8%**（1 次）、Haiku **68.0%**、Sonnet **72.4%**、Opus **86.4%**（疑似污染）；本地模型比 Haiku 低 14.2 个百分点，逐题配对检验 p<0.001，单题 P50 延迟 5.5 s。
+模型对比（最终配置 E4，500 题）：本地 qwen2.5-coder:7b **53.8%**（1 次）、Haiku **68.0%**、Sonnet **72.4%**、Opus **86.4%**（疑似污染）；本地模型比 Haiku（3 次均值）低约 14 个百分点；与 Haiku 首次运行逐题配对（67.4% vs 53.8%）p<0.001，单题 P50 延迟 5.5 s。
 
 结论：改进对较弱模型显著；这个场景不需要自主 Agent；schema 放得下时不需要检索。全部数字和运行 ID 见 [docs/numbers.md](docs/numbers.md)。
 
@@ -96,6 +96,8 @@ uv run python scripts/download_data.py   # 先下载数据
 docker compose up --build                # 打开 http://localhost:3000
 ```
 
+> 前端构建时把后端地址写成 `http://localhost:8000`，后端 CORS 也只放行 `localhost:3000`，所以只能在运行 Docker 的这台机器上用浏览器访问；要从别的机器访问，需用 `--build-arg NEXT_PUBLIC_API_BASE=...` 重建前端并调整 CORS。
+>
 > 已实测（colima + Docker 29，2026-10-22）：首次构建约 5 分钟；镜像后端 783MB、前端 281MB（Next.js standalone）；容器内问数、SSE、Redis 会话与缓存命中均正常。
 
 跑付费实验（不加 `--yes` 只打印预估花费）：

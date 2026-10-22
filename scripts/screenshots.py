@@ -51,6 +51,8 @@ class Page:
         r = await self.call(
             "Runtime.evaluate", expression=expr, awaitPromise=True, returnByValue=True
         )
+        if "exceptionDetails" in r:
+            raise RuntimeError(f"页面脚本出错：{r['exceptionDetails'].get('text')} {expr[:80]}")
         return r.get("result", {}).get("value")
 
     async def goto(self, url: str, settle: float = 3.0):
@@ -113,6 +115,10 @@ async def main():
                 break
             except OSError:
                 time.sleep(0.2)
+        else:
+            raise RuntimeError(
+                f"Chrome 调试端口 {PORT} 10 秒内没起来，检查 {CHROME} 是否存在、端口是否被占用"
+            )
         targets = json.loads(urllib.request.urlopen(f"http://localhost:{PORT}/json").read())
         ws_url = next(t["webSocketDebuggerUrl"] for t in targets if t["type"] == "page")
         async with websockets.connect(ws_url, max_size=64 * 2**20) as ws:
@@ -148,6 +154,7 @@ async def main():
             await page.shot("eval-failure.png")
     finally:
         proc.terminate()
+        proc.wait(timeout=10)
         shutil.rmtree(profile, ignore_errors=True)
 
 

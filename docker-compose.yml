@@ -4,6 +4,12 @@ services:
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--save", "", "--appendonly", "no"]
+    # api 只在启动时探测一次 Redis，连不上就一直用内存；所以要等 Redis 真正可连再启动 api
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   api:
     build: .
@@ -15,7 +21,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
 
   web:
     build: ./web

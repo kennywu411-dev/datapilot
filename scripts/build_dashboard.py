@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from evals.compare import compare, mcnemar_exact  # noqa: E402
+from evals.compare import compare  # noqa: E402
 from evals.report import load_rows, pct, wilson  # noqa: E402
 
 RUNS = ROOT / "runs"
@@ -98,15 +98,16 @@ def main() -> None:
         }
     final["opus"] = {**stats(rows(OPUS_E4)), "runs": None, "contamination_note": True}
     # 本地开源模型 500 题（1 次），与 Haiku E4 首次运行逐题配对
+    # （compare 按 model 字段配对，先把本地模型的行改标成 haiku）
     q500 = rows(QWEN500)
-    haiku = {x["question_id"]: x["correct"] for x in e4 if x["model"] == "haiku"}
-    q_only = sum(1 for x in q500 if x["correct"] and not haiku[x["question_id"]])
-    h_only = sum(1 for x in q500 if haiku[x["question_id"]] and not x["correct"])
+    c = compare(e4, [{**x, "model": "haiku"} for x in q500], "haiku")
     final["qwen"] = {
         **stats(q500),
         "runs": None,
         "run_id": QWEN500,
-        "p_vs_haiku": float(f"{mcnemar_exact(h_only, q_only):.3g}"),
+        "paired_n": c["n"],
+        "haiku_paired_ex": round(c["ex_a"], 4),
+        "p_vs_haiku": float(f"{c['mcnemar_p']:.3g}"),
     }
     data["final"] = final
 
