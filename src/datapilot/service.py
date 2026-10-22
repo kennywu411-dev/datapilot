@@ -22,7 +22,7 @@ from datapilot.pipeline import FixedPipeline, PipelineConfig
 from datapilot.sql_guard import SQLRejected, run_readonly
 from datapilot.store import Store
 
-CONFIG_VERSION = "e4-v1"  # 流程或提示词改了就升版本，旧缓存自然失效
+CONFIG_VERSION = "e4-v2"  # 流程或提示词改了就升版本，旧缓存自然失效
 SESSION_TTL_S = 24 * 3600
 CACHE_TTL_S = 3600
 KEEP_TURNS = 3
@@ -81,8 +81,9 @@ def choose_chart(columns: list[str], rows: list[tuple], question: str) -> dict:
     )
     if is_time:
         return {"type": "line", "x": columns[x], "y": ys}
-    if _SHARE_WORDS.search(question) and len(rows) <= 6 and len(ys) == 1:
-        return {"type": "pie", "x": columns[x], "y": ys}
+    if _SHARE_WORDS.search(question) and len(rows) <= 6:
+        # 占比结果常同时有计数列和百分比列，量纲不同不能画在一起；饼图取第一列，百分比自己算
+        return {"type": "pie", "x": columns[x], "y": ys[:1]}
     return {"type": "bar", "x": columns[x], "y": ys}
 
 

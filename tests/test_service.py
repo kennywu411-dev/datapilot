@@ -28,6 +28,14 @@ def test_chart_pie_for_share_with_few_categories():
     assert c["type"] == "pie"
 
 
+def test_chart_pie_uses_first_numeric_when_share_has_count_and_percent():
+    """问占比时结果常同时带人数和百分比两列：饼图只取第一列（人数），百分比由饼图自己算。"""
+    c = choose_chart(
+        ["gender", "n", "pct"], [("Male", 252, 69.4), ("Female", 111, 30.6)], "男女占比如何"
+    )
+    assert c == {"type": "pie", "x": "gender", "y": ["n"]}
+
+
 def test_chart_none_for_scalar_or_text():
     assert choose_chart(["n"], [(3,)], "多少人")["type"] == "kpi"
     assert choose_chart(["name"], [("a",), ("b",)], "有哪些")["type"] == "table"
