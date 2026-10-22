@@ -41,19 +41,25 @@ def _comparisons(tree: exp.Expression) -> list[tuple[exp.Column, list[str]]]:
     return out
 
 
-def _resolve_tables(
-    tree: exp.Expression, col: exp.Column, db_tables: dict[str, set[str]]
-) -> list[str]:
-    """把列解析到真实表：有限定符就按别名映射，没有就找查询里含该列的表。"""
+def _resolve_tables(col: exp.Column, db_tables: dict[str, set[str]]) -> list[str]:
+    """把列解析到真实表，只看列所在的那一层 SELECT 的 FROM / JOIN。
+
+    BIRD 风格的 SQL 常在外层和子查询里重复使用 T1 指代不同的表，
+    全局建别名表会让后出现的覆盖先出现的（代码审查发现）。
+    """
+    scope = col.find_ancestor(exp.Select)
+    if scope is None:
+        return []
+    tables = [t for t in scope.find_all(exp.Table) if t.find_ancestor(exp.Select) is scope]
     alias_map = {}
-    for t in tree.find_all(exp.Table):
-        alias_map[(t.alias_or_name or t.name).lower()] = t.name
+    for t in tables:
         alias_map[t.name.lower()] = t.name
+        if t.alias:
+            alias_map[t.alias.lower()] = t.name
     if col.table:
         real = alias_map.get(col.table.lower())
         return [real] if real in db_tables else []
-    in_query = {t.name for t in tree.find_all(exp.Table)}
-    return [t for t in in_query if t in db_tables and col.name in db_tables[t]]
+    return [t.name for t in tables if t.name in db_tables and col.name in db_tables[t.name]]
 
 
 def _candidates(conn: sqlite3.Connection, table: str, column: str, lit: str) -> list:
@@ -98,7 +104,7 @@ def check_values(db_id: str, sql: str) -> list[str]:
     conn.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 10_000)
     try:
         for col, lits in comps:
-            for table in _resolve_tables(tree, col, db_tables):
+            for table in _resolve_tables(col, db_tables):
                 if col.name not in db_tables[table]:
                     continue
                 for lit in lits:

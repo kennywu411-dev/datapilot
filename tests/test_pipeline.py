@@ -146,3 +146,47 @@ def test_retrieval_mode_limits_schema(shop_db_dir):
     run(pipe, llm, q="total order amount")
     assert "CREATE TABLE product" not in llm.calls[0]["system"]
     assert 'CREATE TABLE "order"' in llm.calls[0]["system"]
+
+
+def test_correction_without_sql_keeps_previous_sql(shop_db_dir):
+    """纠错那次没产出 SQL（如 max_tokens）时，退回上一版而不是交白卷。"""
+    from datapilot.llm import LLMResult
+
+    class Flaky(ScriptedLLM):
+        async def complete(self, system, messages, tools, output_format=None):
+            if len(self.calls) == 1:
+                self.calls.append({"system": system, "messages": messages})
+                return LLMResult([], "max_tokens", "m")
+            return await super().complete(system, messages, tools, output_format)
+
+    pipe = FixedPipeline(PipelineConfig(schema="ddl", max_corrections=3))
+    llm = Flaky([SQLAnswer(sql="SELECT id FROM users WHERE id > 99")])
+    out = run(pipe, llm)
+    assert out.sql == "SELECT id FROM users WHERE id > 99"
+    assert len(out.llm_calls) == 2
+
+
+def test_check_values_alias_scoped_to_subquery(shop_db_dir):
+    """外层和子查询都用 T1 指向不同表时，外层的 T1.city 必须解析到 users。"""
+    sql = (
+        "SELECT T1.name FROM users AS T1 WHERE T1.city = 'boston' "
+        'AND T1.id IN (SELECT T1.user_id FROM "order" AS T1 WHERE T1.amount > 1)'
+    )
+    issues = check_values("shop", sql)
+    assert len(issues) == 1 and "users.city" in issues[0] and "'Boston'" in issues[0]
+
+
+def test_enhanced_schema_examples_use_sql_literals(shop_db_dir):
+    import sqlite3
+
+    conn = sqlite3.connect(shop_db_dir / "shop" / "shop.sqlite")
+    conn.execute("INSERT INTO product VALUES ('B2', 'O''Brien Gadget')")
+    conn.commit()
+    conn.close()
+    enhanced_schema.cache_clear()
+    from datapilot import schema as schema_mod
+
+    schema_mod._examples.cache_clear()
+    s = enhanced_schema("shop")
+    assert "'O''Brien Gadget'" in s
+    assert '"O\'Brien Gadget"' not in s

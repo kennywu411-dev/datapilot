@@ -95,3 +95,17 @@ def test_parallel_tool_calls(shop_db_dir):
     out = run(SQLAgent(), llm)
     assert len(tool_results(llm.calls[1])) == 2
     assert out.sql == "SELECT count(*) FROM users"
+
+
+def test_agent_first_sql_is_final_and_text_is_traced(shop_db_dir):
+    """Agent 的探索查询不算"纠错前答案"；文字回复记入 trace 以便检查泄露。"""
+    llm = ScriptedLLM(
+        [
+            {"name": "run_sql", "input": {"sql": "SELECT DISTINCT gender FROM users"}},
+            "先说明一下思路。",
+            {"name": "submit_answer", "input": {"sql": "SELECT count(*) FROM users"}},
+        ]
+    )
+    out = run(SQLAgent(), llm)
+    assert out.first_sql == out.sql == "SELECT count(*) FROM users"
+    assert any(t["tool"] == "text" and "思路" in t["output"] for t in out.trace)

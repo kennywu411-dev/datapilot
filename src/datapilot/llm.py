@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
+from functools import cache
 from typing import Any, Protocol
 
 import anthropic
@@ -45,6 +46,11 @@ class LLM(Protocol):
         tools: list[dict],
         output_format: type[BaseModel] | None = None,
     ) -> LLMResult: ...
+
+
+@cache
+def _json_schema(output_format: type[BaseModel]) -> dict:
+    return anthropic.transform_schema(output_format)
 
 
 class ClaudeLLM:
@@ -102,7 +108,7 @@ class ClaudeLLM:
         if output_format is not None:
             output_config["format"] = {
                 "type": "json_schema",
-                "schema": anthropic.transform_schema(output_format),
+                "schema": _json_schema(output_format),
             }
         kwargs: dict = {
             "model": self.model,

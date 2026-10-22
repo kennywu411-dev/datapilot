@@ -46,7 +46,18 @@ class PipelineConfig:
     max_corrections: int = 0
 
 
+class Ctx(TypedDict):
+    """每题不变的上下文，随 state 传入，让图只需编译一次。"""
+
+    llm: LLM
+    system: str
+    db_path: Path
+    db_id: str
+    user: str
+
+
 class State(TypedDict, total=False):
+    ctx: Ctx
     messages: list[dict]
     sql: str
     prev_sql: str
@@ -101,94 +112,114 @@ def feedback_message(state: State) -> str:
     return "\n".join(parts) + "\nReturn the corrected SQL in the `sql` field."
 
 
+async def _ask(state: State, messages: list[dict]) -> State:
+    ctx = state["ctx"]
+    res = await ctx["llm"].complete(ctx["system"], messages, [], output_format=SQLAnswer)
+    sql = clean_sql(res.parsed.sql) if res.parsed else ""
+    return {
+        "messages": messages + [{"role": "assistant", "content": res.content}],
+        "prev_sql": state.get("sql", ""),
+        "sql": sql,
+        "stop_reason": res.stop_reason,
+        "llm_calls": state.get("llm_calls", []) + [res],
+    }
+
+
+async def _generate(state: State) -> State:
+    out = await _ask(state, [{"role": "user", "content": state["ctx"]["user"]}])
+    out["first_sql"] = out["sql"]
+    out["trace"] = [{"step": "generate", "sql": out["sql"]}]
+    return out
+
+
+async def _execute(state: State) -> State:
+    try:
+        res = await asyncio.to_thread(
+            run_readonly,
+            state["ctx"]["db_path"],
+            state["sql"],
+            timeout_s=EXEC_TIMEOUT_S,
+            max_rows=PREVIEW_ROWS,
+        )
+        return {"exec_error": "", "rows": res.rows}
+    except (SQLRejected, TimeoutError, sqlite3.Error) as e:
+        return {"exec_error": str(e), "rows": None}
+
+
+def _make_check(value_check: bool):
+    async def check(state: State) -> State:
+        issues = []
+        if state["exec_error"]:
+            issues.append(f"error: {state['exec_error']}")
+        elif state["rows"] == []:
+            issues.append("empty result")
+        if value_check and not state["exec_error"]:
+            issues += await asyncio.to_thread(check_values, state["ctx"]["db_id"], state["sql"])
+        trace = state["trace"] + [{"step": "check", "issues": issues, "rows": state["rows"]}]
+        return {"issues": issues, "trace": trace}
+
+    return check
+
+
+async def _correct(state: State) -> State:
+    messages = state["messages"] + [{"role": "user", "content": feedback_message(state)}]
+    out = await _ask(state, messages)
+    if not out["sql"]:
+        # 纠错这次没产出 SQL（如 max_tokens）：退回上一版，不交白卷
+        out["sql"] = state["sql"]
+    out["corrections"] = state.get("corrections", 0) + 1
+    out["trace"] = state["trace"] + [{"step": "correct", "sql": out["sql"]}]
+    return out
+
+
+def _after_generate(state: State) -> str:
+    return "execute" if state["sql"] else END
+
+
+def _after_correct(state: State) -> str:
+    # 模型返回同一条 SQL（确认原答案，或纠错失败已退回上一版），不再循环
+    return END if state["sql"] == state["prev_sql"] else "execute"
+
+
 class FixedPipeline:
     def __init__(self, cfg: PipelineConfig):
         self.cfg = cfg
+        self.graph = self._build_graph()
+
+    def _build_graph(self):
+        max_corrections = self.cfg.max_corrections
+
+        def after_check(state: State) -> str:
+            if not state["issues"] or state.get("corrections", 0) >= max_corrections:
+                return END
+            return "correct"
+
+        g = StateGraph(State)
+        g.add_node("generate", _generate)
+        g.add_node("execute", _execute)
+        g.add_node("check", _make_check(self.cfg.value_check))
+        g.add_node("correct", _correct)
+        g.add_edge(START, "generate")
+        g.add_conditional_edges("generate", _after_generate, ["execute", END])
+        g.add_edge("execute", "check")
+        g.add_conditional_edges("check", after_check, ["correct", END])
+        g.add_conditional_edges("correct", _after_correct, ["execute", END])
+        return g.compile()
 
     async def __call__(
         self, llm: LLM, db_path: str | Path, question: str, evidence: str
     ) -> GenerationResult:
-        cfg, db_path = self.cfg, Path(db_path)
-        db_id = db_path.stem
-        system = build_system(cfg, db_path, question, evidence)
-
-        async def ask(state: State, messages: list[dict]) -> State:
-            res = await llm.complete(system, messages, [], output_format=SQLAnswer)
-            sql = clean_sql(res.parsed.sql) if res.parsed else ""
-            return {
-                "messages": messages + [{"role": "assistant", "content": res.content}],
-                "prev_sql": state.get("sql", ""),
-                "sql": sql,
-                "stop_reason": res.stop_reason,
-                "llm_calls": state.get("llm_calls", []) + [res],
-            }
-
-        async def generate(state: State) -> State:
-            out = await ask(state, [{"role": "user", "content": user_message(question, evidence)}])
-            out["first_sql"] = out["sql"]
-            out["trace"] = [{"step": "generate", "sql": out["sql"]}]
-            return out
-
-        async def execute(state: State) -> State:
-            try:
-                res = await asyncio.to_thread(
-                    run_readonly,
-                    db_path,
-                    state["sql"],
-                    timeout_s=EXEC_TIMEOUT_S,
-                    max_rows=PREVIEW_ROWS,
-                )
-                return {"exec_error": "", "rows": res.rows}
-            except (SQLRejected, TimeoutError, sqlite3.Error) as e:
-                return {"exec_error": str(e), "rows": None}
-
-        async def check(state: State) -> State:
-            issues = []
-            if state["exec_error"]:
-                issues.append(f"error: {state['exec_error']}")
-            elif state["rows"] == []:
-                issues.append("empty result")
-            if cfg.value_check and not state["exec_error"]:
-                issues += await asyncio.to_thread(check_values, db_id, state["sql"])
-            trace = state["trace"] + [{"step": "check", "issues": issues, "rows": state["rows"]}]
-            return {"issues": issues, "trace": trace}
-
-        async def correct(state: State) -> State:
-            messages = state["messages"] + [{"role": "user", "content": feedback_message(state)}]
-            out = await ask(state, messages)
-            out["corrections"] = state.get("corrections", 0) + 1
-            out["trace"] = state["trace"] + [{"step": "correct", "sql": out["sql"]}]
-            return out
-
-        def after_generate(state: State) -> str:
-            return "execute" if state["sql"] else END
-
-        def after_check(state: State) -> str:
-            if not state["issues"] or state.get("corrections", 0) >= cfg.max_corrections:
-                return END
-            return "correct"
-
-        def after_correct(state: State) -> str:
-            # 没有 SQL，或模型返回同一条 SQL（确认原答案正确），不再循环
-            if not state["sql"] or state["sql"] == state["prev_sql"]:
-                return END
-            return "execute"
-
-        g = StateGraph(State)
-        for name, fn in [
-            ("generate", generate),
-            ("execute", execute),
-            ("check", check),
-            ("correct", correct),
-        ]:
-            g.add_node(name, fn)
-        g.add_edge(START, "generate")
-        g.add_conditional_edges("generate", after_generate, ["execute", END])
-        g.add_edge("execute", "check")
-        g.add_conditional_edges("check", after_check, ["correct", END])
-        g.add_conditional_edges("correct", after_correct, ["execute", END])
-        final = await g.compile().ainvoke({"corrections": 0, "llm_calls": [], "trace": []})
-
+        db_path = Path(db_path)
+        ctx: Ctx = {
+            "llm": llm,
+            "system": build_system(self.cfg, db_path, question, evidence),
+            "db_path": db_path,
+            "db_id": db_path.stem,
+            "user": user_message(question, evidence),
+        }
+        final = await self.graph.ainvoke(
+            {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
+        )
         return GenerationResult(
             sql=final.get("sql", ""),
             stop_reason=final.get("stop_reason", ""),

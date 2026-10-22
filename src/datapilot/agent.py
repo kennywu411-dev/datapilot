@@ -75,7 +75,7 @@ class SQLAgent:
         system = SYSTEM_TEMPLATE.format(schema=enhanced_schema(db_id))
         messages: list[dict] = [{"role": "user", "content": user_message(question, evidence)}]
         calls, trace = [], []
-        submitted, last_run_sql, first_sql = "", "", ""
+        submitted, last_run_sql = "", ""
         nudged = False
         stop_reason = ""
 
@@ -84,6 +84,8 @@ class SQLAgent:
             calls.append(res)
             stop_reason = res.stop_reason
             messages = messages + [{"role": "assistant", "content": res.content}]
+            if res.text:
+                trace.append({"tool": "text", "input": {}, "output": res.text})
             uses = res.tool_uses
             if not uses:
                 if res.stop_reason == "refusal" or nudged:
@@ -99,7 +101,6 @@ class SQLAgent:
                     out = {"ok": True}
                 elif name == "run_sql":
                     last_run_sql = clean_sql(args.get("sql", ""))
-                    first_sql = first_sql or last_run_sql
                     out = await asyncio.to_thread(tools.run_sql, db_id, last_run_sql, 20)
                 elif name == "search_values":
                     try:
@@ -133,7 +134,8 @@ class SQLAgent:
             sql=sql,
             stop_reason=stop_reason,
             llm_calls=calls,
-            first_sql=first_sql or sql,
+            # Agent 的 run_sql 多是探索查询，不是"纠错前的答案"，不参与改对 / 改错统计
+            first_sql=sql,
             trace=trace,
         )
 

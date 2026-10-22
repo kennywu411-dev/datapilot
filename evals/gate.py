@@ -24,6 +24,8 @@ from evals.runner import Config, make_factory, run, stratified_sample  # noqa: E
 
 BASELINE = config.RUNS_DIR / "gate_baseline.json"
 SMOKE_N = 20
+# 门禁跑最终配置，改动 pipeline / value_check / schema 时才会被覆盖到（代码审查发现）
+GATE_PIPELINE = "e4_correct"
 
 
 def smoke_questions() -> list[dict]:
@@ -64,7 +66,7 @@ def select1_hits() -> set[int]:
 
 
 def run_smoke(model: str, mock: bool) -> float:
-    cfg = Config(model=model, pipeline="baseline", effort="medium", repeat=0)
+    cfg = Config(model=model, pipeline=GATE_PIPELINE, effort="medium", repeat=0)
     with tempfile.TemporaryDirectory() as tmp:
         rows = asyncio.run(
             run(smoke_questions(), [cfg], make_factory(mock), Path(tmp), 8, max_cost=0.5)
@@ -91,7 +93,11 @@ def main() -> int:
     load_dotenv(ROOT / ".env")
     ex = run_smoke("haiku", mock=False)
     if args.set_baseline:
-        BASELINE.write_text(json.dumps({"model": "haiku", "n": SMOKE_N, "ex": ex}, indent=2))
+        BASELINE.write_text(
+            json.dumps(
+                {"model": "haiku", "pipeline": GATE_PIPELINE, "n": SMOKE_N, "ex": ex}, indent=2
+            )
+        )
         print(f"[gate] 基线已记录：Haiku 冒烟 EX = {ex:.0%}")
         return 0
     base = json.loads(BASELINE.read_text())["ex"]

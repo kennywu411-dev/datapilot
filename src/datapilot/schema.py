@@ -69,7 +69,7 @@ def _render_table(db_id: str, table: str) -> str:
         if c["value_description"]:
             notes.append("values: " + _one_line(c["value_description"]))
         if tools._is_text(c["type"] or ""):
-            ex = [repr(tools._clip(v)) for v in _examples(db_id, table, c["name"])]
+            ex = [_sql_literal(tools._clip(v)) for v in _examples(db_id, table, c["name"])]
             if ex:
                 notes.append("e.g. " + ", ".join(ex))
         pk = " PRIMARY KEY" if c["primary_key"] else ""
@@ -82,6 +82,14 @@ def _render_table(db_id: str, table: str) -> str:
         sep = "," if i < len(entries) - 1 else ""
         lines.append(f"  {body}{sep}" + (f"  -- {note}" if note else ""))
     return f"CREATE TABLE {_ident(table)} (\n" + "\n".join(lines) + "\n);"
+
+
+def _sql_literal(v) -> str:
+    """示例值按 SQL 字面量输出（'O''Brien'），不用 Python repr——后者会给含单引号的
+    字符串加双引号，而 SQLite 里双引号表示标识符，模型照抄会出错（代码审查发现）。"""
+    if isinstance(v, str):
+        return "'" + v.replace("'", "''") + "'"
+    return str(v)
 
 
 def _ident(name: str) -> str:
@@ -126,28 +134,28 @@ def _tokens(text: str) -> list[str]:
 
 
 @cache
-def _bm25_index(db_id: str) -> tuple[list[str], BM25Okapi]:
-    names, docs = [], []
+def _bm25_index(db_id: str) -> tuple[list[str], BM25Okapi, tuple[tuple[str, str], ...]]:
+    """BM25 索引与外键边（子表, 父表），同一个库只构建一次。"""
+    names, docs, edges = [], [], []
     for t in tools.list_tables(db_id):
         info = tools.describe_table(db_id, t["table"])
         text = " ".join([t["table"]] + [f"{c['name']} {c['description']}" for c in info["columns"]])
         names.append(t["table"])
         docs.append(_tokens(text))
-    return names, BM25Okapi(docs)
+        edges += [(t["table"], fk["ref_table"]) for fk in info["foreign_keys"]]
+    return names, BM25Okapi(docs), tuple(edges)
 
 
 def retrieve_tables(db_id: str, question: str, evidence: str, k: int = 3) -> list[str]:
     """BM25 取 top-k 表，再沿外键（双向）补一跳关联表。"""
-    names, bm25 = _bm25_index(db_id)
+    names, bm25, edges = _bm25_index(db_id)
     scores = bm25.get_scores(_tokens(f"{question} {evidence}"))
     ranked = [n for _, n in sorted(zip(scores, names, strict=True), key=lambda x: -x[0])]
     picked = ranked[:k]
     neighbors = []
-    for t in names:
-        fks = tools.describe_table(db_id, t)["foreign_keys"]
-        for fk in fks:
-            if t in picked and fk["ref_table"] in names and fk["ref_table"] not in picked:
-                neighbors.append(fk["ref_table"])
-            if fk["ref_table"] in picked and t not in picked:
-                neighbors.append(t)
+    for child, parent in edges:
+        if child in picked and parent in names and parent not in picked:
+            neighbors.append(parent)
+        if parent in picked and child not in picked:
+            neighbors.append(child)
     return picked + [n for n in dict.fromkeys(neighbors) if n not in picked]
