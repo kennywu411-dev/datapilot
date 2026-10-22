@@ -245,10 +245,16 @@ def make_factory(mock: bool):
         return mock
     import anthropic
 
-    from datapilot.llm import ClaudeLLM
+    from datapilot.llm import ClaudeLLM, LocalLLM
 
     client = anthropic.AsyncAnthropic(max_retries=6)
-    return lambda cfg, q: ClaudeLLM(config.MODELS[cfg.model], effort=cfg.effort, client=client)
+
+    def factory(cfg, q):
+        if cfg.model in config.LOCAL_MODELS:
+            return LocalLLM(config.LOCAL_MODELS[cfg.model])
+        return ClaudeLLM(config.MODELS[cfg.model], effort=cfg.effort, client=client)
+
+    return factory
 
 
 def main(argv=None) -> None:

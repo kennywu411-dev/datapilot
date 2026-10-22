@@ -18,6 +18,9 @@ MODELS = {
 }
 DEFAULT_MODEL = MODELS["sonnet"]
 
+# 本地开源模型（Ollama），花费记为 0
+LOCAL_MODELS = {"qwen7b": "qwen2.5-coder:7b"}
+
 # 美元 / 百万 token：(输入, 输出, 缓存读取)。缓存写入按输入价 1.25 倍计。
 # 来源：Anthropic 官方价格（2026-10 核对），价格变动时只改这里。
 PRICING = {

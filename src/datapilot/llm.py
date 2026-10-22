@@ -8,6 +8,7 @@ from functools import cache
 from typing import Any, Protocol
 
 import anthropic
+import httpx2
 from pydantic import BaseModel, ValidationError
 
 from datapilot.config import DEFAULT_MODEL, cost_usd
@@ -141,6 +142,78 @@ class ClaudeLLM:
             stop_reason=resp.stop_reason or "end_turn",
             model=self.model,
             usage=usage,
+            parsed=parsed,
+        )
+
+
+class LocalLLM:
+    """本地开源模型（Ollama /api/chat）。回答"国内用不了 Claude 怎么办"。
+
+    - 只用于固定流程（不传 tools）：7B 模型的工具调用不稳定，第 6 节已预判
+    - format 传 JSON schema 约束输出，SQL 放在 sql 字段，与 Claude 走同一套解析
+    - num_ctx 8192：最大的增强 schema 约 5700 token，默认 2048 会被截断
+    - temperature 0：尽量可复现；花费记为 0（本地电费不计），延迟照实记录
+    """
+
+    def __init__(
+        self,
+        model: str = "qwen2.5-coder:7b",
+        client: httpx2.AsyncClient | None = None,
+        base_url: str = "http://localhost:11434",
+        num_ctx: int = 8192,
+        max_tokens: int = 1024,
+    ):
+        self.model = model
+        self.base_url = base_url
+        self.num_ctx = num_ctx
+        self.max_tokens = max_tokens
+        self.client = client or httpx2.AsyncClient(timeout=600)
+
+    @staticmethod
+    def _text(content) -> str:
+        if isinstance(content, str):
+            return content
+        return "".join(b.get("text", "") for b in content if b.get("type") == "text")
+
+    async def complete(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        if tools:
+            raise ValueError("LocalLLM 只用于固定流程，不支持工具调用")
+        start = time.perf_counter()
+        body: dict = {
+            "model": self.model,
+            "messages": [{"role": "system", "content": system}]
+            + [{"role": m["role"], "content": self._text(m["content"])} for m in messages],
+            "stream": False,
+            "options": {"temperature": 0, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
+        }
+        if output_format is not None:
+            body["format"] = output_format.model_json_schema()
+        resp = await self.client.post(f"{self.base_url}/api/chat", json=body)
+        resp.raise_for_status()
+        data = resp.json()
+        text = data.get("message", {}).get("content", "")
+        stop = "max_tokens" if data.get("done_reason") == "length" else "end_turn"
+        parsed = None
+        if output_format is not None and stop != "max_tokens":
+            try:
+                parsed = output_format.model_validate_json(text)
+            except ValidationError:
+                parsed = None
+        return LLMResult(
+            content=[{"type": "text", "text": text}],
+            stop_reason=stop,
+            model=self.model,
+            usage={
+                "input_tokens": data.get("prompt_eval_count", 0),
+                "output_tokens": data.get("eval_count", 0),
+            },
+            latency_s=time.perf_counter() - start,
             parsed=parsed,
         )
 

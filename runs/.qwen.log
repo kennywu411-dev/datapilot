@@ -1,0 +1,24 @@
+500 题 × 1 组配置，预估花费约 $0.00（未计缓存，偏保守）
+[1/500] qwen7b r0 q1471 ✓
+[2/500] qwen7b r0 q1472 ✗ ok
+[3/500] qwen7b r0 q1473 ✓
+[4/500] qwen7b r0 q1476 ✓
+[5/500] qwen7b r0 q1479 ✗ ok
+[6/500] qwen7b r0 q1480 ✗ ok
+[7/500] qwen7b r0 q1481 ✗ ok
+[8/500] qwen7b r0 q1483 ✓
+[9/500] qwen7b r0 q1482 ✗ pred_error
+[10/500] qwen7b r0 q1484 ✓
+[11/500] qwen7b r0 q1486 ✗ ok
+[12/500] qwen7b r0 q1490 ✓
+[13/500] qwen7b r0 q1493 ✓
+[14/500] qwen7b r0 q1498 ✗ ok
+[15/500] qwen7b r0 q1500 ✗ ok
+[16/500] qwen7b r0 q1501 ✗ ok
+[17/500] qwen7b r0 q1505 ✗ ok
+[18/500] qwen7b r0 q1506 ✓
+[19/500] qwen7b r0 q1507 ✓
+[20/500] qwen7b r0 q1509 ✓
+[21/500] qwen7b r0 q1514 ✓
+[22/500] qwen7b r0 q1515 ✓
+[23/500] qwen7b r0 q1521 ✓
