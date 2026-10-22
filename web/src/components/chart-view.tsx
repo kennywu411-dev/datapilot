@@ -11,7 +11,9 @@ import { CHART_THEME, useIsDark } from "@/lib/theme";
 
 echarts.use([BarChart, LineChart, PieChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
 
-const MAX_POINTS = 60; // 超过就只画前 60 个，避免柱子挤成一条线
+// 柱状 / 饼图最多画 60 个类别，避免挤成一条线；折线不截断（结果最多 500 行）。
+// 截断时必须在图下注明，不能悄悄少画（同 P11：截断了却不告诉看的人）
+export const MAX_CATEGORIES = 60;
 
 export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -22,7 +24,7 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
     const t = dark ? CHART_THEME.dark : CHART_THEME.light;
     const xi = data.columns.indexOf(spec.x);
     const yis = spec.y.map((c) => data.columns.indexOf(c));
-    const rows = data.rows.slice(0, MAX_POINTS);
+    const rows = spec.type === "line" ? data.rows : data.rows.slice(0, MAX_CATEGORIES);
     const labels = rows.map((r) => String(r[xi] ?? "(空)"));
     const chart = echarts.init(ref.current, undefined, { renderer: "canvas" });
     const tooltip = {
@@ -51,7 +53,13 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
       chart.setOption({
         color: t.series,
         // 标签倾斜时第一个标签会伸出左边界，多留出空间
-        grid: { left: labels.length > 5 ? 40 : 8, right: 16, top: 24, bottom: 8, containLabel: true },
+        grid: {
+          left: labels.length > 5 && labels.length <= 20 ? 40 : 8,
+          right: 16,
+          top: 24,
+          bottom: 8,
+          containLabel: true,
+        },
         tooltip: { ...tooltip, trigger: "axis" },
         legend: spec.y.length > 1 ? { top: 0, textStyle: { color: t.text } } : undefined,
         xAxis: {
@@ -60,10 +68,11 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
           axisLine: { lineStyle: { color: t.axis } },
           axisTick: { show: false },
           // 类别多时倾斜并截断，而不是让 ECharts 静默隐藏大部分标签
+          // 类别不多（≤ 20）时全部显示、过多则倾斜截断；点很多（如逐年折线）交给 ECharts 自动间隔
           axisLabel: {
             color: t.text,
-            interval: 0,
-            rotate: labels.length > 5 ? 30 : 0,
+            interval: labels.length <= 20 ? 0 : "auto",
+            rotate: labels.length > 5 && labels.length <= 20 ? 30 : 0,
             width: 96,
             overflow: "truncate",
           },
@@ -92,5 +101,15 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
     };
   }, [spec, data, dark]);
 
-  return <div ref={ref} className="h-72 w-full" />;
+  const clipped = spec.type !== "line" && data.rows.length > MAX_CATEGORIES;
+  return (
+    <div>
+      <div ref={ref} className="h-72 w-full" />
+      {clipped && (
+        <p className="mt-1 text-xs text-muted-foreground">
+          类别较多，图中只显示前 {MAX_CATEGORIES} 个，完整结果见表格（共 {data.rows.length} 行）。
+        </p>
+      )}
+    </div>
+  );
 }

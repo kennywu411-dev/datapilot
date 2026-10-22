@@ -13,9 +13,24 @@ def test_normalize_question():
     assert normalize_question("Top５ Users!") == "top5 users"  # 全角转半角、去尾标点、小写
 
 
+def test_normalize_keeps_case_inside_quotes():
+    """引号里多是库里的取值，区分大小写：'F' 和 'f' 不能命中同一条缓存。"""
+    assert normalize_question("Gender = 'F' 有多少人") != normalize_question(
+        "Gender = 'f' 有多少人"
+    )
+    assert normalize_question("WHO IS 'chl'") == normalize_question("who is 'chl'")
+    assert normalize_question('List "Marvel Comics" heroes') == 'list "Marvel Comics" heroes'
+
+
 def test_chart_line_for_time_series():
     c = choose_chart(["year", "total"], [("2019", 3), ("2020", 5), ("2021", 4)], "趋势")
     assert c == {"type": "line", "x": "year", "y": ["total"]}
+
+
+def test_chart_line_when_year_is_integer_column():
+    """年份常存成整数：两列都是数值时，列名像时间的那列当 x 轴。"""
+    c = choose_chart(["year", "races"], [(1950, 7), (1951, 8), (1952, 8)], "每年多少场")
+    assert c == {"type": "line", "x": "year", "y": ["races"]}
 
 
 def test_chart_bar_for_category_numeric():
@@ -40,6 +55,23 @@ def test_chart_none_for_scalar_or_text():
     assert choose_chart(["n"], [(3,)], "多少人")["type"] == "kpi"
     assert choose_chart(["name"], [("a",), ("b",)], "有哪些")["type"] == "table"
     assert choose_chart(["n"], [], "多少")["type"] == "table"
+
+
+def test_answer_prompt_states_row_counts():
+    """回答阶段要知道结果总行数与给出的行数，否则会误以为数据只有这么多（P11）。"""
+    from datapilot.service import ANSWER_PREVIEW_ROWS, ChatService
+
+    table = {
+        "columns": ["year", "n"],
+        "rows": [[1950 + i, i] for i in range(68)],
+        "truncated": False,
+    }
+    p = ChatService._answer_prompt("每年多少场", "SELECT ...", table)
+    assert "共 68 行" in p and "全部" in p
+    assert ANSWER_PREVIEW_ROWS >= 68
+    big = {"columns": ["x"], "rows": [[i] for i in range(300)], "truncated": False}
+    p2 = ChatService._answer_prompt("q", "SELECT ...", big)
+    assert f"前 {ANSWER_PREVIEW_ROWS} 行" in p2 and "共 300 行" in p2
 
 
 # ---------- 服务 ----------

@@ -22,13 +22,13 @@ from datapilot.pipeline import FixedPipeline, PipelineConfig
 from datapilot.sql_guard import SQLRejected, run_readonly
 from datapilot.store import Store
 
-CONFIG_VERSION = "e4-v2"  # 流程或提示词改了就升版本，旧缓存自然失效
+CONFIG_VERSION = "e4-v4"  # 流程或提示词改了就升版本，旧缓存自然失效
 SESSION_TTL_S = 24 * 3600
 CACHE_TTL_S = 3600
 KEEP_TURNS = 3
 CONTEXT_TURNS = 2
 TABLE_MAX_ROWS = 500
-ANSWER_PREVIEW_ROWS = 20
+ANSWER_PREVIEW_ROWS = 100  # 给回答模型看的行数；20 行时 68 行的趋势被误判为数据不全（P11）
 
 PIPELINE = FixedPipeline(PipelineConfig(schema="enhanced", value_check=True, max_corrections=3))
 
@@ -50,8 +50,16 @@ _TIME_VALUE = re.compile(r"^\d{4}([-/]\d{1,2}){0,2}")
 _SHARE_WORDS = re.compile(r"(占比|比例|份额|构成|分布|percent|share|proportion|ratio)", re.I)
 
 
+_QUOTED = re.compile(r"('[^']*'|\"[^\"]*\")")
+
+
 def normalize_question(q: str) -> str:
-    q = unicodedata.normalize("NFKC", q).lower().strip()
+    """缓存 key 用的规范化：全角转半角、去尾标点、合并空白、引号外转小写。
+
+    引号内保持原样：那里通常是库里的取值，'F' 和 'f' 可能查出不同结果，不能命中同一条缓存。
+    """
+    q = unicodedata.normalize("NFKC", q).strip()
+    q = "".join(p if _QUOTED.fullmatch(p) else p.lower() for p in _QUOTED.split(q))
     q = _TRAILING_PUNCT.sub("", q)
     return re.sub(r"\s+", " ", q)
 
@@ -74,6 +82,12 @@ def choose_chart(columns: list[str], rows: list[tuple], question: str) -> dict:
         return {"type": "table"}
     x = labels[0] if labels else None
     if x is None:
+        # 年份常存成整数：没有文本列时，列名像时间的数值列当 x 轴
+        time_cols = [i for i in numeric if _TIME_NAME.search(columns[i])]
+        if time_cols and len(numeric) >= 2:
+            x = time_cols[0]
+            ys = [columns[i] for i in numeric if i != x]
+            return {"type": "line", "x": columns[x], "y": ys}
         return {"type": "table"}
     ys = [columns[i] for i in numeric]
     is_time = bool(_TIME_NAME.search(columns[x])) or all(
@@ -191,13 +205,15 @@ class ChatService:
 
     @staticmethod
     def _answer_prompt(question: str, sql: str, table: dict) -> str:
-        preview = table["rows"][:ANSWER_PREVIEW_ROWS]
-        more = (
-            f"（共 {len(table['rows'])} 行，只展示前 {len(preview)} 行）"
-            if len(table["rows"]) > len(preview)
-            else ""
-        )
-        return f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果{more}：{preview}"
+        rows = table["rows"]
+        preview = rows[:ANSWER_PREVIEW_ROWS]
+        if len(preview) == len(rows):
+            scope = f"共 {len(rows)} 行，以下是全部结果"
+        else:
+            scope = (
+                f"共 {len(rows)} 行，以下只展示前 {len(preview)} 行，回答时不要只依据这部分下结论"
+            )
+        return f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果（{scope}）：{preview}"
 
     async def _remember(self, key, session, db_id, question, sql, table) -> None:
         turns = session["turns"] if session.get("db_id") == db_id else []
