@@ -112,7 +112,7 @@ uv run python scripts/mcp_smoke.py   # 按 .mcp.json 的命令拉起服务，列
 | 文档 | 内容 |
 |---|---|
 | [docs/numbers.md](docs/numbers.md) | 全部数字与运行 ID |
-| [docs/问题日志.md](docs/问题日志.md) | 12 个真实问题（现象、排查、根因、解决、前后对比） |
+| [docs/问题日志.md](docs/问题日志.md) | 13 个真实问题（现象、排查、根因、解决、前后对比） |
 | [docs/badcases.md](docs/badcases.md) | 3 个 bad case |
 | [docs/failure/判定表.md](docs/failure/判定表.md) | 50 道失败题的判定标准与逐题理由 |
 | [docs/roi.md](docs/roi.md) | ROI 测算框架（实测与假设分开、盈亏平衡、敏感性） |
