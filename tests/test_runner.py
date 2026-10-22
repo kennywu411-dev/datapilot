@@ -199,3 +199,32 @@ def test_compare_counts_corrections():
     out = compare(a, b, "m")
     assert out["b_only_correct"] == [1] and out["a_only_correct"] == [2]
     assert out["corrections"]["fixed"] == 1 and out["corrections"]["broke"] == 1
+
+
+def test_factory_routes_local_and_claude_and_shares_clients(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    from datapilot.llm import ClaudeLLM, LocalLLM
+    from evals.runner import make_factory
+
+    f = make_factory(False)
+    q = {"question_id": 1}
+    a, b = (
+        f(Config("qwen7b", "e4_correct", "medium", 0), q),
+        f(Config("qwen7b", "e4_correct", "medium", 0), q),
+    )
+    c = f(Config("haiku", "e4_correct", "medium", 0), q)
+    assert isinstance(a, LocalLLM) and isinstance(c, ClaudeLLM)
+    assert a.client is b.client  # 共用一个 HTTP 客户端
+
+
+def test_validate_rejects_unknown_model_and_local_agent():
+    import pytest
+
+    from evals.runner import validate
+
+    with pytest.raises(SystemExit, match="未知模型"):
+        validate(["sonet"], "e4_correct")
+    with pytest.raises(SystemExit, match="不支持工具"):
+        validate(["qwen7b"], "agent")
+    validate(["haiku", "qwen7b"], "e4_correct")
+    validate(["gold"], "agent")

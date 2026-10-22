@@ -8,6 +8,7 @@ from functools import cache
 from typing import Any, Protocol
 
 import anthropic
+import httpx2
 from pydantic import BaseModel, ValidationError
 
 from datapilot.config import DEFAULT_MODEL, cost_usd
@@ -48,6 +49,20 @@ class LLM(Protocol):
     ) -> LLMResult: ...
 
 
+async def retry_on_max_tokens(once) -> LLMResult:
+    """撞到 max_tokens 时重试一次，usage 两次累计（P8）。ClaudeLLM 与 LocalLLM 共用。"""
+    start = time.perf_counter()
+    first = await once()
+    if first.stop_reason != "max_tokens":
+        first.latency_s = time.perf_counter() - start
+        return first
+    second = await once()
+    second.usage = {k: first.usage.get(k, 0) + v for k, v in second.usage.items()}
+    second.retried = True
+    second.latency_s = time.perf_counter() - start
+    return second
+
+
 @cache
 def _json_schema(output_format: type[BaseModel]) -> dict:
     return anthropic.transform_schema(output_format)
@@ -86,16 +101,7 @@ class ClaudeLLM:
         tools: list[dict],
         output_format: type[BaseModel] | None = None,
     ) -> LLMResult:
-        start = time.perf_counter()
-        first = await self._once(system, messages, tools, output_format)
-        if first.stop_reason != "max_tokens":
-            first.latency_s = time.perf_counter() - start
-            return first
-        second = await self._once(system, messages, tools, output_format)
-        second.usage = {k: first.usage.get(k, 0) + v for k, v in second.usage.items()}
-        second.retried = True
-        second.latency_s = time.perf_counter() - start
-        return second
+        return await retry_on_max_tokens(lambda: self._once(system, messages, tools, output_format))
 
     async def _once(
         self,
@@ -141,6 +147,86 @@ class ClaudeLLM:
             stop_reason=resp.stop_reason or "end_turn",
             model=self.model,
             usage=usage,
+            parsed=parsed,
+        )
+
+
+class LocalLLM:
+    """本地开源模型（Ollama /api/chat）。回答"国内用不了 Claude 怎么办"。
+
+    - 只用于固定流程（不传 tools）：7B 模型的工具调用不稳定，第 6 节已预判
+    - format 传 JSON schema 约束输出，SQL 放在 sql 字段，与 Claude 走同一套解析
+    - num_ctx 8192：最大的增强 schema 约 5700 token，默认 2048 会被截断
+    - temperature 0：尽量可复现；花费记为 0（本地电费不计），延迟照实记录
+    """
+
+    def __init__(
+        self,
+        model: str = "qwen2.5-coder:7b",
+        client: httpx2.AsyncClient | None = None,
+        base_url: str = "http://localhost:11434",
+        num_ctx: int = 8192,
+        max_tokens: int = 1024,
+    ):
+        self.model = model
+        self.base_url = base_url
+        self.num_ctx = num_ctx
+        self.max_tokens = max_tokens
+        self.client = client or httpx2.AsyncClient(timeout=600)
+
+    @staticmethod
+    def _text(content) -> str:
+        if isinstance(content, str):
+            return content
+        return "".join(b.get("text", "") for b in content if b.get("type") == "text")
+
+    async def complete(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        if tools:
+            raise ValueError("LocalLLM 只用于固定流程，不支持工具调用")
+        chat = [{"role": "system", "content": system}] + [
+            {"role": m["role"], "content": self._text(m["content"])} for m in messages
+        ]
+        # 超过 num_ctx 时 Ollama 只保留开头 4 个 token、静默丢掉之后的开头部分——schema 正好在开头。
+        # 按 3 字符/token 保守估算，宁可报错也不让模型在看不到 schema 的情况下作答（代码审查发现）。
+        est = sum(len(m["content"]) for m in chat) / 3
+        if est + self.max_tokens > self.num_ctx:
+            raise ValueError(f"提示约 {est:.0f} token，加输出上限超过 num_ctx={self.num_ctx}")
+        return await retry_on_max_tokens(lambda: self._once(chat, output_format))
+
+    async def _once(self, chat: list[dict], output_format: type[BaseModel] | None) -> LLMResult:
+        body: dict = {
+            "model": self.model,
+            "messages": chat,
+            "stream": False,
+            "options": {"temperature": 0, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
+        }
+        if output_format is not None:
+            body["format"] = output_format.model_json_schema()
+        resp = await self.client.post(f"{self.base_url}/api/chat", json=body)
+        resp.raise_for_status()
+        data = resp.json()
+        text = data.get("message", {}).get("content", "")
+        stop = "max_tokens" if data.get("done_reason") == "length" else "end_turn"
+        parsed = None
+        if output_format is not None and stop != "max_tokens":
+            try:
+                parsed = output_format.model_validate_json(text)
+            except ValidationError:
+                parsed = None
+        return LLMResult(
+            content=[{"type": "text", "text": text}],
+            stop_reason=stop,
+            model=self.model,
+            usage={
+                "input_tokens": data.get("prompt_eval_count", 0),
+                "output_tokens": data.get("eval_count", 0),
+            },
             parsed=parsed,
         )
 

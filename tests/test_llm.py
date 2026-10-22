@@ -135,3 +135,105 @@ def test_scripted_llm_structured():
     r2 = asyncio.run(llm.complete("s", [], []))
     assert r1.parsed.sql == "SELECT 3"
     assert r2.text == "完成"
+
+
+def test_local_llm_request_and_parse():
+    """LocalLLM（Ollama）：JSON schema 约束输出，content 块转成纯文本，花费为 0。"""
+    from datapilot.llm import LocalLLM
+
+    seen = {}
+
+    def handler(request):
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "message": {"role": "assistant", "content": '{"sql": "SELECT 7"}'},
+                "done_reason": "stop",
+                "prompt_eval_count": 1200,
+                "eval_count": 30,
+            },
+        )
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    llm = LocalLLM("qwen2.5-coder:7b", client=client)
+    history = [
+        {"role": "user", "content": "q"},
+        {"role": "assistant", "content": [{"type": "text", "text": '{"sql": "SELECT 1"}'}]},
+        {"role": "user", "content": "fix it"},
+    ]
+    res = asyncio.run(llm.complete("系统", history, [], output_format=SQLAnswer))
+    body = seen["body"]
+    assert body["messages"][0] == {"role": "system", "content": "系统"}
+    assert body["messages"][2] == {"role": "assistant", "content": '{"sql": "SELECT 1"}'}
+    assert body["format"]["properties"]["sql"]["type"] == "string"
+    assert body["options"]["temperature"] == 0 and body["options"]["num_ctx"] >= 8192
+    assert body["stream"] is False
+    assert res.parsed == SQLAnswer(sql="SELECT 7")
+    assert res.usage == {"input_tokens": 1200, "output_tokens": 30}
+    assert res.cost_usd == 0.0
+
+
+def test_local_llm_truncated_output_is_max_tokens():
+    from datapilot.llm import LocalLLM
+
+    def handler(request):
+        return httpx.Response(
+            200,
+            json={"message": {"role": "assistant", "content": '{"sql'}, "done_reason": "length"},
+        )
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    res = asyncio.run(
+        LocalLLM("m", client=client).complete(
+            "s", [{"role": "user", "content": "q"}], [], SQLAnswer
+        )
+    )
+    assert res.stop_reason == "max_tokens" and res.parsed is None
+
+
+def test_local_llm_rejects_prompt_over_context():
+    """提示超过 num_ctx 时 Ollama 会静默截掉开头（schema 就在开头），必须提前报错。"""
+    import pytest
+
+    from datapilot.llm import LocalLLM
+
+    called = []
+
+    def handler(request):
+        called.append(1)
+        return httpx.Response(200, json={})
+
+    llm = LocalLLM(
+        "m", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)), num_ctx=100
+    )
+    with pytest.raises(ValueError, match="num_ctx"):
+        asyncio.run(llm.complete("x" * 1000, [{"role": "user", "content": "q"}], [], SQLAnswer))
+    assert called == []
+
+
+def test_local_llm_retries_once_on_length():
+    from datapilot.llm import LocalLLM
+
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) == 1:
+            return httpx.Response(
+                200,
+                json={"message": {"content": '{"sql'}, "done_reason": "length", "eval_count": 9},
+            )
+        return httpx.Response(
+            200,
+            json={
+                "message": {"content": '{"sql": "SELECT 1"}'},
+                "done_reason": "stop",
+                "eval_count": 5,
+            },
+        )
+
+    llm = LocalLLM("m", client=httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    res = asyncio.run(llm.complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer))
+    assert len(seen) == 2 and res.retried and res.parsed == SQLAnswer(sql="SELECT 1")
+    assert res.usage["output_tokens"] == 14

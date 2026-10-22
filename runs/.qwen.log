@@ -1,0 +1,79 @@
+500 题 × 1 组配置，预估花费约 $0.00（未计缓存，偏保守）
+[1/500] qwen7b r0 q1471 ✓
+[2/500] qwen7b r0 q1472 ✗ ok
+[3/500] qwen7b r0 q1473 ✓
+[4/500] qwen7b r0 q1476 ✓
+[5/500] qwen7b r0 q1479 ✗ ok
+[6/500] qwen7b r0 q1480 ✗ ok
+[7/500] qwen7b r0 q1481 ✗ ok
+[8/500] qwen7b r0 q1483 ✓
+[9/500] qwen7b r0 q1482 ✗ pred_error
+[10/500] qwen7b r0 q1484 ✓
+[11/500] qwen7b r0 q1486 ✗ ok
+[12/500] qwen7b r0 q1490 ✓
+[13/500] qwen7b r0 q1493 ✓
+[14/500] qwen7b r0 q1498 ✗ ok
+[15/500] qwen7b r0 q1500 ✗ ok
+[16/500] qwen7b r0 q1501 ✗ ok
+[17/500] qwen7b r0 q1505 ✗ ok
+[18/500] qwen7b r0 q1506 ✓
+[19/500] qwen7b r0 q1507 ✓
+[20/500] qwen7b r0 q1509 ✓
+[21/500] qwen7b r0 q1514 ✓
+[22/500] qwen7b r0 q1515 ✓
+[23/500] qwen7b r0 q1521 ✓
+[24/500] qwen7b r0 q1525 ✓
+[25/500] qwen7b r0 q1524 ✗ ok
+[26/500] qwen7b r0 q1528 ✗ ok
+[27/500] qwen7b r0 q1526 ✗ ok
+[28/500] qwen7b r0 q1531 ✗ ok
+[29/500] qwen7b r0 q1529 ✗ ok
+[30/500] qwen7b r0 q1533 ✓
+[31/500] qwen7b r0 q1312 ✓
+[32/500] qwen7b r0 q1317 ✓
+[33/500] qwen7b r0 q1322 ✗ ok
+[34/500] qwen7b r0 q1331 ✓
+[35/500] qwen7b r0 q1323 ✓
+[36/500] qwen7b r0 q1334 ✓
+[37/500] qwen7b r0 q1339 ✓
+[38/500] qwen7b r0 q1338 ✗ pred_error
+[39/500] qwen7b r0 q1340 ✓
+[40/500] qwen7b r0 q1344 ✓
+[41/500] qwen7b r0 q1346 ✓
+[42/500] qwen7b r0 q1351 ✓
+[43/500] qwen7b r0 q1350 ✗ pred_error
+[44/500] qwen7b r0 q1352 ✓
+[45/500] qwen7b r0 q1356 ✓
+[46/500] qwen7b r0 q1357 ✓
+[47/500] qwen7b r0 q1359 ✓
+[48/500] qwen7b r0 q1361 ✓
+[49/500] qwen7b r0 q1362 ✓
+[50/500] qwen7b r0 q1368 ✓
+[51/500] qwen7b r0 q1371 ✓
+[52/500] qwen7b r0 q1375 ✓
+[53/500] qwen7b r0 q1376 ✓
+[54/500] qwen7b r0 q1378 ✓
+[55/500] qwen7b r0 q1380 ✓
+[56/500] qwen7b r0 q1381 ✓
+[57/500] qwen7b r0 q1387 ✗ ok
+[58/500] qwen7b r0 q1389 ✗ pred_error
+[59/500] qwen7b r0 q1390 ✗ pred_error
+[60/500] qwen7b r0 q1392 ✓
+[61/500] qwen7b r0 q1394 ✓
+[62/500] qwen7b r0 q1398 ✓
+[63/500] qwen7b r0 q1399 ✗ ok
+[64/500] qwen7b r0 q1401 ✗ pred_error
+[65/500] qwen7b r0 q1403 ✓
+[66/500] qwen7b r0 q1405 ✓
+[67/500] qwen7b r0 q1404 ✗ pred_error
+[68/500] qwen7b r0 q1409 ✓
+[69/500] qwen7b r0 q1410 ✓
+[70/500] qwen7b r0 q1411 ✓
+[71/500] qwen7b r0 q1422 ✓
+[72/500] qwen7b r0 q1426 ✓
+[73/500] qwen7b r0 q1427 ✗ ok
+[74/500] qwen7b r0 q1432 ✓
+[75/500] qwen7b r0 q1435 ✓
+[76/500] qwen7b r0 q1457 ✓
+[77/500] qwen7b r0 q1460 ✓
+[78/500] qwen7b r0 q1464 ✓
