@@ -127,3 +127,78 @@
 [126/500] qwen7b r0 q1275 ✗ pred_error
 [127/500] qwen7b r0 q1281 ✗ ok
 [128/500] qwen7b r0 q1302 ✗ ok
+[129/500] qwen7b r0 q1025 ✓
+[130/500] qwen7b r0 q1028 ✓
+[131/500] qwen7b r0 q1029 ✗ ok
+[132/500] qwen7b r0 q1030 ✓
+[133/500] qwen7b r0 q1031 ✓
+[134/500] qwen7b r0 q1032 ✗ ok
+[135/500] qwen7b r0 q1035 ✓
+[136/500] qwen7b r0 q1036 ✓
+[137/500] qwen7b r0 q1037 ✗ pred_error
+[138/500] qwen7b r0 q1039 ✓
+[139/500] qwen7b r0 q1040 ✗ ok
+[140/500] qwen7b r0 q1042 ✓
+[141/500] qwen7b r0 q1044 ✓
+[142/500] qwen7b r0 q1048 ✓
+[143/500] qwen7b r0 q1057 ✓
+[144/500] qwen7b r0 q1058 ✗ ok
+[145/500] qwen7b r0 q1068 ✗ ok
+[146/500] qwen7b r0 q1076 ✗ pred_error
+[147/500] qwen7b r0 q1078 ✓
+[148/500] qwen7b r0 q1079 ✓
+[149/500] qwen7b r0 q1080 ✓
+[150/500] qwen7b r0 q1084 ✗ pred_error
+[151/500] qwen7b r0 q1088 ✓
+[152/500] qwen7b r0 q1091 ✓
+[153/500] qwen7b r0 q1092 ✗ ok
+[154/500] qwen7b r0 q1094 ✗ ok
+[155/500] qwen7b r0 q1096 ✓
+[156/500] qwen7b r0 q1098 ✓
+[157/500] qwen7b r0 q1102 ✓
+[158/500] qwen7b r0 q1103 ✓
+[159/500] qwen7b r0 q1105 ✓
+[160/500] qwen7b r0 q1107 ✗ ok
+[161/500] qwen7b r0 q1110 ✓
+[162/500] qwen7b r0 q1113 ✓
+[163/500] qwen7b r0 q1114 ✗ ok
+[164/500] qwen7b r0 q1115 ✗ llm_error
+[165/500] qwen7b r0 q1116 ✓
+[166/500] qwen7b r0 q1122 ✗ pred_error
+[167/500] qwen7b r0 q1124 ✓
+[168/500] qwen7b r0 q1130 ✓
+[169/500] qwen7b r0 q1133 ✓
+[170/500] qwen7b r0 q1134 ✓
+[171/500] qwen7b r0 q1135 ✗ ok
+[172/500] qwen7b r0 q1136 ✓
+[173/500] qwen7b r0 q1139 ✓
+[174/500] qwen7b r0 q1141 ✗ pred_error
+[175/500] qwen7b r0 q1144 ✗ ok
+[176/500] qwen7b r0 q1145 ✓
+[177/500] qwen7b r0 q1146 ✓
+[178/500] qwen7b r0 q1147 ✓
+[179/500] qwen7b r0 q1148 ✓
+[180/500] qwen7b r0 q846 ✓
+[181/500] qwen7b r0 q847 ✓
+[182/500] qwen7b r0 q850 ✓
+[183/500] qwen7b r0 q854 ✓
+[184/500] qwen7b r0 q857 ✓
+[185/500] qwen7b r0 q859 ✓
+[186/500] qwen7b r0 q861 ✗ ok
+[187/500] qwen7b r0 q862 ✓
+[188/500] qwen7b r0 q865 ✓
+[189/500] qwen7b r0 q866 ✗ ok
+[190/500] qwen7b r0 q868 ✓
+[191/500] qwen7b r0 q869 ✓
+[192/500] qwen7b r0 q872 ✓
+[193/500] qwen7b r0 q875 ✓
+[194/500] qwen7b r0 q877 ✗ ok
+[195/500] qwen7b r0 q879 ✗ ok
+[196/500] qwen7b r0 q880 ✗ ok
+[197/500] qwen7b r0 q881 ✓
+[198/500] qwen7b r0 q884 ✗ ok
+[199/500] qwen7b r0 q892 ✗ ok
+[200/500] qwen7b r0 q894 ✗ ok
+[201/500] qwen7b r0 q895 ✓
+[202/500] qwen7b r0 q896 ✗ ok
+[203/500] qwen7b r0 q897 ✓
