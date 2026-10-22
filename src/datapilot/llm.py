@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
+from functools import cache
 from typing import Any, Protocol
 
 import anthropic
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from datapilot.config import DEFAULT_MODEL, cost_usd
 
@@ -20,6 +21,7 @@ class LLMResult:
     usage: dict = field(default_factory=dict)
     latency_s: float = 0.0
     parsed: Any = None  # 结构化输出解析结果；refusal 或解析失败时为 None
+    retried: bool = False  # 撞到 max_tokens 后是否重试过（P8）
 
     @property
     def cost_usd(self) -> float:
@@ -46,6 +48,11 @@ class LLM(Protocol):
     ) -> LLMResult: ...
 
 
+@cache
+def _json_schema(output_format: type[BaseModel]) -> dict:
+    return anthropic.transform_schema(output_format)
+
+
 class ClaudeLLM:
     """Claude Messages API。
 
@@ -53,7 +60,11 @@ class ClaudeLLM:
     - 系统提示和工具定义固定，打 cache_control，多轮调用时走缓存
     - 不开启 refusal fallback：评测要比较的是指定模型本身，换模型作答会污染结果；
       refusal 记为一种失败类型
-    - output_format 传 Pydantic 模型时走结构化输出，避免从自由文本里抠 SQL
+    - output_format 传 Pydantic 模型时走结构化输出，避免从自由文本里抠 SQL。
+      用 create + 自己解析而不是 messages.parse：后者遇到截断的 JSON 会直接抛异常，
+      这次调用的 usage 就丢了，花费记不上账
+    - max_tokens 4096（正常调用单次输出最大 885 token）；撞到上限重试一次（P8：Sonnet
+      偶发生成失控，每次白白耗尽 16000 token）
     """
 
     def __init__(
@@ -61,7 +72,7 @@ class ClaudeLLM:
         model: str = DEFAULT_MODEL,
         effort: str = "medium",
         client: anthropic.AsyncAnthropic | None = None,
-        max_tokens: int = 16000,
+        max_tokens: int = 4096,
     ):
         self.model = model
         self.effort = effort
@@ -76,23 +87,48 @@ class ClaudeLLM:
         output_format: type[BaseModel] | None = None,
     ) -> LLMResult:
         start = time.perf_counter()
+        first = await self._once(system, messages, tools, output_format)
+        if first.stop_reason != "max_tokens":
+            first.latency_s = time.perf_counter() - start
+            return first
+        second = await self._once(system, messages, tools, output_format)
+        second.usage = {k: first.usage.get(k, 0) + v for k, v in second.usage.items()}
+        second.retried = True
+        second.latency_s = time.perf_counter() - start
+        return second
+
+    async def _once(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None,
+    ) -> LLMResult:
+        output_config: dict = {"effort": self.effort}
+        if output_format is not None:
+            output_config["format"] = {
+                "type": "json_schema",
+                "schema": _json_schema(output_format),
+            }
         kwargs: dict = {
             "model": self.model,
             "max_tokens": self.max_tokens,
             "system": [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             "messages": messages,
             "thinking": {"type": "adaptive"},
-            "output_config": {"effort": self.effort},
+            "output_config": output_config,
         }
         if tools:
             kwargs["tools"] = tools
+        resp = await self.client.messages.create(**kwargs)
+        content = [b.to_dict() for b in resp.content]
         parsed = None
-        if output_format is None:
-            resp = await self.client.messages.create(**kwargs)
-        else:
-            resp = await self.client.messages.parse(output_format=output_format, **kwargs)
-            if resp.stop_reason not in ("refusal", "max_tokens"):
-                parsed = resp.parsed_output
+        if output_format is not None and resp.stop_reason not in ("refusal", "max_tokens"):
+            text = "".join(b.get("text", "") for b in content if b.get("type") == "text")
+            try:
+                parsed = output_format.model_validate_json(text)
+            except ValidationError:
+                parsed = None
         u = resp.usage
         usage = {
             "input_tokens": u.input_tokens,
@@ -101,11 +137,10 @@ class ClaudeLLM:
             "cache_read_input_tokens": u.cache_read_input_tokens or 0,
         }
         return LLMResult(
-            content=[b.to_dict() for b in resp.content],
+            content=content,
             stop_reason=resp.stop_reason or "end_turn",
             model=self.model,
             usage=usage,
-            latency_s=time.perf_counter() - start,
             parsed=parsed,
         )
 

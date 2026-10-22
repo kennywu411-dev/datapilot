@@ -169,3 +169,33 @@ def test_summarize_groups_by_config():
     s = summarize(rows)
     assert s[0]["n"] == 4 and s[0]["ex"] == 0.75
     assert s[0]["cost_per_q"] == pytest.approx(0.001)
+
+
+def test_mcnemar_exact():
+    from evals.compare import mcnemar_exact
+
+    assert mcnemar_exact(0, 0) == 1.0
+    assert mcnemar_exact(5, 5) == 1.0
+    assert mcnemar_exact(0, 10) < 0.01  # 10 题只在 B 对：显著
+    assert 0.2 < mcnemar_exact(3, 7) < 0.4
+
+
+def test_compare_counts_corrections():
+    from evals.compare import compare
+
+    def row(i, correct, first_correct=None, first_sql=None, sql="S"):
+        return {
+            "question_id": i,
+            "model": "m",
+            "correct": correct,
+            "cost_usd": 0.0,
+            "pred_sql": sql,
+            "first_sql": first_sql or sql,
+            "first_correct": correct if first_correct is None else first_correct,
+        }
+
+    a = [row(1, False), row(2, True), row(3, True)]
+    b = [row(1, True, False, "OLD"), row(2, False, True, "OLD"), row(3, True)]
+    out = compare(a, b, "m")
+    assert out["b_only_correct"] == [1] and out["a_only_correct"] == [2]
+    assert out["corrections"]["fixed"] == 1 and out["corrections"]["broke"] == 1

@@ -1,0 +1,6 @@
+{
+  "model": "haiku",
+  "pipeline": "e4_correct",
+  "n": 20,
+  "ex": 0.8
+}
