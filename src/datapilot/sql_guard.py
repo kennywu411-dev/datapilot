@@ -1,9 +1,13 @@
 """只读 SQL 执行层：分层防御。
 
 1. 静态检查：sqlglot 解析，只放行单条 SELECT / WITH ... SELECT；
-2. 只读连接：`file:...?mode=ro`，即使静态检查被绕过，写操作也会被 SQLite 拒绝；
-3. 超时：`set_progress_handler` 定期检查耗时，超时中断；
-4. 行数上限：`fetchmany`，避免几万行结果撑爆模型上下文。
+   sqlglot 解析不了的（不一定非法）不拒绝，交给 SQLite 执行并由下面两层兜底，
+   这样评测口径与官方一致，写错的 SQL 也能拿到 SQLite 原生报错去纠错；
+2. 只读连接：`file:...?mode=ro`，写库文件会被拒绝；
+3. 授权回调：`set_authorizer` 只放行读操作。只读连接单独拦不住 ATTACH、
+   PRAGMA、CREATE TEMP TABLE（问题日志 P6），这一层补上；
+4. 超时：`set_progress_handler` 定期检查耗时，超时中断；
+5. 行数上限：`fetchmany`，避免几万行结果撑爆模型上下文。
 """
 
 from __future__ import annotations
@@ -15,7 +19,7 @@ from pathlib import Path
 
 import sqlglot
 from sqlglot import exp
-from sqlglot.errors import ParseError
+from sqlglot.errors import SqlglotError
 
 DEFAULT_TIMEOUT_S = 30.0  # 与官方评测 meta_time_out 一致
 DEFAULT_MAX_ROWS = 1000
@@ -23,6 +27,31 @@ DEFAULT_MAX_ROWS = 1000
 
 class SQLRejected(Exception):
     """SQL 未通过安全检查，或被只读连接拒绝。"""
+
+
+class SQLUnparseable(SQLRejected):
+    """sqlglot 无法解析。run_readonly 会继续交给 SQLite（由只读连接和授权回调兜底）。"""
+
+
+# 授权回调只放行这些操作：读表、SELECT、函数调用、递归 CTE
+_ALLOWED_ACTIONS = {
+    sqlite3.SQLITE_SELECT,
+    sqlite3.SQLITE_READ,
+    sqlite3.SQLITE_FUNCTION,
+    sqlite3.SQLITE_RECURSIVE,
+}
+
+
+# 只读的元数据 PRAGMA（tools.describe_table 要用），且不能带赋值
+_ALLOWED_PRAGMAS = {"table_info", "table_xinfo", "foreign_key_list", "index_list", "index_info"}
+
+
+def _authorizer(action: int, arg1, arg2, _db, _source) -> int:
+    if action in _ALLOWED_ACTIONS:
+        return sqlite3.SQLITE_OK
+    if action == sqlite3.SQLITE_PRAGMA and (arg1 or "").lower() in _ALLOWED_PRAGMAS:
+        return sqlite3.SQLITE_OK
+    return sqlite3.SQLITE_DENY
 
 
 @dataclass
@@ -39,8 +68,8 @@ def check_sql(sql: str) -> None:
         raise SQLRejected("SQL 为空")
     try:
         statements = [s for s in sqlglot.parse(sql, read="sqlite") if s is not None]
-    except ParseError as e:
-        raise SQLRejected(f"SQL 无法解析：{e}") from e
+    except SqlglotError as e:  # 含 ParseError 与 TokenError（后者不是前者子类）
+        raise SQLUnparseable(f"SQL 无法解析：{e}") from e
     if len(statements) != 1:
         raise SQLRejected(f"只允许单条语句，收到 {len(statements)} 条")
     stmt = statements[0]
@@ -53,9 +82,11 @@ def check_sql(sql: str) -> None:
 
 
 def connect_readonly(db_path: str | Path) -> sqlite3.Connection:
-    """只读连接；文件不存在时报错而不是新建空库。"""
+    """只读连接 + 只放行读操作的授权回调；文件不存在时报错而不是新建空库。"""
     uri = f"{Path(db_path).resolve().as_uri()}?mode=ro"
-    return sqlite3.connect(uri, uri=True, check_same_thread=False)
+    conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+    conn.set_authorizer(_authorizer)
+    return conn
 
 
 def run_readonly(
@@ -71,8 +102,13 @@ def run_readonly(
     skip_guard 只给测试和评测标准答案用：标准 SQL 不需要静态检查，但仍走只读连接。
     超时抛 TimeoutError；SQL 本身错误原样抛 sqlite3 异常，方便把报错反馈给模型纠错。
     """
+    if max_rows is not None and max_rows < 0:
+        raise ValueError(f"max_rows 不能为负：{max_rows}")
     if not skip_guard:
-        check_sql(sql)
+        try:
+            check_sql(sql)
+        except SQLUnparseable:
+            pass  # 交给 SQLite：语法真错会得到原生报错，写操作由只读连接和授权回调拦截
 
     conn = connect_readonly(db_path)
     start = time.monotonic()
@@ -88,12 +124,12 @@ def run_readonly(
             rows = cur.fetchmany(max_rows + 1)
             truncated = len(rows) > max_rows
             rows = rows[:max_rows]
-    except sqlite3.OperationalError as e:
+    except sqlite3.DatabaseError as e:
         msg = str(e)
         if msg == "interrupted":
             raise TimeoutError(f"查询超过 {timeout_s:g} 秒被中断") from e
-        if "readonly" in msg:
-            raise SQLRejected(f"只读连接拒绝写操作：{msg}") from e
+        if "readonly" in msg or "not authorized" in msg:
+            raise SQLRejected(f"只读连接拒绝非读操作：{msg}") from e
         raise
     finally:
         conn.close()

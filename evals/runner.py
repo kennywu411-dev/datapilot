@@ -64,14 +64,19 @@ def load_done(run_dir: Path) -> set[tuple]:
 
 
 def stratified_sample(questions: list[dict], n: int, seed: int = 0) -> list[dict]:
-    """按难度分层抽样，各层按原比例分配名额，固定种子保证可复现。"""
+    """按难度分层抽样，各层按原比例分配名额（最大余数法，总数恰为 n），固定种子可复现。"""
     rng = random.Random(seed)
     by_diff: dict[str, list[dict]] = {}
     for q in questions:
         by_diff.setdefault(q["difficulty"], []).append(q)
+    strata = sorted(by_diff.items())
+    exact = [n * len(qs) / len(questions) for _, qs in strata]
+    quota = [int(x) for x in exact]
+    by_remainder = sorted(range(len(strata)), key=lambda i: exact[i] - quota[i], reverse=True)
+    for i in by_remainder[: n - sum(quota)]:
+        quota[i] += 1
     picked = []
-    for _, qs in sorted(by_diff.items()):
-        k = round(n * len(qs) / len(questions))
+    for (_, qs), k in zip(strata, quota, strict=True):
         picked += rng.sample(qs, k)
     return sorted(picked, key=lambda q: q["question_id"])
 
@@ -112,8 +117,11 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     elif not gen.sql:
         status, correct, detail = "no_sql", False, gen.stop_reason
     else:
-        out = await asyncio.to_thread(evaluate_one, path, gen.sql, q["SQL"])
-        status, correct, detail = out.status, out.correct, out.detail
+        try:
+            out = await asyncio.to_thread(evaluate_one, path, gen.sql, q["SQL"])
+            status, correct, detail = out.status, out.correct, out.detail
+        except Exception as e:  # 评测器意外错误：记为失败并保留 SQL，不中断整次运行
+            status, correct, detail = "eval_error", False, f"{type(e).__name__}: {e}"
     return {
         **row,
         "pred_sql": gen.sql,

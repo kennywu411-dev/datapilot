@@ -42,7 +42,7 @@ def offline_checks() -> list[str]:
     failures = []
     if run_smoke("gold", mock=True) != 1.0:
         failures.append("标准答案走全管线未达 100%")
-    expected_select1 = set(SELECT1_HITS)
+    expected_select1 = select1_hits()
     for q in smoke_questions():
         path, gold = config.db_path(q["db_id"]), q["SQL"]
         shuffled = f"SELECT * FROM ({gold.strip().rstrip(';')}) ORDER BY RANDOM()"
@@ -54,25 +54,13 @@ def offline_checks() -> list[str]:
     return failures
 
 
-# gold-check-20261022-143358 中 SELECT 1 判对的题（与官方逐题一致）
-SELECT1_HITS = (
-    62,
-    245,
-    260,
-    472,
-    547,
-    933,
-    945,
-    967,
-    1134,
-    1164,
-    1171,
-    1189,
-    1275,
-    1322,
-    1352,
-    1394,
-)
+# SELECT 1 判对的题以 gold-check 运行记录为准（与官方逐题一致），重跑 gold-check 后改这里的 run_id
+GOLD_CHECK_RUN = "gold-check-20261022-143358"
+
+
+def select1_hits() -> set[int]:
+    summary = json.loads((config.RUNS_DIR / GOLD_CHECK_RUN / "summary.json").read_text())
+    return set(summary["selfcheck_select1_hit"])
 
 
 def run_smoke(model: str, mock: bool) -> float:
@@ -81,7 +69,7 @@ def run_smoke(model: str, mock: bool) -> float:
         rows = asyncio.run(
             run(smoke_questions(), [cfg], make_factory(mock), Path(tmp), 8, max_cost=0.5)
         )
-    return sum(r["correct"] for r in rows) / SMOKE_N
+    return sum(r["correct"] for r in rows) / len(smoke_questions())
 
 
 def main() -> int:

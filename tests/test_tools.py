@@ -73,6 +73,24 @@ def test_search_values_restricted_to_column(db_dir):
         tools.search_values("shop", "F", table="users", column="nope")
 
 
+def test_search_values_escapes_like_wildcards(db_dir):
+    # 'a_' 不应把 _ 当通配符匹配到 'Alice Smith' 里的 "al" 之类
+    out = tools.search_values("shop", "e_S")
+    assert out["matches"] == []
+    out = tools.search_values("shop", "%")
+    assert out["matches"] == []
+
+
+def test_run_sql_unterminated_quote_is_structured_error(db_dir):
+    out = tools.run_sql("shop", "SELECT 'abc")
+    assert out["error"] == "sql_error"
+
+
+def test_run_sql_clamps_negative_max_rows(db_dir):
+    out = tools.run_sql("shop", "SELECT * FROM users", max_rows=-5)
+    assert out["error"] == "bad_arguments"
+
+
 def test_run_sql_ok_and_rejected(db_dir):
     out = tools.run_sql("shop", "SELECT name FROM users WHERE gender = 'F' ORDER BY id")
     assert out["columns"] == ["name"] and out["rows"] == [["Alice Smith"], ["Carol"]]

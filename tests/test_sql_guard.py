@@ -104,6 +104,56 @@ def test_sql_error_surfaces_message(db):
         run_readonly(db, "SELECT not_a_col FROM users")
 
 
+def test_tokenize_error_becomes_sqlrejected():
+    """sqlglot 的 TokenError 不是 ParseError 子类，也必须转成 SQLRejected，不能原样抛出。"""
+    with pytest.raises(SQLRejected):
+        check_sql("SELECT 'abc")
+
+
+def test_unparseable_sql_is_left_to_sqlite(db, monkeypatch):
+    """sqlglot 解析不了不等于 SQL 非法：交给 SQLite 执行，与官方评测口径一致。"""
+    import sqlglot
+    from sqlglot.errors import ParseError
+
+    def boom(*a, **k):
+        raise ParseError("sqlglot 不支持的语法")
+
+    monkeypatch.setattr(sqlglot, "parse", boom)
+    res = run_readonly(db, "SELECT count(*) FROM users")
+    assert res.rows == [(2000,)]
+    # 真正写错的 SQL 拿到的是 SQLite 自己的报错，可直接反馈给模型纠错
+    with pytest.raises(sqlite3.OperationalError):
+        run_readonly(db, "SELECT 'abc")
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "DROP TABLE users",
+        "ATTACH DATABASE ':memory:' AS x",
+        "PRAGMA journal_mode = DELETE",
+        "CREATE TEMP TABLE x (a)",
+    ],
+)
+def test_authorizer_blocks_non_read_ops_even_without_guard(db, sql):
+    """第二层防御：连接级授权回调只放行读操作。"""
+    with pytest.raises(SQLRejected):
+        run_readonly(db, sql, skip_guard=True)
+
+
+def test_authorizer_allows_recursive_cte_and_functions(db):
+    sql = (
+        "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c WHERE x < 5) "
+        "SELECT sum(x), upper('a'), strftime('%Y', '2020-01-01') FROM c"
+    )
+    assert run_readonly(db, sql).rows == [(15, "A", "2020")]
+
+
+def test_negative_max_rows_rejected(db):
+    with pytest.raises(ValueError):
+        run_readonly(db, "SELECT 1", max_rows=-1)
+
+
 def test_missing_db_file_is_not_created(tmp_path):
     missing = tmp_path / "nope.sqlite"
     with pytest.raises(sqlite3.OperationalError):

@@ -110,6 +110,29 @@ def test_max_cost_stops_new_calls(setup):
     assert sum(r["cost_usd"] for r in rows) == pytest.approx(40.0)
 
 
+def test_eval_exception_is_recorded_not_crash(setup, monkeypatch):
+    """评测阶段的意外异常要记成一条失败，不能让 gather 中断整次运行。"""
+    questions, run_dir = setup
+
+    def boom(*a, **k):
+        raise RuntimeError("评测器意外错误")
+
+    monkeypatch.setattr("evals.runner.evaluate_one", boom)
+    answers = {i: "SELECT 1" for i in range(1, 5)}
+    cfg = Config(model="haiku", pipeline="baseline", effort="medium", repeat=0)
+    rows = asyncio.run(run(questions, [cfg], scripted_factory(answers, []), run_dir, 2))
+    assert len(rows) == 4 and all(r["status"] == "eval_error" for r in rows)
+
+
+@pytest.mark.parametrize("n", [7, 20, 25, 33])
+def test_stratified_sample_size_is_exact(n):
+    qs = [
+        {"question_id": i, "difficulty": d}
+        for i, d in enumerate(["simple"] * 148 + ["moderate"] * 250 + ["challenging"] * 102)
+    ]
+    assert len(stratified_sample(qs, n)) == n
+
+
 def test_stratified_sample_is_deterministic():
     qs = [
         {"question_id": i, "difficulty": d}

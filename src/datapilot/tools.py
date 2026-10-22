@@ -29,11 +29,34 @@ def _db(db_id: str):
     return config.db_path(db_id)
 
 
+@cache
+def _tables_cached(db_file: str) -> tuple[tuple[str, int], ...]:
+    """表名与列数。表结构是静态的，按库文件路径缓存，避免每次工具调用都遍历全部表。"""
+    conn = connect_readonly(db_file)
+    try:
+        names = [
+            r[0]
+            for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' "
+                "AND name != 'sqlite_sequence' ORDER BY name"
+            )
+        ]
+        return tuple(
+            (n, len(conn.execute(f"PRAGMA table_info({_q(n)})").fetchall())) for n in names
+        )
+    finally:
+        conn.close()
+
+
 def _table(db_id: str, table: str) -> str:
-    names = {t["table"] for t in list_tables(db_id)}
-    if table not in names:
+    if table not in {name for name, _ in _tables_cached(str(_db(db_id)))}:
         raise ValueError(f"未知表：{table}")
     return table
+
+
+def _escape_like(s: str) -> str:
+    """keyword 里的 % 和 _ 按字面匹配，不当通配符。"""
+    return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 def _is_text(col_type: str) -> bool:
@@ -56,21 +79,7 @@ def list_databases() -> list[str]:
 
 
 def list_tables(db_id: str) -> list[dict]:
-    conn = connect_readonly(_db(db_id))
-    try:
-        names = [
-            r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type = 'table' "
-                "AND name != 'sqlite_sequence' ORDER BY name"
-            )
-        ]
-        return [
-            {"table": n, "columns": len(conn.execute(f"PRAGMA table_info({_q(n)})").fetchall())}
-            for n in names
-        ]
-    finally:
-        conn.close()
+    return [{"table": n, "columns": c} for n, c in _tables_cached(str(_db(db_id)))]
 
 
 @cache
@@ -161,11 +170,11 @@ def search_values(
             if len(matches) >= limit:
                 break
             sql = (
-                f"SELECT DISTINCT {_q(c)} FROM {_q(t)} WHERE {_q(c)} LIKE ? "
+                f"SELECT DISTINCT {_q(c)} FROM {_q(t)} WHERE {_q(c)} LIKE ? ESCAPE '\\' "
                 f"LIMIT {limit - len(matches)}"
             )
             try:
-                rows = conn.execute(sql, (f"%{keyword}%",)).fetchall()
+                rows = conn.execute(sql, (f"%{_escape_like(keyword)}%",)).fetchall()
             except sqlite3.OperationalError:  # 超时（interrupted）或个别列出错，跳过并告知
                 skipped.append(f"{t}.{c}")
                 continue
@@ -177,6 +186,8 @@ def search_values(
 
 def run_sql(db_id: str, sql: str, max_rows: int = 50) -> dict:
     """只读执行单条 SELECT。错误以结构化结果返回（不抛异常），方便模型据此纠错。"""
+    if max_rows < 0:
+        return {"error": "bad_arguments", "message": f"max_rows 不能为负：{max_rows}"}
     try:
         res = run_readonly(_db(db_id), sql, max_rows=max_rows)
     except SQLRejected as e:

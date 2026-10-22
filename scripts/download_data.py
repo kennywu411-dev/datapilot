@@ -80,7 +80,9 @@ def extract_sqlite(zip_path: Path) -> None:
                 continue
             if rel.suffix not in {".sqlite", ".csv"}:
                 continue
-            target = DB_DIR / rel
+            target = (DB_DIR / rel).resolve()
+            if not target.is_relative_to(DB_DIR.resolve()):
+                raise ValueError(f"压缩包条目越出目标目录：{info.filename}")
             if target.exists() and target.stat().st_size == info.file_size:
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)
