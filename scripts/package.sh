@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # 生成发布用的代码包：只打包 git 跟踪的文件（天然排除 .env、data/、node_modules、.next），
 # 打包前扫描密钥与数据库文件，发现任何一项就中止。
-# 用法：bash scripts/package.sh   →  dist/datapilot-<版本>.zip
+# 用法：bash scripts/package.sh   →  dist/datapilot-<版本>.tar.gz
+# 用 tar.gz 而不是 zip：macOS 自带的 unzip 6.00 解压中文文件名会失败（问题日志 P12）
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
@@ -10,7 +11,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 VERSION="$(git describe --tags --always)"
-OUT="dist/datapilot-${VERSION}.zip"
+OUT="dist/datapilot-${VERSION}.tar.gz"
 FILES="$(git ls-files)"
 
 echo "[package] 检查文件清单"
@@ -31,5 +32,10 @@ fi
 
 mkdir -p dist
 rm -f "$OUT"
-git archive --format=zip --prefix="datapilot/" -o "$OUT" HEAD
+git archive --format=tar.gz --prefix="datapilot/" -o "$OUT" HEAD
+# 自检：解压到临时目录，确认中文文件名完好
+CHECK="$(mktemp -d)"
+tar -xzf "$OUT" -C "$CHECK"
+test -f "$CHECK/datapilot/docs/问题日志.md" || { echo "解压自检失败：中文文件名丢失" >&2; exit 1; }
+rm -rf "$CHECK"
 echo "[package] 完成：$OUT（$(du -h "$OUT" | cut -f1)，$(echo "$FILES" | wc -l | tr -d ' ') 个文件）"
