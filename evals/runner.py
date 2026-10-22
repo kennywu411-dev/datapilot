@@ -37,8 +37,9 @@ from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
 PIPELINES = {"baseline": generate_sql}
-# 每题输出 token 预估（SQL + adaptive thinking）。试跑后用实测值替换。
-EST_OUTPUT_TOKENS = 1500
+# 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
+# Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
+EST_OUTPUT_TOKENS = 500
 
 
 @dataclass(frozen=True)
