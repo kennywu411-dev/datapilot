@@ -1,0 +1,309 @@
+"use client";
+
+import { CaretRight, Moon, Sun } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
+
+import { ChartView } from "@/components/chart-view";
+import { SqlBlock } from "@/components/sql-block";
+import { TopNav } from "@/components/top-nav";
+import data from "@/data/eval.json";
+import { toggleTheme, useIsDark } from "@/lib/theme";
+import { cn } from "@/lib/utils";
+
+type Stats = {
+  n: number;
+  ex: number;
+  ci: number[];
+  cost_per_q: number;
+  p50: number;
+  p95: number;
+  by_difficulty: Record<string, number>;
+  p_vs_prev?: number;
+  p_vs_e4?: number;
+};
+
+const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`;
+const pval = (p?: number) => (p === undefined ? "" : p < 0.001 ? "p<0.001" : `p=${p.toFixed(3)}`);
+
+function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-4">
+      <div>
+        <h2 className="text-lg font-medium tracking-tight">{title}</h2>
+        {note && <p className="mt-1 max-w-[70ch] text-sm leading-relaxed text-muted-foreground">{note}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Kpi({ value, label, sub }: { value: string; label: string; sub: string }) {
+  return (
+    <div className="border-l-2 border-primary/60 pl-4">
+      <div className="font-mono text-3xl font-medium tabular-nums tracking-tight">{value}</div>
+      <div className="mt-1 text-sm">{label}</div>
+      <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>
+    </div>
+  );
+}
+
+function Table({ head, rows, align }: { head: string[]; rows: (string | number)[][]; align?: ("l" | "r")[] }) {
+  return (
+    <div className="overflow-x-auto rounded-lg border">
+      <table className="w-full text-sm">
+        <thead className="bg-surface text-muted-foreground">
+          <tr>
+            {head.map((h, i) => (
+              <th key={i} className={cn("whitespace-nowrap px-3 py-2 font-medium", align?.[i] === "r" ? "text-right" : "text-left")}>
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {rows.map((r, ri) => (
+            <tr key={ri}>
+              {r.map((c, ci) => (
+                <td key={ci} className={cn("whitespace-nowrap px-3 py-2", align?.[ci] === "r" && "text-right font-mono tabular-nums")}>
+                  {c}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Ladder() {
+  const ladder = data.ladder as unknown as { key: string; label: string; run_id: string; sonnet: Stats; haiku: Stats }[];
+  const chart = {
+    columns: ["实验", "Sonnet", "Haiku"],
+    rows: ladder.map((l) => [l.key, +(l.sonnet.ex * 100).toFixed(1), +(l.haiku.ex * 100).toFixed(1)]),
+    truncated: false,
+  };
+  return (
+    <>
+      <ChartView spec={{ type: "bar", x: "实验", y: ["Sonnet", "Haiku"] }} data={chart} />
+      <Table
+        head={["实验", "说明", "Sonnet EX", "相对上一步", "Haiku EX", "相对上一步", "Sonnet 单题成本", "Sonnet P50"]}
+        align={["l", "l", "r", "r", "r", "r", "r", "r"]}
+        rows={ladder.map((l) => [
+          l.key,
+          l.label,
+          pct(l.sonnet.ex),
+          l.key === "Agent" ? `vs E4 ${pval(l.sonnet.p_vs_e4)}` : pval(l.sonnet.p_vs_prev),
+          pct(l.haiku.ex),
+          l.key === "Agent" ? `vs E4 ${pval(l.haiku.p_vs_e4)}` : pval(l.haiku.p_vs_prev),
+          `$${l.sonnet.cost_per_q.toFixed(4)}`,
+          `${l.sonnet.p50}s`,
+        ])}
+      />
+    </>
+  );
+}
+
+function Models() {
+  const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null }>;
+  const s100 = data.same100 as unknown as Record<string, Stats>;
+  return (
+    <div className="grid gap-8">
+      <div className="space-y-2">
+        <h3 className="text-sm text-muted-foreground">最终配置 E4，500 题</h3>
+        <Table
+          head={["模型", "EX", "simple", "moderate", "challenging", "单题成本"]}
+          align={["l", "r", "r", "r", "r", "r"]}
+          rows={(["haiku", "sonnet", "opus"] as const).map((m) => [
+            m === "opus" ? "Opus（疑似污染）" : m[0].toUpperCase() + m.slice(1),
+            f[m].mean !== undefined ? `${pct(f[m].mean!)} ± ${(f[m].std! * 100).toFixed(2)}` : pct(f[m].ex),
+            pct(f[m].by_difficulty.simple, 0),
+            pct(f[m].by_difficulty.moderate, 0),
+            pct(f[m].by_difficulty.challenging, 0),
+            `$${f[m].cost_per_q.toFixed(4)}`,
+          ])}
+        />
+        <p className="text-xs text-muted-foreground">Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）。</p>
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-sm text-muted-foreground">同 100 题（分层抽样），含本地开源模型</h3>
+        <Table
+          head={["模型", "EX", "95% CI", "P50 延迟", "单题成本"]}
+          align={["l", "r", "r", "r", "r"]}
+          rows={Object.entries(s100).map(([m, s]) => [
+            m,
+            pct(s.ex, 0),
+            `${pct(s.ci[0], 0)} - ${pct(s.ci[1], 0)}`,
+            `${s.p50}s`,
+            m.startsWith("qwen") ? "本地" : `$${s.cost_per_q.toFixed(4)}`,
+          ])}
+        />
+        <p className="text-xs text-muted-foreground">qwen2.5-coder:7b 经 Ollama 运行于 M4 16GB；与 Haiku 的差距在 100 题上不显著。</p>
+      </div>
+    </div>
+  );
+}
+
+type Case = (typeof data.failure.cases)[number];
+
+function CaseRow({ c }: { c: Case }) {
+  const [open, setOpen] = useState(false);
+  const names = data.failure.names as Record<string, string>;
+  return (
+    <li className="py-3">
+      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start gap-2 text-left" aria-expanded={open}>
+        <CaretRight size={12} className={cn("mt-1.5 shrink-0 text-muted-foreground transition-transform", open && "rotate-90")} />
+        <span className="w-14 shrink-0 font-mono text-xs leading-6 text-muted-foreground">q{c.qid}</span>
+        <span className="flex-1 text-sm leading-6">{c.question}</span>
+        <span
+          className={cn(
+            "shrink-0 rounded-md px-2 py-0.5 text-xs",
+            c.category === "B" ? "bg-primary/15 text-primary" : "bg-accent text-muted-foreground",
+          )}
+        >
+          {names[c.category]}
+        </span>
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 pl-[5.5rem] text-sm">
+          {c.evidence && <p className="text-muted-foreground">evidence：{c.evidence}</p>}
+          <p className="leading-relaxed">
+            <span className="text-muted-foreground">判定理由：</span>
+            {c.reason}
+          </p>
+          <div className="grid gap-3 xl:grid-cols-2">
+            <div className="space-y-1.5">
+              <div className="text-xs text-muted-foreground">标准 SQL</div>
+              <SqlBlock sql={c.gold_sql} />
+            </div>
+            <div className="space-y-1.5">
+              <div className="text-xs text-muted-foreground">模型 SQL</div>
+              {c.pred_sql ? <SqlBlock sql={c.pred_sql} /> : <p className="text-muted-foreground">（没有生成 SQL）</p>}
+            </div>
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function Failures() {
+  const f = data.failure;
+  const names = f.names as Record<string, string>;
+  const counts = f.counts as Record<string, number>;
+  const [filter, setFilter] = useState<string | null>(null);
+  const cases = useMemo(() => f.cases.filter((c) => !filter || c.category === filter), [f.cases, filter]);
+  const order = Object.keys(names).sort((a, b) => counts[b] - counts[a]);
+  const total = f.cases.length;
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setFilter(null)}
+          className={cn("rounded-lg border px-3 py-1.5 text-sm", !filter ? "border-primary/50 text-foreground" : "text-muted-foreground")}
+        >
+          全部 <span className="font-mono">{total}</span>
+        </button>
+        {order.map((k) => (
+          <button
+            key={k}
+            onClick={() => setFilter(k)}
+            className={cn(
+              "rounded-lg border px-3 py-1.5 text-sm",
+              filter === k ? "border-primary/50 text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {names[k]} <span className="font-mono">{counts[k]}</span>
+            <span className="ml-1 text-xs text-muted-foreground">{pct(counts[k] / total, 0)}</span>
+          </button>
+        ))}
+      </div>
+      <ul className="divide-y rounded-lg border px-4">
+        {cases.map((c) => (
+          <CaseRow key={c.qid} c={c} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function EvalPage() {
+  const dark = useIsDark();
+  const ladder = data.ladder as unknown as { sonnet: Stats; haiku: Stats }[];
+  const f = data.final as unknown as Record<string, { mean?: number }>;
+  const sc = data.selfcheck;
+  const cache = data.cache;
+
+  return (
+    <div className="min-h-[100dvh]">
+      <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background/90 px-4 backdrop-blur md:px-8">
+        <span className="font-medium tracking-tight">DataPilot</span>
+        <div className="flex items-center gap-2">
+          <TopNav />
+          <button onClick={toggleTheme} aria-label="切换深浅色" className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground">
+            {dark ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl space-y-14 px-4 py-10 md:px-8">
+        <div>
+          <h1 className="text-2xl font-medium tracking-tight">评测看板</h1>
+          <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-muted-foreground">
+            BIRD Mini-Dev 500 题、11 个真实数据库，指标为执行准确率（EX），评测器与官方判分逐题对齐。全部数字由运行记录生成，运行 ID 见
+            docs/numbers.md。
+          </p>
+        </div>
+
+        <div className="grid gap-8 sm:grid-cols-3">
+          <Kpi
+            value={`${pct(ladder[0].haiku.ex)} → ${pct(f.haiku.mean!)}`}
+            label="Haiku 执行准确率"
+            sub={`取值核对 + 执行纠错，McNemar p=${data.haiku_e0_to_e4_p}，3 次均值`}
+          />
+          <Kpi
+            value={pct(data.failure.counts.B / data.failure.cases.length, 0)}
+            label="失败题中标准答案错"
+            sub={`${data.failure.cases.length} 道分层抽样，人工判定；审计论文报告 52.8%`}
+          />
+          <Kpi
+            value={`${(cache.hit_latency_p50 * 1000).toFixed(1)} ms`}
+            label="缓存命中延迟（P50）"
+            sub={`未命中 ${cache.miss_latency_p50.toFixed(2)} s；重复问题命中 ${pct(cache.repeat_hit_rate)}，构造请求`}
+          />
+        </div>
+
+        <Section
+          title="逐项改进"
+          note="同一批 500 题，每一步与上一步做配对检验。改进在 Haiku 上显著，在 Sonnet 上不显著：它很少犯取值和报错类错误。Agent 准确率与固定流程相同，但更贵更慢。"
+        >
+          <Ladder />
+        </Section>
+
+        <Section title="模型对比" note="Opus 有 241/500 条预测逐字复现标准答案，疑似训练数据污染，数字仅供参考。">
+          <Models />
+        </Section>
+
+        <Section
+          title="失败分析"
+          note={`从 Sonnet 最终配置的 ${data.failure.n_failures} 道失败题中分层随机抽 50 道，先定判定标准再逐题判定。点开可看两条 SQL 和判定理由。`}
+        >
+          <Failures />
+        </Section>
+
+        <Section title="评测可信度" note="不先证明评测器可靠，后面的数字都没有意义。">
+          <Table
+            head={["自检", "结果", "说明"]}
+            align={["l", "r", "l"]}
+            rows={[
+              ["标准 SQL 对比自身", pct(sc.selfcheck_gold_self_acc), "理论上限：两题标准 SQL 超过 30 秒预算"],
+              ["打乱行顺序", pct(sc.selfcheck_shuffle_acc), "3 题标准答案用了无 ORDER BY 的 LIMIT"],
+              ["恒返回 SELECT 1", pct(sc.selfcheck_select1_acc), "空 Agent 下限"],
+              ["与官方判分逐题对照", "0 / 1500", "三组自检全部一致"],
+            ]}
+          />
+        </Section>
+      </main>
+    </div>
+  );
+}

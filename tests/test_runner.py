@@ -228,3 +228,85 @@ def test_validate_rejects_unknown_model_and_local_agent():
         validate(["qwen7b"], "agent")
     validate(["haiku", "qwen7b"], "e4_correct")
     validate(["gold"], "agent")
+
+
+def test_main_accepts_custom_question_file(tmp_path, monkeypatch, shop_db_dir):
+    """--questions 指向自定义题集：接入新库时用标准答案空跑全管线必须 100%。"""
+    import json as _json
+
+    from evals import runner as runner_mod
+
+    qfile = tmp_path / "shop.json"
+    qfile.write_text(
+        _json.dumps(
+            [
+                {
+                    "question_id": 1,
+                    "db_id": "shop",
+                    "question": "多少用户",
+                    "evidence": "",
+                    "SQL": "SELECT count(*) FROM users",
+                    "difficulty": "simple",
+                },
+                {
+                    "question_id": 2,
+                    "db_id": "shop",
+                    "question": "女性用户",
+                    "evidence": "",
+                    "SQL": "SELECT name FROM users WHERE gender = 'F'",
+                    "difficulty": "simple",
+                },
+            ]
+        )
+    )
+    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path / "runs")
+    runner_mod.main(
+        [
+            "--models",
+            "gold",
+            "--pipeline",
+            "e4_correct",
+            "--questions",
+            str(qfile),
+            "--tag",
+            "custom",
+        ]
+    )
+    run_dir = next((tmp_path / "runs").iterdir())
+    summary = _json.loads((run_dir / "summary.json").read_text())
+    assert summary[0]["n"] == 2 and summary[0]["ex"] == 1.0
+
+
+def test_resume_with_different_question_set_is_refused(tmp_path, monkeypatch, shop_db_dir):
+    import json as _json
+
+    import pytest
+
+    from evals import runner as runner_mod
+
+    def qfile(name, ids):
+        p = tmp_path / name
+        p.write_text(
+            _json.dumps(
+                [
+                    {
+                        "question_id": i,
+                        "db_id": "shop",
+                        "question": "q",
+                        "evidence": "",
+                        "SQL": "SELECT 1",
+                        "difficulty": "simple",
+                    }
+                    for i in ids
+                ]
+            )
+        )
+        return str(p)
+
+    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path / "runs")
+    runner_mod.main(["--models", "gold", "--questions", qfile("a.json", [1, 2]), "--tag", "t"])
+    run_id = next((tmp_path / "runs").iterdir()).name
+    with pytest.raises(SystemExit, match="题集"):
+        runner_mod.main(
+            ["--models", "gold", "--questions", qfile("b.json", [1, 2, 3]), "--resume", run_id]
+        )

@@ -26,6 +26,8 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
     const yis = spec.y.map((c) => data.columns.indexOf(c));
     const rows = spec.type === "line" ? data.rows : data.rows.slice(0, MAX_CATEGORIES);
     const labels = rows.map((r) => String(r[xi] ?? "(空)"));
+    // 类别较多且标签较长时才倾斜，短标签（如 E0、E1）保持水平
+    const tilt = labels.length > 5 && labels.length <= 20 && Math.max(...labels.map((l) => l.length)) > 6;
     const chart = echarts.init(ref.current, undefined, { renderer: "canvas" });
     const tooltip = {
       backgroundColor: t.tooltipBg,
@@ -54,7 +56,7 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
         color: t.series,
         // 标签倾斜时第一个标签会伸出左边界，多留出空间
         grid: {
-          left: labels.length > 5 && labels.length <= 20 ? 40 : 8,
+          left: tilt ? 40 : 8,
           right: 16,
           top: 24,
           bottom: 8,
@@ -72,7 +74,7 @@ export function ChartView({ spec, data }: { spec: ChartSpec; data: TableData }) 
           axisLabel: {
             color: t.text,
             interval: labels.length <= 20 ? 0 : "auto",
-            rotate: labels.length > 5 && labels.length <= 20 ? 30 : 0,
+            rotate: tilt ? 30 : 0,
             width: 96,
             overflow: "truncate",
           },

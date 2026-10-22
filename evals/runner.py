@@ -282,6 +282,7 @@ def main(argv=None) -> None:
     p.add_argument("--effort", default="medium", choices=["low", "medium", "high", "xhigh", "max"])
     p.add_argument("--repeats", type=int, default=1)
     p.add_argument("--sample", type=int, help="按难度分层抽样题数（固定种子）")
+    p.add_argument("--questions", help="自定义题集 JSON（默认 BIRD Mini-Dev）；接入新库时用")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--ids", help="逗号分隔的 question_id")
     p.add_argument("--concurrency", type=int, default=8)
@@ -294,7 +295,8 @@ def main(argv=None) -> None:
     from dotenv import load_dotenv
 
     load_dotenv(ROOT / ".env")
-    questions = json.loads(config.QUESTIONS_PATH.read_text(encoding="utf-8"))
+    qpath = Path(args.questions) if args.questions else config.QUESTIONS_PATH
+    questions = json.loads(qpath.read_text(encoding="utf-8"))
     if args.ids:
         ids = {int(i) for i in args.ids.split(",")}
         questions = [q for q in questions if q["question_id"] in ids]
@@ -325,6 +327,13 @@ def main(argv=None) -> None:
         return
 
     run_dir.mkdir(parents=True, exist_ok=True)
+    prev_cfg = run_dir / "config.json"
+    if args.resume and prev_cfg.exists():
+        prev_ids = json.loads(prev_cfg.read_text()).get("question_ids")
+        if prev_ids is not None and prev_ids != [q["question_id"] for q in questions]:
+            raise SystemExit(
+                "续跑的题集与原运行不一致（--questions / --sample / --ids 要与原来相同）"
+            )
     (run_dir / "config.json").write_text(
         json.dumps({**vars(args), "question_ids": [q["question_id"] for q in questions]}, indent=2)
     )

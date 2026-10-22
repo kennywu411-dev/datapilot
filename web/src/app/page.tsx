@@ -4,6 +4,7 @@ import { ArrowUp, NotePencil } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Sidebar } from "@/components/sidebar";
+import { TopNav } from "@/components/top-nav";
 import { type Turn, TurnView } from "@/components/turn-view";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { api, ask } from "@/lib/api";
@@ -130,6 +131,8 @@ export default function Home() {
                 "选择一个数据库开始"
               )}
             </span>
+            <div className="flex items-center gap-2">
+            <TopNav />
             <button
               onClick={resetConversation}
               disabled={running || turns.length === 0}
@@ -138,6 +141,7 @@ export default function Home() {
               <NotePencil size={15} />
               新对话
             </button>
+            </div>
           </header>
 
           <div className="min-h-0 flex-1 overflow-y-auto">
