@@ -44,6 +44,7 @@ class PipelineConfig:
     retrieval_k: int = 0
     value_check: bool = False
     max_corrections: int = 0
+    result_rows: int = PREVIEW_ROWS  # 执行时取多少行；服务层设成展示上限，结果直接复用
 
 
 class Ctx(TypedDict):
@@ -54,6 +55,7 @@ class Ctx(TypedDict):
     db_path: Path
     db_id: str
     user: str
+    max_rows: int
 
 
 class State(TypedDict, total=False):
@@ -65,6 +67,8 @@ class State(TypedDict, total=False):
     stop_reason: str
     exec_error: str
     rows: list
+    columns: list[str]
+    truncated: bool
     issues: list[str]
     corrections: int
     llm_calls: list[LLMResult]
@@ -139,11 +143,16 @@ async def _execute(state: State) -> State:
             state["ctx"]["db_path"],
             state["sql"],
             timeout_s=EXEC_TIMEOUT_S,
-            max_rows=PREVIEW_ROWS,
+            max_rows=state["ctx"]["max_rows"],
         )
-        return {"exec_error": "", "rows": res.rows}
+        return {
+            "exec_error": "",
+            "rows": res.rows,
+            "columns": res.columns,
+            "truncated": res.truncated,
+        }
     except (SQLRejected, TimeoutError, sqlite3.Error) as e:
-        return {"exec_error": str(e), "rows": None}
+        return {"exec_error": str(e), "rows": None, "columns": None, "truncated": False}
 
 
 def _make_check(value_check: bool):
@@ -155,7 +164,8 @@ def _make_check(value_check: bool):
             issues.append("empty result")
         if value_check and not state["exec_error"]:
             issues += await asyncio.to_thread(check_values, state["ctx"]["db_id"], state["sql"])
-        trace = state["trace"] + [{"step": "check", "issues": issues, "rows": state["rows"]}]
+        preview = state["rows"][:PREVIEW_ROWS] if state["rows"] else state["rows"]
+        trace = state["trace"] + [{"step": "check", "issues": issues, "rows": preview}]
         return {"issues": issues, "trace": trace}
 
     return check
@@ -206,9 +216,8 @@ class FixedPipeline:
         g.add_conditional_edges("correct", _after_correct, ["execute", END])
         return g.compile()
 
-    async def __call__(
-        self, llm: LLM, db_path: str | Path, question: str, evidence: str
-    ) -> GenerationResult:
+    async def astream(self, llm: LLM, db_path: str | Path, question: str, evidence: str):
+        """逐节点产出 (节点名, 更新)，最后产出 ("result", GenerationResult)。供前端显示进度。"""
         db_path = Path(db_path)
         ctx: Ctx = {
             "llm": llm,
@@ -216,17 +225,36 @@ class FixedPipeline:
             "db_path": db_path,
             "db_id": db_path.stem,
             "user": user_message(question, evidence),
+            "max_rows": self.cfg.result_rows,
         }
-        final = await self.graph.ainvoke(
-            {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
+        state: dict = {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
+        async for chunk in self.graph.astream(state, stream_mode="updates"):
+            for node, update in chunk.items():
+                state.update(update or {})
+                yield node, update or {}
+        yield (
+            "result",
+            GenerationResult(
+                sql=state.get("sql", ""),
+                stop_reason=state.get("stop_reason", ""),
+                llm_calls=state.get("llm_calls", []),
+                first_sql=state.get("first_sql", ""),
+                trace=state.get("trace", []),
+                exec_error=state.get("exec_error", ""),
+                columns=state.get("columns"),
+                rows=state.get("rows"),
+                truncated=state.get("truncated", False),
+            ),
         )
-        return GenerationResult(
-            sql=final.get("sql", ""),
-            stop_reason=final.get("stop_reason", ""),
-            llm_calls=final.get("llm_calls", []),
-            first_sql=final.get("first_sql", ""),
-            trace=final.get("trace", []),
-        )
+
+    async def __call__(
+        self, llm: LLM, db_path: str | Path, question: str, evidence: str
+    ) -> GenerationResult:
+        result = None
+        async for node, payload in self.astream(llm, db_path, question, evidence):
+            if node == "result":
+                result = payload
+        return result
 
     def input_chars(self, db_path: str | Path, question: str, evidence: str) -> int:
         return len(build_system(self.cfg, Path(db_path), question, evidence)) + len(
