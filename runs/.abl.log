@@ -342,3 +342,40 @@
 [341/500] sonnet r0 q683 ✗ ok
 [342/500] sonnet r0 q710 ✗ ok
 [343/500] sonnet r0 q694 ✗ ok
+[344/500] sonnet r0 q716 ✓
+[345/500] sonnet r0 q707 ✓
+[346/500] sonnet r0 q344 ✓
+[347/500] sonnet r0 q341 ✗ ok
+[348/500] sonnet r0 q345 ✓
+[349/500] sonnet r0 q340 ✗ ok
+[350/500] sonnet r0 q346 ✓
+[351/500] sonnet r0 q347 ✗ ok
+[352/500] sonnet r0 q349 ✗ ok
+[353/500] sonnet r0 q356 ✓
+[354/500] sonnet r0 q358 ✓
+[355/500] sonnet r0 q366 ✓
+[356/500] sonnet r0 q368 ✓
+[357/500] sonnet r0 q352 ✗ ok
+[358/500] sonnet r0 q377 ✓
+[359/500] sonnet r0 q371 ✗ ok
+[360/500] sonnet r0 q379 ✓
+[361/500] sonnet r0 q383 ✗ ok
+[362/500] sonnet r0 q391 ✗ ok
+[363/500] sonnet r0 q402 ✗ ok
+[364/500] sonnet r0 q407 ✓
+[365/500] sonnet r0 q405 ✓
+[366/500] sonnet r0 q397 ✓
+[367/500] sonnet r0 q408 ✗ ok
+[368/500] sonnet r0 q414 ✓
+[369/500] sonnet r0 q412 ✓
+[370/500] sonnet r0 q409 ✓
+[371/500] sonnet r0 q415 ✓
+[372/500] sonnet r0 q416 ✓
+[373/500] sonnet r0 q701 ✗ timeout
+达到花费上限 $3.00，跳过 127 题，可用 --resume 续跑
+本次实际花费 $3.0742
+
+run_id=abl-20261022-164533-638f
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| sonnet | abl_retrieval | medium | 373 | 70.0% | 65.1%–74.4% | 105/129 | 113/175 | 43/69 | $0.0082 | $3.074 | 1.8s / 3.4s | {'ok': 372, 'timeout': 1} |
