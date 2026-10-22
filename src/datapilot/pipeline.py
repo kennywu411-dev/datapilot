@@ -206,9 +206,8 @@ class FixedPipeline:
         g.add_conditional_edges("correct", _after_correct, ["execute", END])
         return g.compile()
 
-    async def __call__(
-        self, llm: LLM, db_path: str | Path, question: str, evidence: str
-    ) -> GenerationResult:
+    async def astream(self, llm: LLM, db_path: str | Path, question: str, evidence: str):
+        """逐节点产出 (节点名, 更新)，最后产出 ("result", GenerationResult)。供前端显示进度。"""
         db_path = Path(db_path)
         ctx: Ctx = {
             "llm": llm,
@@ -217,16 +216,30 @@ class FixedPipeline:
             "db_id": db_path.stem,
             "user": user_message(question, evidence),
         }
-        final = await self.graph.ainvoke(
-            {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
+        state: dict = {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
+        async for chunk in self.graph.astream(state, stream_mode="updates"):
+            for node, update in chunk.items():
+                state.update(update or {})
+                yield node, update or {}
+        yield (
+            "result",
+            GenerationResult(
+                sql=state.get("sql", ""),
+                stop_reason=state.get("stop_reason", ""),
+                llm_calls=state.get("llm_calls", []),
+                first_sql=state.get("first_sql", ""),
+                trace=state.get("trace", []),
+            ),
         )
-        return GenerationResult(
-            sql=final.get("sql", ""),
-            stop_reason=final.get("stop_reason", ""),
-            llm_calls=final.get("llm_calls", []),
-            first_sql=final.get("first_sql", ""),
-            trace=final.get("trace", []),
-        )
+
+    async def __call__(
+        self, llm: LLM, db_path: str | Path, question: str, evidence: str
+    ) -> GenerationResult:
+        result = None
+        async for node, payload in self.astream(llm, db_path, question, evidence):
+            if node == "result":
+                result = payload
+        return result
 
     def input_chars(self, db_path: str | Path, question: str, evidence: str) -> int:
         return len(build_system(self.cfg, Path(db_path), question, evidence)) + len(
