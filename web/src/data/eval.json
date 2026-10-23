@@ -322,6 +322,30 @@
    "p_vs_haiku": 5.8e-09
   }
  },
+ "cn_models": [
+  {
+   "name": "deepseek-flash",
+   "run_id": "deepseek500-20261023-204115-ddaa",
+   "n": 500,
+   "ex": 0.668,
+   "ci": [
+    0.6256,
+    0.7079
+   ],
+   "cost_per_q": 0.001332,
+   "p50": 3.17,
+   "p95": 28.54,
+   "by_difficulty": {
+    "simple": 0.7703,
+    "moderate": 0.648,
+    "challenging": 0.5686
+   },
+   "p_vs_haiku": 0.804,
+   "haiku_paired_ex": 0.674,
+   "p_vs_sonnet": 0.00255,
+   "sonnet_paired_ex": 0.72
+  }
+ ],
  "same100": {
   "qwen2.5-coder:7b": {
    "n": 100,

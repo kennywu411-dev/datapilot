@@ -280,7 +280,7 @@ class OpenAICompatLLM:
 
     - 与 LocalLLM 一样只用于固定流程（不传 tools）
     - 结构化输出用 JSON 模式（json_object）：两家都支持，json_schema 支持情况不一；
-      JSON 模式要求提示里出现 "json"，所以把 schema 附在 system 末尾
+      JSON 模式要求提示里出现 "json"，所以在 system 末尾给字段示例（不附完整 schema，P17）
     - temperature 0；extra_body 透传厂商参数（百炼用 enable_thinking=False 关掉思考，
       与 Claude 对比时统一说明）
     - usage 拆出缓存命中部分单独计价：DeepSeek 返回 prompt_cache_hit_tokens，
@@ -316,9 +316,11 @@ class OpenAICompatLLM:
         if tools:
             raise ValueError("OpenAICompatLLM 只用于固定流程，不支持工具调用")
         if output_format is not None:
-            schema = json.dumps(output_format.model_json_schema(), ensure_ascii=False)
+            # 只给字段示例，不附完整 schema：qwen3.7-plus 约 1/5 的题会把 schema 原样抄回（P17）
+            example = json.dumps({k: "..." for k in output_format.model_fields})
             system = (
-                f"{system}\n\nRespond with one JSON object matching this JSON schema:\n{schema}"
+                f"{system}\n\nReply with only one JSON object of the form {example}, "
+                "filling in your answer. Do not output anything else."
             )
         chat = [{"role": "system", "content": system}] + [
             {"role": m["role"], "content": LocalLLM._text(m["content"])} for m in messages

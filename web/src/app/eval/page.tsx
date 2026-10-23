@@ -107,6 +107,7 @@ function Ladder() {
 function Models() {
   const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null; p_vs_haiku?: number; haiku_paired_ex?: number }>;
   const s100 = data.same100 as unknown as Record<string, Stats>;
+  const cn = (data as unknown as { cn_models: (Stats & { name: string; p_vs_haiku: number; p_vs_sonnet: number; haiku_paired_ex: number; sonnet_paired_ex: number })[] }).cn_models;
   return (
     <div className="grid gap-8">
       <div className="space-y-2">
@@ -125,6 +126,28 @@ function Models() {
         />
         <p className="text-xs text-muted-foreground">
           Haiku、Sonnet 为 3 次运行均值 ± 标准差（百分点）；本地模型跑 1 次，与 Haiku 首次运行逐题配对：{pct(f.qwen.haiku_paired_ex!)} vs {pct(f.qwen.ex)}，{pval(f.qwen.p_vs_haiku!)}。
+        </p>
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-sm text-muted-foreground">国产 API 模型，最终配置 E4，500 题</h3>
+        <Table
+          head={["模型", "EX", "95% CI", "simple", "moderate", "challenging", "单题成本", "P95 延迟", "vs Haiku", "vs Sonnet"]}
+          align={["l", "r", "r", "r", "r", "r", "r", "r", "r", "r"]}
+          rows={cn.map((m) => [
+            m.name,
+            pct(m.ex),
+            `${pct(m.ci[0], 0)} - ${pct(m.ci[1], 0)}`,
+            pct(m.by_difficulty.simple, 0),
+            pct(m.by_difficulty.moderate, 0),
+            pct(m.by_difficulty.challenging, 0),
+            `$${m.cost_per_q.toFixed(4)}`,
+            `${m.p95}s`,
+            `${pct(m.haiku_paired_ex)} · ${pval(m.p_vs_haiku)}`,
+            `${pct(m.sonnet_paired_ex)} · ${pval(m.p_vs_sonnet)}`,
+          ])}
+        />
+        <p className="text-xs text-muted-foreground">
+          经 OpenAI 兼容接口接入，JSON 模式、temperature 0，各跑 1 次；配对对象是 Haiku、Sonnet 的 E4 首次运行（括号前为对方在同题上的 EX）。逐字复现标准答案的题数低于 Claude，没有污染迹象。
         </p>
       </div>
       <div className="space-y-2">

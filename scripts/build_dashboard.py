@@ -111,6 +111,18 @@ def main() -> None:
     }
     data["final"] = final
 
+    # 国产 API 模型（v1.3）：500 题 E4 各 1 次，与 Haiku、Sonnet 的 E4 首次运行逐题配对
+    cn = []
+    for name, run in MANIFEST.get("cn_models", {}).items():
+        r = rows(run)
+        item = {"name": name, "run_id": run, **stats(r)}
+        for base in ("haiku", "sonnet"):
+            c = compare(e4, [{**x, "model": base} for x in r], base)
+            item[f"p_vs_{base}"] = float(f"{c['mcnemar_p']:.3g}")
+            item[f"{base}_paired_ex"] = round(c["ex_a"], 4)
+        cn.append(item)
+    data["cn_models"] = cn
+
     # 同 100 题：本地开源模型 vs Claude
     q = rows(QWEN)
     ids = {x["question_id"] for x in q}
