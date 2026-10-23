@@ -42,5 +42,9 @@
   "cn_models": {
     "deepseek-flash": "deepseek500-20261023-204115-ddaa",
     "qwen3.7-plus": "qwen37-500-20261023-213824-dc9d"
+  },
+  "shop_ops": {
+    "claude": "shop-20261023-220333-1947",
+    "cn": "shop-cn-20261023-220333-f418"
   }
 }
