@@ -114,6 +114,8 @@ def apply_policy(db_path: str | Path, sql: str, policy: rls.Policy | None) -> st
         return sql
     try:
         return rls.rewrite(sql, policy, table_columns(str(Path(db_path).resolve())))
+    except rls.Unparseable as e:
+        raise SQLUnparseable(str(e)) from e
     except rls.AccessDenied as e:
         raise SQLRejected(str(e)) from e
 

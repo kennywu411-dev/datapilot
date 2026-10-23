@@ -124,7 +124,6 @@ def test_unqualified_column_with_join_visible_side(mini):
         ("SELECT COUNT(*) FROM orders WHERE user_id = 'U2'", [(0,)]),
         ("SELECT (SELECT COUNT(*) FROM orders) + (SELECT COUNT(*) FROM tickets)", [(2,)]),
         ("SELECT order_id FROM orders UNION SELECT order_id FROM tickets", [("O1",)]),
-        ("WITH orders AS (SELECT * FROM main.orders) SELECT COUNT(*) FROM orders", [(1,)]),
     ],
 )
 def test_row_filter_applies_everywhere(mini, sql, expected):
@@ -295,3 +294,33 @@ def test_mcp_tools_do_not_take_role_argument():
     for fn in (mcp_server.describe_table, mcp_server.search_values, mcp_server.run_sql):
         target = getattr(fn, "fn", fn)
         assert "role" not in inspect.signature(target).parameters
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        # 用户 CTE 冒充过滤条件里的 users 表（代码审查实测曾能绕过）
+        "WITH users AS (SELECT 'U2' AS user_id, '上海' AS city) SELECT COUNT(*) FROM orders",
+        # 子查询里定义同名 CTE，让外层真实表被跳过改写（代码审查实测曾能绕过）
+        "SELECT (WITH orders AS (SELECT 1) SELECT 1) AS z, COUNT(*) FROM orders",
+        "WITH orders AS (SELECT * FROM main.orders) SELECT COUNT(*) FROM tickets",
+    ],
+)
+def test_cte_shadowing_cannot_bypass_row_filter(mini, sql):
+    with pytest.raises(SQLRejected, match="CTE 不能与数据表同名"):
+        q(mini, sql, "sh")
+
+
+def test_row_filter_tables_are_qualified():
+    p = rls.Policy("x", rows={"orders": "user_id IN (SELECT user_id FROM users WHERE city = 'a')"})
+    src = rls.source_sql("orders", ["order_id", "user_id"], p)
+    assert "main.users" in src and "FROM users" not in src
+
+
+def test_unparseable_gold_is_gold_error_not_denied(mini):
+    from datapilot.ex import evaluate_one
+
+    out = evaluate_one(
+        mini, "SELECT 1", "SELECT cost FROM products WHERE ((", policy=rls.policy_for("mini", "ops")
+    )
+    assert out.status == "gold_error" and not out.correct

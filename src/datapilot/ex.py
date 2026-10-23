@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from datapilot.sql_guard import DEFAULT_TIMEOUT_S, SQLRejected, run_readonly
+from datapilot.sql_guard import DEFAULT_TIMEOUT_S, SQLRejected, SQLUnparseable, run_readonly
 
 Status = Literal[
     "ok", "pred_error", "pred_rejected", "pred_timeout", "timeout", "gold_error", "denied_ok"
@@ -52,6 +52,8 @@ def evaluate_one(
     if policy is not None:
         try:
             run_readonly(db_path, gold_sql, timeout_s=timeout_s, max_rows=1, policy=policy)
+        except SQLUnparseable as e:  # 解析不了不等于无权访问：按标准答案出错处理
+            return ExOutcome(False, "gold_error", str(e))
         except SQLRejected:
             try:
                 pred = run_readonly(
@@ -86,6 +88,6 @@ def evaluate_one(
         )
     except TimeoutError as e:
         return ExOutcome(False, "timeout", f"预测+标准共超过 {timeout_s:g} 秒：{e}")
-    except sqlite3.Error as e:
+    except (sqlite3.Error, SQLRejected) as e:
         return ExOutcome(False, "gold_error", str(e))
     return ExOutcome(ex_match(pred.rows, gold.rows), "ok")

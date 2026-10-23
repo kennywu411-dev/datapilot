@@ -24,6 +24,10 @@ class AccessDenied(Exception):
     """违反行列级权限。sql_guard 会转成 SQLRejected，消息原样给模型和用户。"""
 
 
+class Unparseable(AccessDenied):
+    """受限角色下 SQL 无法解析（无法改写，所以拒绝）。和"无权访问"分开，评测判分要区分两者。"""
+
+
 @dataclass(frozen=True)
 class Policy:
     label: str
@@ -117,7 +121,17 @@ def source_sql(table: str, columns: list[str], policy: Policy | None) -> str:
     hidden = policy.hidden_in(table)
     cols = ", ".join('"' + c.replace('"', '""') + '"' for c in columns if c.lower() not in hidden)
     where = policy.rows.get(table.lower())
-    return f"(SELECT {cols} FROM main.{q}" + (f" WHERE {where})" if where else ")")
+    return f"(SELECT {cols} FROM main.{q}" + (f" WHERE {_qualify(where)})" if where else ")")
+
+
+def _qualify(predicate: str) -> str:
+    """把过滤条件里的表都写成 main.表名：插进用户的查询后，未限定的 users 会被用户自己
+    定义的同名 CTE 遮蔽（代码审查实测能绕过行过滤），带 main. 的则不会。"""
+    tree = sqlglot.parse_one(f"SELECT 1 WHERE {predicate}", read="sqlite")
+    for t in tree.find_all(exp.Table):
+        if t.args.get("db") is None:
+            t.set("db", exp.to_identifier("main"))
+    return tree.args["where"].this.sql(dialect="sqlite")
 
 
 def _scope_tables(node: exp.Expression) -> list[exp.Table]:
@@ -166,7 +180,7 @@ def rewrite(sql: str, policy: Policy, columns: dict[str, list[str]]) -> str:
     try:
         trees = [t for t in sqlglot.parse(sql, read="sqlite") if t is not None]
     except SqlglotError as e:
-        raise AccessDenied(
+        raise Unparseable(
             f"当前角色（{policy.label}）下 SQL 必须能被解析才能做权限检查：{e}"
         ) from e
     if len(trees) != 1:
@@ -174,6 +188,11 @@ def rewrite(sql: str, policy: Policy, columns: dict[str, list[str]]) -> str:
     tree = trees[0]
     real = {t.lower(): t for t in columns}
     ctes = {c.alias_or_name.lower() for c in tree.find_all(exp.CTE)}
+    # CTE 有作用域：在某个子查询里定义的同名 CTE 会让别处对真实表的引用被误当成 CTE 而跳过改写
+    # （代码审查实测能绕过行过滤）。受限角色下直接禁止 CTE 与真实表同名。
+    clash = sorted(ctes & set(real))
+    if clash:
+        raise AccessDenied(f"当前角色（{policy.label}）下 CTE 不能与数据表同名：{', '.join(clash)}")
 
     for node in tree.walk():
         name = getattr(node, "name", "") or ""
@@ -206,11 +225,13 @@ def make_authorizer(policy: Policy, base):
     """在 sql_guard 原有授权回调之上，拒绝读受限列和元数据表。"""
     import sqlite3
 
+    hidden = {t.lower(): policy.hidden_in(t) for t in policy.hidden}  # 编译时每读一列都会调用
+
     def auth(action, arg1, arg2, db_name, source):
         if action == sqlite3.SQLITE_READ and arg1:
             if arg1.lower() in META_TABLES:
                 return sqlite3.SQLITE_DENY
-            if arg2 and arg2.lower() in policy.hidden_in(arg1):
+            if arg2 and arg2.lower() in hidden.get(arg1.lower(), ()):
                 return sqlite3.SQLITE_DENY
         return base(action, arg1, arg2, db_name, source)
 

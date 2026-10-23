@@ -385,8 +385,12 @@ def main(argv=None) -> None:
     models = args.models.split(",")
     validate(models, args.pipeline)
     if args.role:
-        if not isinstance(PIPELINES[args.pipeline], FixedPipeline | RoutedPipeline):
-            raise SystemExit("--role 只支持固定流程和路由流程")
+        pipe = PIPELINES[args.pipeline]
+        base = pipe.base if isinstance(pipe, RoutedPipeline) else pipe
+        if not isinstance(base, FixedPipeline) or base.cfg.schema != "enhanced":
+            raise SystemExit(
+                "--role 只支持增强 schema 的固定流程和路由流程（如 e4_correct、routed_r1）"
+            )
         for db in {q["db_id"] for q in questions}:
             config_role_check(db, args.role)
     mock = models == ["gold"]
