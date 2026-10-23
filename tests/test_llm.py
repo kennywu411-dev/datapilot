@@ -237,3 +237,18 @@ def test_local_llm_retries_once_on_length():
     res = asyncio.run(llm.complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer))
     assert len(seen) == 2 and res.retried and res.parsed == SQLAnswer(sql="SELECT 1")
     assert res.usage["output_tokens"] == 14
+
+
+async def test_simulated_llm_sleeps_and_returns_structured_sql():
+    import time
+
+    from datapilot.baseline import SQLAnswer
+    from datapilot.llm import SimulatedLLM
+
+    llm = SimulatedLLM(latency_s=0.1)
+    start = time.perf_counter()
+    res = await llm.complete("sys", [{"role": "user", "content": "q"}], [], output_format=SQLAnswer)
+    assert time.perf_counter() - start >= 0.1
+    assert res.parsed.sql == "SELECT 1 AS n" and res.cost_usd == 0
+    text = await llm.complete("sys", [{"role": "user", "content": "q"}], [])
+    assert text.text and text.parsed is None

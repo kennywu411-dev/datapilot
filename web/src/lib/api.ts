@@ -37,6 +37,26 @@ async function getJSON<T>(path: string): Promise<T> {
   return r.json();
 }
 
+const newId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
+let fallbackUser = "";
+
+/** 浏览器级匿名用户 id，后端按它限流和隔离会话。没有登录系统，只用于区分浏览器，不是身份认证。 */
+function userId(): string {
+  try {
+    let id = localStorage.getItem("dp-user");
+    if (!id) {
+      id = newId();
+      localStorage.setItem("dp-user", id);
+    }
+    return id;
+  } catch {
+    // 隐私模式等读不了 localStorage：本页内保持同一个 id
+    fallbackUser ||= newId();
+    return fallbackUser;
+  }
+}
+
 export const api = {
   health: () => getJSON<{ store: string; model: string }>("/api/health"),
   databases: () => getJSON<{ db_id: string; tables: number }[]>("/api/databases"),
@@ -52,11 +72,19 @@ export async function ask(
 ): Promise<boolean> {
   const r = await fetch(`${API_BASE}/api/ask`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", "x-user-id": userId() },
     body: JSON.stringify(body),
     signal,
   });
-  if (!r.ok || !r.body) throw new Error(`请求失败：${r.status}`);
+  if (!r.ok || !r.body) {
+    // 429 限流、400 等带中文 detail，直接展示给用户
+    const detail = await r
+      .json()
+      .then((j: { detail?: unknown }) => (typeof j.detail === "string" ? j.detail : ""))
+      .catch(() => "");
+    if (detail) throw Object.assign(new Error(detail), { name: "HttpError" });
+    throw new Error(`请求失败：${r.status}`);
+  }
 
   const reader = r.body.getReader();
   const decoder = new TextDecoder();

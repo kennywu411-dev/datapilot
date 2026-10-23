@@ -127,16 +127,16 @@ async def test_follow_up_passes_previous_sql_and_is_not_cache_shared(shop_db_dir
     follow_up_user_msg = llm.calls[2]["messages"][0]["content"]
     assert "波士顿有多少用户" in follow_up_user_msg
     assert "city = 'Boston'" in follow_up_user_msg
-    session = await svc.store.get_json("dp:session:s1")
+    session = await svc.store.get_json("dp:session:anon:s1")
     assert [t["question"] for t in session["turns"]] == ["波士顿有多少用户？", "那纽约呢？"]
 
 
 async def test_switching_db_resets_follow_up_context(shop_db_dir):
     svc, llm = make_service([SQLAnswer(sql="SELECT 1"), "1。", SQLAnswer(sql="SELECT 2"), "2。"])
     await collect(svc.ask("s1", "shop", "问题一"))
-    session = await svc.store.get_json("dp:session:s1")
+    session = await svc.store.get_json("dp:session:anon:s1")
     session["db_id"] = "other"
-    await svc.store.set_json("dp:session:s1", session, ttl_s=60)
+    await svc.store.set_json("dp:session:anon:s1", session, ttl_s=60)
     await collect(svc.ask("s1", "shop", "问题二"))
     assert "Previous" not in llm.calls[2]["messages"][0]["content"]
 
@@ -196,7 +196,7 @@ async def test_concurrent_asks_in_same_session_keep_all_turns(shop_db_dir):
     await asyncio.gather(
         collect(svc.ask("s1", "shop", "问一")), collect(svc.ask("s1", "shop", "问二"))
     )
-    session = await svc.store.get_json("dp:session:s1")
+    session = await svc.store.get_json("dp:session:anon:s1")
     assert sorted(t["question"] for t in session["turns"]) == ["问一", "问二"]
 
 
@@ -204,3 +204,115 @@ def test_default_factory_shares_one_client(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
     svc = ChatService(MemoryStore())
     assert svc.llm_factory().client is svc.llm_factory().client
+
+
+# ---------- 多用户与并发保护 ----------
+
+
+async def test_sessions_are_isolated_per_user(shop_db_dir):
+    svc, llm = make_service([SQLAnswer(sql="SELECT 1"), "一。", SQLAnswer(sql="SELECT 2"), "二。"])
+    await collect(svc.ask("s1", "shop", "爱丽丝的私密问题", user_id="alice"))
+    await collect(svc.ask("s1", "shop", "鲍勃的问题", user_id="bob"))  # 同一个 session_id
+    bob_msg = llm.calls[2]["messages"][0]["content"]
+    assert "爱丽丝" not in bob_msg  # 拿不到别人的追问上下文
+    alice = await svc.store.get_json("dp:session:alice:s1")
+    bob = await svc.store.get_json("dp:session:bob:s1")
+    assert [t["question"] for t in alice["turns"]] == ["爱丽丝的私密问题"]
+    assert [t["question"] for t in bob["turns"]] == ["鲍勃的问题"]
+
+
+async def test_inflight_limit_rejects_when_queue_times_out(shop_db_dir):
+    import asyncio
+
+    from datapilot.llm import SimulatedLLM
+
+    svc = ChatService(
+        MemoryStore(),
+        llm_factory=lambda: SimulatedLLM(latency_s=0.3),
+        max_inflight=1,
+        queue_timeout_s=0.05,
+    )
+    first, second = await asyncio.gather(
+        collect(svc.ask("s1", "shop", "问一", user_id="a")),
+        collect(svc.ask("s2", "shop", "问二", user_id="b")),
+    )
+    assert [e["event"] for e in first][-2:] == ["answer", "done"]
+    err = next(e for e in second if e["event"] == "error")["data"]
+    assert "繁忙" in err["message"]
+    assert second[-1]["event"] == "done"
+
+
+async def test_cache_hits_bypass_inflight_limit(shop_db_dir):
+    import asyncio
+
+    from datapilot.llm import SimulatedLLM
+
+    svc = ChatService(
+        MemoryStore(),
+        llm_factory=lambda: SimulatedLLM(latency_s=0.3),
+        max_inflight=1,
+        queue_timeout_s=0.05,
+    )
+    await collect(svc.ask("s0", "shop", "热门问题", user_id="a"))  # 先写进缓存
+    hit, _ = await asyncio.gather(
+        collect(svc.ask("s1", "shop", "热门问题", user_id="b")),
+        collect(svc.ask("s2", "shop", "冷门问题", user_id="c")),  # 占住唯一的名额
+    )
+    assert hit[-1]["data"]["cached"] is True
+
+
+async def test_queued_request_gets_queue_step_immediately(shop_db_dir):
+    import asyncio
+
+    from datapilot.llm import SimulatedLLM
+
+    svc = ChatService(
+        MemoryStore(),
+        llm_factory=lambda: SimulatedLLM(latency_s=0.2),
+        max_inflight=1,
+        queue_timeout_s=5,
+    )
+    first = asyncio.create_task(collect(svc.ask("s1", "shop", "问一", user_id="a")))
+    while not svc._inflight.locked():  # 等第一个请求占住名额，不靠固定 sleep
+        await asyncio.sleep(0.005)
+    gen = svc.ask("s2", "shop", "问二", user_id="b")
+    head = await asyncio.wait_for(gen.__anext__(), 0.1)  # 不用等名额就先收到排队事件
+    assert head["event"] == "step" and head["data"]["name"] == "queue"
+    rest = [e async for e in gen]
+    assert rest[-2]["event"] == "answer"
+    await first
+
+
+async def test_no_queue_step_when_slot_is_free(shop_db_dir):
+    from datapilot.llm import SimulatedLLM
+
+    svc = ChatService(MemoryStore(), llm_factory=lambda: SimulatedLLM(latency_s=0))
+    events = await collect(svc.ask("s1", "shop", "问一"))
+    assert all(e["data"].get("name") != "queue" for e in events if e["event"] == "step")
+
+
+async def test_queued_request_rechecks_cache_after_getting_slot(shop_db_dir):
+    import asyncio
+
+    from datapilot.llm import SimulatedLLM
+
+    made = []
+
+    def factory():
+        made.append(1)
+        return SimulatedLLM(latency_s=0.2)
+
+    svc = ChatService(MemoryStore(), llm_factory=factory, max_inflight=1, queue_timeout_s=5)
+    a, b = await asyncio.gather(
+        collect(svc.ask("s1", "shop", "同一个热门问题", user_id="a")),
+        collect(svc.ask("s2", "shop", "同一个热门问题", user_id="b")),
+    )
+    assert len(made) == 1  # 第二个请求排完队直接用缓存，没有再调模型
+    assert {a[-1]["data"]["cached"], b[-1]["data"]["cached"]} == {False, True}
+
+
+def test_max_inflight_must_be_positive():
+    import pytest
+
+    with pytest.raises(ValueError):
+        ChatService(MemoryStore(), max_inflight=0)

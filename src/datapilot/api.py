@@ -2,7 +2,13 @@
 
 启动：uv run uvicorn datapilot.api:app --reload --port 8000
 环境变量：REDIS_URL（默认 redis://localhost:6379/0，连不上自动退回内存）
-          DATAPILOT_MODEL（默认 sonnet）
+          DATAPILOT_MODEL（默认 sonnet；simulated = 不调 API、只模拟延迟，压测用）
+          DATAPILOT_RATE_LIMIT（每用户每分钟问数次数，默认 20）
+          DATAPILOT_MAX_INFLIGHT（同时调用模型的请求上限，默认 8）
+          DATAPILOT_SIM_LATENCY_S（simulated 模式下每次模型调用的延迟，默认 2.0）
+
+用户识别：请求头 X-User-Id；没有时按客户端 IP。项目没有登录系统，这个头由前端或网关填，
+生产环境应换成网关校验过的身份（JWT 等），不能信任客户端自报。
 """
 
 from __future__ import annotations
@@ -10,20 +16,26 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
+import time
 from contextlib import asynccontextmanager
 from functools import cache
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
 from datapilot import config, tools
-from datapilot.service import ChatService
+from datapilot.llm import SimulatedLLM
+from datapilot.service import MAX_INFLIGHT, ChatService
 from datapilot.store import make_store
 
 HEARTBEAT_S = 15
+RATE_LIMIT_PER_MIN = 20
+RATE_WINDOW_S = 60
+_USER_ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
 class AskRequest(BaseModel):
@@ -46,15 +58,43 @@ def _examples() -> dict[str, list[str]]:
     return {db: rng.sample(v, min(4, len(v))) for db, v in by_db.items()}
 
 
-def create_app(service: ChatService | None = None) -> FastAPI:
+def user_id_of(request: Request) -> str:
+    """X-User-Id 优先，没有时按客户端 IP；格式不对直接拒绝（它会拼进存储 key）。"""
+    uid = request.headers.get("x-user-id")
+    if uid is None:
+        host = request.client.host if request.client else "unknown"
+        return f"ip-{host}"
+    if not _USER_ID.fullmatch(uid):
+        raise HTTPException(400, "X-User-Id 只能包含字母、数字、下划线和连字符，最长 64 位")
+    return uid
+
+
+def _make_service(store) -> ChatService:
+    model = os.environ.get("DATAPILOT_MODEL", "sonnet")
+    max_inflight = int(os.environ.get("DATAPILOT_MAX_INFLIGHT", MAX_INFLIGHT))
+    if model == "simulated":
+        latency = float(os.environ.get("DATAPILOT_SIM_LATENCY_S", "2.0"))
+        return ChatService(
+            store,
+            model=model,
+            llm_factory=lambda: SimulatedLLM(latency),
+            max_inflight=max_inflight,
+        )
+    return ChatService(store, model=model, max_inflight=max_inflight)
+
+
+def create_app(
+    service: ChatService | None = None, rate_limit_per_min: int | None = None
+) -> FastAPI:
+    if rate_limit_per_min is None:
+        rate_limit_per_min = int(os.environ.get("DATAPILOT_RATE_LIMIT", RATE_LIMIT_PER_MIN))
+
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if service is None:
             load_dotenv(config.ROOT / ".env")
             store = await make_store(os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
-            app.state.service = ChatService(
-                store, model=os.environ.get("DATAPILOT_MODEL", "sonnet")
-            )
+            app.state.service = _make_service(store)
         yield
 
     app = FastAPI(title="DataPilot", lifespan=lifespan)
@@ -70,7 +110,12 @@ def create_app(service: ChatService | None = None) -> FastAPI:
     @app.get("/api/health")
     async def health():
         svc: ChatService = app.state.service
-        return {"store": svc.store.name, "model": svc.model}
+        return {
+            "store": svc.store.name,
+            "model": svc.model,
+            "rate_limit_per_min": rate_limit_per_min,
+            "max_inflight": svc.max_inflight,
+        }
 
     @app.get("/api/databases")
     async def databases():
@@ -89,12 +134,27 @@ def create_app(service: ChatService | None = None) -> FastAPI:
     async def examples(db_id: str):
         return _examples().get(db_id, [])
 
+    async def check_rate(svc: ChatService, user_id: str) -> None:
+        """固定窗口：每个用户每分钟一个计数 key。缓存命中也计数，限制的是请求频率而不只是花费。"""
+        now = time.time()
+        window = int(now // RATE_WINDOW_S)
+        n = await svc.store.incr(f"dp:rl:{user_id}:{window}", RATE_WINDOW_S)
+        if n > rate_limit_per_min:
+            retry = max(1, int(RATE_WINDOW_S - now % RATE_WINDOW_S))
+            raise HTTPException(
+                429,
+                f"提问太频繁：每分钟最多 {rate_limit_per_min} 次，请 {retry} 秒后再试",
+                headers={"Retry-After": str(retry)},
+            )
+
     @app.post("/api/ask")
-    async def ask(req: AskRequest):
+    async def ask(req: AskRequest, request: Request):
         svc: ChatService = app.state.service
+        user_id = user_id_of(request)
+        await check_rate(svc, user_id)
 
         async def events():
-            async for e in svc.ask(req.session_id, req.db_id, req.question):
+            async for e in svc.ask(req.session_id, req.db_id, req.question, user_id=user_id):
                 yield {"event": e["event"], "data": json.dumps(e["data"], ensure_ascii=False)}
 
         # ping：长查询时定期发心跳注释行，防止代理或浏览器判定连接空闲而断开

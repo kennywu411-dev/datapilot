@@ -47,7 +47,7 @@ function Steps({ turn }: { turn: Turn }) {
   const corrections = turn.steps.filter((s) => s.name === "correct").length;
   const summary = running
     ? `${turn.steps.at(-1)?.label ?? "理解问题"}…`
-    : `${turn.steps.length} 步${corrections ? `，修正 ${corrections} 次` : ""}`;
+    : `${turn.steps.filter((s) => s.name !== "queue").length} 步${corrections ? `，修正 ${corrections} 次` : ""}`;
 
   if (!running && turn.done?.cached) {
     return <p className="text-sm text-muted-foreground">命中缓存，未调用模型</p>;

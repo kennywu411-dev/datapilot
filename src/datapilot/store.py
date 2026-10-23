@@ -1,6 +1,6 @@
 """键值存储：会话与查询缓存共用。Redis 优先，连不上时自动退回内存。
 
-两种实现同一接口（get_json / set_json / delete_prefix），值按 JSON 存，都带过期时间。
+两种实现同一接口（get_json / set_json / delete_prefix / incr），值按 JSON 存，都带过期时间。
 - Redis：服务重启不丢，多个后端进程共享
 - 内存：别人拿到代码包不装 Redis 也能跑；带 LRU 上限，防止无限增长
 """
@@ -25,6 +25,10 @@ class Store(Protocol):
 
     async def delete_prefix(self, prefix: str) -> int: ...
 
+    async def incr(self, key: str, ttl_s: int) -> int:
+        """计数加一并返回新值；key 第一次出现时设过期时间，之后不续期（固定窗口限流用）。"""
+        ...
+
 
 class MemoryStore:
     name = "memory"
@@ -32,6 +36,8 @@ class MemoryStore:
     def __init__(self, max_items: int = 10_000):
         self.max_items = max_items
         self._data: OrderedDict[str, tuple[float, str]] = OrderedDict()
+        # 计数单独存放：限流 key 每个用户每分钟一个，混在一起会把会话和缓存挤出 LRU
+        self._counters: OrderedDict[str, tuple[float, int]] = OrderedDict()
 
     async def get_json(self, key: str) -> Any | None:
         item = self._data.get(key)
@@ -56,6 +62,20 @@ class MemoryStore:
             del self._data[k]
         return len(keys)
 
+    async def incr(self, key: str, ttl_s: int) -> int:
+        # 单线程事件循环里没有 await 打断，读改写天然原子
+        item = self._counters.get(key)
+        now = time.monotonic()
+        if item is None or now > item[0]:
+            expires, n = now + ttl_s, 1
+        else:
+            expires, n = item[0], item[1] + 1
+        self._counters[key] = (expires, n)
+        self._counters.move_to_end(key)
+        while len(self._counters) > self.max_items:
+            self._counters.popitem(last=False)
+        return n
+
 
 class RedisStore:
     name = "redis"
@@ -78,6 +98,12 @@ class RedisStore:
         n = 0
         async for key in self.client.scan_iter(match=f"{prefix}*", count=500):
             n += await self.client.delete(key)
+        return n
+
+    async def incr(self, key: str, ttl_s: int) -> int:
+        # MULTI 事务：INCR 与 EXPIRE NX 一起提交，不会出现计数了却没设过期的 key
+        async with self.client.pipeline(transaction=True) as pipe:
+            n, _ = await pipe.incr(key).expire(key, ttl_s, nx=True).execute()
         return n
 
 
