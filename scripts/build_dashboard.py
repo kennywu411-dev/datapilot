@@ -111,6 +111,49 @@ def main() -> None:
     }
     data["final"] = final
 
+    # 国产 API 模型（v1.3）：500 题 E4 各 1 次，与 Haiku、Sonnet 的 E4 首次运行逐题配对
+    cn = []
+    for name, run in MANIFEST.get("cn_models", {}).items():
+        r = rows(run)
+        item = {"name": name, "run_id": run, **stats(r)}
+        for base in ("haiku", "sonnet"):
+            c = compare(e4, [{**x, "model": base} for x in r], base)
+            item[f"p_vs_{base}"] = float(f"{c['mcnemar_p']:.3g}")
+            item[f"{base}_paired_ex"] = round(c["ex_a"], 4)
+        cn.append(item)
+    data["cn_models"] = cn
+
+    # 电商经营分析（模拟数据，v1.3）：有口径 vs 去掉口径，同 40 题
+    shop = MANIFEST.get("shop_ops")
+    if shop:
+        with_ev = rows(shop["claude"]) + rows(shop["cn"])
+        no_ev = rows(shop["claude_noev"]) + rows(shop["cn_noev"])
+        names = {
+            "haiku": "Haiku",
+            "sonnet": "Sonnet",
+            "deepseek": "deepseek-flash",
+            "qwen": "qwen3.7-plus",
+        }
+        items = []
+        for m, label in names.items():
+
+            def runs_of(rs, m=m):
+                reps = sorted({r["repeat"] for r in rs if r["model"] == m})
+                return [[r for r in rs if r["model"] == m and r["repeat"] == k] for k in reps]
+
+            w, n = runs_of(with_ev), runs_of(no_ev)
+            ex = lambda rr: [round(sum(r["correct"] for r in x) / len(x), 4) for x in rr]  # noqa: E731
+            items.append(
+                {
+                    "model": label,
+                    "with_ev": ex(w),
+                    "no_ev": ex(n),
+                    "with_mean": round(statistics.mean(ex(w)), 4),
+                    "no_mean": round(statistics.mean(ex(n)), 4),
+                }
+            )
+        data["shop_ops"] = {"n": 40, "runs": shop, "models": items}
+
     # 同 100 题：本地开源模型 vs Claude
     q = rows(QWEN)
     ids = {x["question_id"] for x in q}
@@ -153,6 +196,45 @@ def main() -> None:
             for s in sample["sample"]
         ],
     }
+
+    # 智能路由（v1.3）：离线回放 3 条规则 + r1 实跑
+    if "route_replay" in MANIFEST:
+        rep = json.loads((RUNS / MANIFEST["route_replay"] / "summary.json").read_text())
+        live = rows(MANIFEST["route_live"])
+        esc = sum(
+            1 for r in live if any(t.get("step") == "escalate" for t in (r.get("trace") or []))
+        )
+        data["route"] = {
+            "replay_run": MANIFEST["route_replay"],
+            "live_run": MANIFEST["route_live"],
+            "haiku": rep["baselines"]["haiku"],
+            "sonnet": rep["baselines"]["sonnet"],
+            "oracle": rep["oracle"],
+            "rules": {
+                k: {kk: v[kk] for kk in ("ex_mean", "ex_std", "escalated_mean", "cost_mean")}
+                for k, v in rep["rules"].items()
+            },
+            "live": {
+                "ex": sum(r["correct"] for r in live) / len(live),
+                "escalated": esc,
+                "cost": round(sum(r["cost_usd"] for r in live), 4),
+            },
+        }
+
+    # 中文问题（v1.3 D2）：BIRD 同批 100 题，中英文配对
+    if "zh100" in MANIFEST:
+        z, e = rows(MANIFEST["zh100"]["zh"]), rows(MANIFEST["zh100"]["en"])
+        zh = {}
+        for m in ("haiku", "sonnet"):
+            c = compare(e, z, m)
+            zh[m] = {
+                "en": round(c["ex_a"], 4),
+                "zh": round(c["ex_b"], 4),
+                "en_only": len(c["a_only_correct"]),
+                "zh_only": len(c["b_only_correct"]),
+                "p": round(c["mcnemar_p"], 3),
+            }
+        data["zh100"] = {"runs": MANIFEST["zh100"], "models": zh}
 
     data["cache"] = json.loads((RUNS / CACHE / "summary.json").read_text())
     data["selfcheck"] = json.loads((RUNS / MANIFEST["gold_check"] / "summary.json").read_text())

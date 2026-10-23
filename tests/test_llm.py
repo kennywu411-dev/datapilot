@@ -252,3 +252,172 @@ async def test_simulated_llm_sleeps_and_returns_structured_sql():
     assert res.parsed.sql == "SELECT 1 AS n" and res.cost_usd == 0
     text = await llm.complete("sys", [{"role": "user", "content": "q"}], [])
     assert text.text and text.parsed is None
+
+
+def _compat(handler, **kw):
+    from datapilot.llm import OpenAICompatLLM
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    return OpenAICompatLLM(
+        "deepseek-test", base_url="https://api.example.com/v1", api_key="k", client=client, **kw
+    )
+
+
+def _chat_resp(content, finish="stop", usage=None):
+    return httpx.Response(
+        200,
+        json={
+            "choices": [
+                {"message": {"role": "assistant", "content": content}, "finish_reason": finish}
+            ],
+            "usage": usage or {"prompt_tokens": 1000, "completion_tokens": 50},
+        },
+    )
+
+
+def test_openai_compat_request_and_parse():
+    """OpenAI 兼容接口（DeepSeek / 通义千问）：JSON 模式、system 带 schema、内容转纯文本。"""
+    seen = {}
+
+    def handler(request):
+        seen["url"] = str(request.url)
+        seen["auth"] = request.headers["authorization"]
+        seen["body"] = json.loads(request.content)
+        return _chat_resp('{"sql": "SELECT 7"}')
+
+    llm = _compat(handler, extra_body={"enable_thinking": False})
+    history = [
+        {"role": "user", "content": "q"},
+        {"role": "assistant", "content": [{"type": "text", "text": '{"sql": "SELECT 1"}'}]},
+        {"role": "user", "content": "fix it"},
+    ]
+    res = asyncio.run(llm.complete("系统", history, [], output_format=SQLAnswer))
+    body = seen["body"]
+    assert seen["url"] == "https://api.example.com/v1/chat/completions"
+    assert seen["auth"] == "Bearer k"
+    assert body["model"] == "deepseek-test" and body["temperature"] == 0
+    assert body["response_format"] == {"type": "json_object"}
+    assert body["enable_thinking"] is False
+    sys_msg = body["messages"][0]
+    assert sys_msg["role"] == "system" and sys_msg["content"].startswith("系统")
+    assert "JSON" in sys_msg["content"] and '"sql"' in sys_msg["content"]
+    assert body["messages"][2] == {"role": "assistant", "content": '{"sql": "SELECT 1"}'}
+    assert res.parsed == SQLAnswer(sql="SELECT 7")
+    assert res.usage == {"input_tokens": 1000, "output_tokens": 50, "cache_read_input_tokens": 0}
+
+
+def test_openai_compat_cache_usage_both_vendors():
+    """缓存命中单独计价：DeepSeek 用 prompt_cache_hit_tokens，百炼用 prompt_tokens_details。"""
+    ds = {"prompt_tokens": 1000, "completion_tokens": 10, "prompt_cache_hit_tokens": 800}
+    qw = {
+        "prompt_tokens": 1000,
+        "completion_tokens": 10,
+        "prompt_tokens_details": {"cached_tokens": 600},
+    }
+    for usage, hit in ((ds, 800), (qw, 600)):
+        llm = _compat(lambda r, u=usage: _chat_resp('{"sql": "SELECT 1"}', usage=u))
+        res = asyncio.run(llm.complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer))
+        assert res.usage == {
+            "input_tokens": 1000 - hit,
+            "output_tokens": 10,
+            "cache_read_input_tokens": hit,
+        }
+
+
+def test_openai_compat_length_retries_once():
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) == 1:
+            return _chat_resp('{"sql', finish="length")
+        return _chat_resp('{"sql": "SELECT 1"}')
+
+    res = asyncio.run(
+        _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+    )
+    assert len(seen) == 2 and res.retried and res.parsed == SQLAnswer(sql="SELECT 1")
+
+
+def test_openai_compat_bad_json_is_unparsed_not_crash():
+    res = asyncio.run(
+        _compat(lambda r: _chat_resp("SELECT 1")).complete(
+            "s", [{"role": "user", "content": "q"}], [], SQLAnswer
+        )
+    )
+    assert res.parsed is None and res.stop_reason == "end_turn"
+
+
+def test_openai_compat_retries_rate_limit(monkeypatch):
+    """429 / 5xx 退避重试（Claude SDK 自带 max_retries，这里自己实现）。"""
+    import datapilot.llm as llm_mod
+
+    monkeypatch.setattr(llm_mod, "RETRY_BASE_S", 0)
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) < 3:
+            return httpx.Response(429 if len(seen) == 1 else 503, json={})
+        return _chat_resp('{"sql": "SELECT 1"}')
+
+    res = asyncio.run(
+        _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+    )
+    assert len(seen) == 3 and res.parsed == SQLAnswer(sql="SELECT 1")
+
+
+def test_openai_compat_rejects_tools():
+    import pytest
+
+    with pytest.raises(ValueError, match="工具"):
+        asyncio.run(_compat(lambda r: _chat_resp("")).complete("s", [], [{"name": "t"}]))
+
+
+def test_parse_loose_handles_fences_and_key_case():
+    from datapilot.llm import parse_loose
+
+    assert parse_loose('{"sql": "SELECT 1"}', SQLAnswer) == SQLAnswer(sql="SELECT 1")
+    assert parse_loose('```json\n{"sql": "SELECT 2"}\n```', SQLAnswer) == SQLAnswer(sql="SELECT 2")
+    assert parse_loose('{"SQL": "SELECT 3"}', SQLAnswer) == SQLAnswer(sql="SELECT 3")
+    assert parse_loose('好的：{"Sql": "SELECT 4"} 以上', SQLAnswer) == SQLAnswer(sql="SELECT 4")
+    assert parse_loose("SELECT 5", SQLAnswer) is None
+    assert parse_loose('{"query": "SELECT 6"}', SQLAnswer) is None
+
+
+def test_openai_compat_fatal_status_not_retried():
+    """403（如百炼"仅免费额度"用完）重试没用：直接抛 FatalAPIError，让评测停下。"""
+    import pytest
+
+    from datapilot.llm import FatalAPIError
+
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        return httpx.Response(403, json={"error": {"code": "AllocationQuota.FreeTierOnly"}})
+
+    with pytest.raises(FatalAPIError, match="403"):
+        asyncio.run(
+            _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+        )
+    assert len(seen) == 1
+
+
+def test_openai_compat_retries_transport_error(monkeypatch):
+    """连接失败 / 读超时重试，不直接记成这一题失败。"""
+    import datapilot.llm as llm_mod
+
+    monkeypatch.setattr(llm_mod, "RETRY_BASE_S", 0)
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) == 1:
+            raise httpx.ConnectError("boom", request=request)
+        return _chat_resp('{"sql": "SELECT 1"}')
+
+    res = asyncio.run(
+        _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+    )
+    assert len(seen) == 2 and res.parsed == SQLAnswer(sql="SELECT 1")

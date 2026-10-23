@@ -19,6 +19,7 @@ import argparse
 import asyncio
 import itertools
 import json
+import os
 import random
 import sys
 import time
@@ -34,8 +35,9 @@ from datapilot import config  # noqa: E402
 from datapilot.agent import SQLAgent  # noqa: E402
 from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
 from datapilot.ex import evaluate_one  # noqa: E402
-from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
+from datapilot.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
 from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
+from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
 # 实验序列见 docs/adr/002-D2实验设计.md
@@ -54,6 +56,10 @@ PIPELINES = {
         PipelineConfig(schema="enhanced", retrieval_k=3, value_check=True, max_corrections=3)
     ),
 }
+# 智能路由（v1.3）：E4 流程先用 Haiku，按规则升级到 Sonnet；模型名固定写 route
+ROUTE_MODELS = ("haiku", "sonnet")
+for _rule in RULES:
+    PIPELINES[f"routed_{_rule.split('_')[0]}"] = RoutedPipeline(PIPELINES["e4_correct"], _rule)
 # 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
@@ -109,6 +115,8 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     start = time.perf_counter()
     try:
         gen = await PIPELINES[cfg.pipeline](llm, path, q["question"], q["evidence"])
+    except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
+        raise
     except Exception as e:  # 记录为失败，不中断整个评测
         return {
             **row,
@@ -132,7 +140,9 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     if gen.stop_reason == "refusal":
         status, correct, detail = "refusal", False, ""
     elif not gen.sql:
-        status, correct, detail = "no_sql", False, gen.stop_reason
+        # 记下模型最后一次的原话，排查解析失败用
+        said = gen.llm_calls[-1].text[:300] if gen.llm_calls else ""
+        status, correct, detail = "no_sql", False, f"{gen.stop_reason}: {said}"
     else:
         try:
             out = await asyncio.to_thread(evaluate_one, path, gen.sql, q["SQL"])
@@ -216,9 +226,12 @@ async def run(
 def estimate(questions: list[dict], configs: list[Config]) -> float:
     total = 0.0
     for cfg in configs:
-        if cfg.model not in config.MODELS:
+        if cfg.model in config.LOCAL_MODELS:
             continue
-        inp, out, _ = config.PRICING[config.MODELS[cfg.model]]
+        # 路由按"两个模型都跑"估上限，实际只有升级的题才调用 Sonnet
+        names = ROUTE_MODELS if cfg.model == "route" else (cfg.model,)
+        prices = [config.PRICING[config.model_id(n)] for n in names]
+        inp, out = sum(p[0] for p in prices), sum(p[1] for p in prices)
         pipe = PIPELINES[cfg.pipeline]
         for q in questions:
             path = config.db_path(q["db_id"])
@@ -236,12 +249,36 @@ def validate(models: list[str], pipeline: str) -> None:
     """开跑前拦住不可能成功的配置：否则每题都记成 llm_error，续跑时还会被无限重试。"""
     if models == ["gold"]:
         return
-    known = set(config.MODELS) | set(config.LOCAL_MODELS)
+    routed = pipeline.startswith("routed_")
+    if routed != (models == ["route"]):
+        raise SystemExit("路由流程（routed_*）只能配 --models route，route 也只能跑路由流程")
+    if routed:
+        return
+    known = set(config.MODELS) | set(config.LOCAL_MODELS) | set(config.API_MODELS)
     unknown = [m for m in models if m not in known]
     if unknown:
         raise SystemExit(f"未知模型：{unknown}，可选：{sorted(known)}")
-    if pipeline == "agent" and any(m in config.LOCAL_MODELS for m in models):
-        raise SystemExit("本地模型不支持工具调用，不能跑 agent 流程")
+    if pipeline == "agent" and any(m not in config.MODELS for m in models):
+        raise SystemExit("本地模型和国产 API 模型只接了固定流程，不能跑 agent 流程")
+    # 没有价格就算不出花费，--max-cost 形同虚设（模型 ID 被环境变量换掉时会出现）
+    unpriced = [
+        config.model_id(m)
+        for m in models
+        if m in config.API_MODELS and config.model_id(m) not in config.PRICING
+    ]
+    if unpriced:
+        raise SystemExit(f"{unpriced} 没有价格，先在 config.PRICING 里登记")
+
+
+def check_keys(models: list[str]) -> None:
+    """真正调用前确认国产模型的密钥已填：否则每题都记成 llm_error。"""
+    missing = [
+        config.API_MODELS[m]["key_env"]
+        for m in models
+        if m in config.API_MODELS and not os.environ.get(config.API_MODELS[m]["key_env"])
+    ]
+    if missing:
+        raise SystemExit(f"缺少 {', '.join(missing)}：请在 .env 里填写")
 
 
 def make_factory(mock: bool):
@@ -252,20 +289,38 @@ def make_factory(mock: bool):
                 submit = {"name": "submit_answer", "input": {"sql": q["SQL"]}}
                 return ScriptedLLM([submit], model="gold")
             # 纠错流程可能追问，多备几份同样的答案；返回同一 SQL 时流程会结束
-            return ScriptedLLM([SQLAnswer(sql=q["SQL"])] * 4, model="gold")
+            gold = [SQLAnswer(sql=q["SQL"])] * 4
+            if cfg.pipeline.startswith("routed_"):
+                return LLMPair(ScriptedLLM(gold, model="gold"), ScriptedLLM(gold, model="gold"))
+            return ScriptedLLM(gold, model="gold")
 
         return mock
     import anthropic
     import httpx2
 
-    from datapilot.llm import ClaudeLLM, LocalLLM
+    from datapilot.llm import ClaudeLLM, LocalLLM, OpenAICompatLLM
 
     client = anthropic.AsyncAnthropic(max_retries=6)
     local_client = httpx2.AsyncClient(timeout=600)  # 与 Claude 一样共用一个客户端，不每题新建
+    api_client = httpx2.AsyncClient(timeout=300)
 
     def factory(cfg, q):
+        if cfg.model == "route":
+            cheap, strong = (
+                ClaudeLLM(config.MODELS[m], effort=cfg.effort, client=client) for m in ROUTE_MODELS
+            )
+            return LLMPair(cheap, strong)
         if cfg.model in config.LOCAL_MODELS:
             return LocalLLM(config.LOCAL_MODELS[cfg.model], client=local_client)
+        if cfg.model in config.API_MODELS:
+            spec = config.API_MODELS[cfg.model]
+            return OpenAICompatLLM(
+                config.model_id(cfg.model),
+                base_url=spec["base_url"],
+                api_key=os.environ[spec["key_env"]],
+                client=api_client,
+                extra_body=spec["extra_body"],
+            )
         return ClaudeLLM(config.MODELS[cfg.model], effort=cfg.effort, client=client)
 
     return factory
@@ -326,6 +381,7 @@ def main(argv=None) -> None:
         print("加 --yes 确认后执行。")
         return
 
+    check_keys(models)
     run_dir.mkdir(parents=True, exist_ok=True)
     prev_cfg = run_dir / "config.json"
     if args.resume and prev_cfg.exists():
@@ -337,9 +393,12 @@ def main(argv=None) -> None:
     (run_dir / "config.json").write_text(
         json.dumps({**vars(args), "question_ids": [q["question_id"] for q in questions]}, indent=2)
     )
-    asyncio.run(
-        run(questions, configs, make_factory(mock), run_dir, args.concurrency, args.max_cost)
-    )
+    try:
+        asyncio.run(
+            run(questions, configs, make_factory(mock), run_dir, args.concurrency, args.max_cost)
+        )
+    except FatalAPIError as e:
+        raise SystemExit(f"账户错误，评测已停止：{e}\n处理后用 --resume {run_id} 续跑") from None
 
     from evals.report import load_rows
 

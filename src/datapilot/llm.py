@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import re
 import time
 from dataclasses import dataclass, field
 from functools import cache
@@ -227,6 +229,154 @@ class LocalLLM:
             usage={
                 "input_tokens": data.get("prompt_eval_count", 0),
                 "output_tokens": data.get("eval_count", 0),
+            },
+            parsed=parsed,
+        )
+
+
+RETRY_BASE_S = 1.0
+RETRY_STATUS = {429, 500, 502, 503, 504}
+FATAL_STATUS = {401, 402, 403}  # 密钥无效、欠费、额度用完：重试没用，整个评测应该停下
+
+
+class FatalAPIError(RuntimeError):
+    """账户层面的错误（不是这一题的问题）。评测遇到它就停，避免把剩下的题全记成失败。"""
+
+
+FENCE = re.compile(r"^```(?:json)?\s*|\s*```$")
+
+
+def parse_loose(text: str, output_format: type[BaseModel]) -> BaseModel | None:
+    """先按严格 JSON 解析；失败时去掉代码块包装、截取第一个 {...}、字段名不区分大小写再试。
+
+    国产模型在 JSON 模式下偶尔把 JSON 包进 ```json 代码块，或把 sql 写成 SQL（v1.3 实测）。
+    """
+    try:
+        return output_format.model_validate_json(text)
+    except ValidationError:
+        pass
+    body = FENCE.sub("", text.strip())
+    start, end = body.find("{"), body.rfind("}")
+    if start < 0 or end <= start:
+        return None
+    try:
+        obj = json.loads(body[start : end + 1])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(obj, dict):
+        return None
+    lower = {str(k).lower(): v for k, v in obj.items()}
+    fields = {
+        name: lower[name.lower()] for name in output_format.model_fields if name.lower() in lower
+    }
+    try:
+        return output_format.model_validate(fields)
+    except ValidationError:
+        return None
+
+
+class OpenAICompatLLM:
+    """OpenAI 兼容接口（DeepSeek、阿里云百炼的通义千问）。回答"国内用什么模型"。
+
+    - 与 LocalLLM 一样只用于固定流程（不传 tools）
+    - 结构化输出用 JSON 模式（json_object）：两家都支持，json_schema 支持情况不一；
+      JSON 模式要求提示里出现 "json"，所以在 system 末尾给字段示例（不附完整 schema，P17）
+    - temperature 0；extra_body 透传厂商参数（百炼用 enable_thinking=False 关掉思考，
+      与 Claude 对比时统一说明）
+    - usage 拆出缓存命中部分单独计价：DeepSeek 返回 prompt_cache_hit_tokens，
+      百炼返回 prompt_tokens_details.cached_tokens
+    - 429 / 5xx 和网络错误指数退避重试（Claude SDK 自带 max_retries，这里没有 SDK，自己做）
+    """
+
+    def __init__(
+        self,
+        model: str,
+        base_url: str,
+        api_key: str,
+        client: httpx2.AsyncClient | None = None,
+        max_tokens: int = 4096,
+        extra_body: dict | None = None,
+        max_retries: int = 6,
+    ):
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+        self.api_key = api_key
+        self.max_tokens = max_tokens
+        self.extra_body = extra_body or {}
+        self.max_retries = max_retries
+        self.client = client or httpx2.AsyncClient(timeout=300)
+
+    async def complete(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        if tools:
+            raise ValueError("OpenAICompatLLM 只用于固定流程，不支持工具调用")
+        if output_format is not None:
+            # 只给字段示例，不附完整 schema：qwen3.7-plus 约 1/5 的题会把 schema 原样抄回（P17）
+            example = json.dumps({k: "..." for k in output_format.model_fields})
+            system = (
+                f"{system}\n\nReply with only one JSON object of the form {example}, "
+                "filling in your answer. Do not output anything else."
+            )
+        chat = [{"role": "system", "content": system}] + [
+            {"role": m["role"], "content": LocalLLM._text(m["content"])} for m in messages
+        ]
+        return await retry_on_max_tokens(lambda: self._once(chat, output_format))
+
+    async def _post(self, body: dict) -> dict:
+        for attempt in range(self.max_retries + 1):
+            try:
+                resp = await self.client.post(
+                    f"{self.base_url}/chat/completions",
+                    json=body,
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                )
+            except httpx2.TransportError:  # 连接失败、读超时：和 Claude SDK 一样重试
+                if attempt == self.max_retries:
+                    raise
+                await asyncio.sleep(RETRY_BASE_S * 2**attempt)
+                continue
+            if resp.status_code in FATAL_STATUS:
+                raise FatalAPIError(f"HTTP {resp.status_code}：{resp.text[:300]}")
+            if resp.status_code not in RETRY_STATUS or attempt == self.max_retries:
+                resp.raise_for_status()
+                return resp.json()
+            await asyncio.sleep(RETRY_BASE_S * 2**attempt)
+        raise AssertionError("unreachable")
+
+    async def _once(self, chat: list[dict], output_format: type[BaseModel] | None) -> LLMResult:
+        body: dict = {
+            "model": self.model,
+            "messages": chat,
+            "temperature": 0,
+            "max_tokens": self.max_tokens,
+            **self.extra_body,
+        }
+        if output_format is not None:
+            body["response_format"] = {"type": "json_object"}
+        data = await self._post(body)
+        choice = data["choices"][0]
+        text = choice.get("message", {}).get("content") or ""
+        stop = "max_tokens" if choice.get("finish_reason") == "length" else "end_turn"
+        parsed = None
+        if output_format is not None and stop != "max_tokens":
+            parsed = parse_loose(text, output_format)
+        u = data.get("usage") or {}
+        hit = u.get("prompt_cache_hit_tokens")
+        if hit is None:
+            hit = (u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0
+        return LLMResult(
+            content=[{"type": "text", "text": text}],
+            stop_reason=stop,
+            model=self.model,
+            usage={
+                "input_tokens": u.get("prompt_tokens", 0) - hit,
+                "output_tokens": u.get("completion_tokens", 0),
+                "cache_read_input_tokens": hit,
             },
             parsed=parsed,
         )

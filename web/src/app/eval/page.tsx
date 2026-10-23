@@ -107,6 +107,7 @@ function Ladder() {
 function Models() {
   const f = data.final as unknown as Record<string, Stats & { mean?: number; std?: number; runs: number[] | null; p_vs_haiku?: number; haiku_paired_ex?: number }>;
   const s100 = data.same100 as unknown as Record<string, Stats>;
+  const cn = (data as unknown as { cn_models: (Stats & { name: string; p_vs_haiku: number; p_vs_sonnet: number; haiku_paired_ex: number; sonnet_paired_ex: number })[] }).cn_models;
   return (
     <div className="grid gap-8">
       <div className="space-y-2">
@@ -128,6 +129,28 @@ function Models() {
         </p>
       </div>
       <div className="space-y-2">
+        <h3 className="text-sm text-muted-foreground">国产 API 模型，最终配置 E4，500 题</h3>
+        <Table
+          head={["模型", "EX", "95% CI", "simple", "moderate", "challenging", "单题成本", "P95 延迟", "vs Haiku", "vs Sonnet"]}
+          align={["l", "r", "r", "r", "r", "r", "r", "r", "r", "r"]}
+          rows={cn.map((m) => [
+            m.name,
+            pct(m.ex),
+            `${pct(m.ci[0], 0)} - ${pct(m.ci[1], 0)}`,
+            pct(m.by_difficulty.simple, 0),
+            pct(m.by_difficulty.moderate, 0),
+            pct(m.by_difficulty.challenging, 0),
+            `$${m.cost_per_q.toFixed(4)}`,
+            `${m.p95}s`,
+            `${pct(m.haiku_paired_ex)} · ${pval(m.p_vs_haiku)}`,
+            `${pct(m.sonnet_paired_ex)} · ${pval(m.p_vs_sonnet)}`,
+          ])}
+        />
+        <p className="text-xs text-muted-foreground">
+          经 OpenAI 兼容接口接入，JSON 模式、temperature 0，各跑 1 次；配对对象是 Haiku、Sonnet 的 E4 首次运行（括号前为对方在同题上的 EX）。逐字复现标准答案的题数低于 Claude，没有污染迹象。
+        </p>
+      </div>
+      <div className="space-y-2">
         <h3 className="text-sm text-muted-foreground">同 100 题（分层抽样），含本地开源模型</h3>
         <Table
           head={["模型", "EX", "95% CI", "P50 延迟", "单题成本"]}
@@ -143,6 +166,80 @@ function Models() {
         <p className="text-xs text-muted-foreground">qwen2.5-coder:7b 经 Ollama 运行于 M4 16GB；与 Haiku 的差距在 100 题上不显著。</p>
       </div>
     </div>
+  );
+}
+
+function Routing() {
+  type R = { ex_mean: number; ex_std?: number; escalated_mean?: number; cost_mean: number };
+  const r = (data as unknown as { route: { haiku: R; sonnet: R; oracle: R; rules: Record<string, R>; live: { ex: number; escalated: number; cost: number } } }).route;
+  const names: Record<string, string> = { r1_any_fix: "r1：触发纠错就升级", r2_unresolved: "r2：纠错后仍有问题才升级", r3_fix_or_complex: "r3：r1 或关联 ≥ 3 张表" };
+  const ratio = (c: number) => `${Math.round((c / r.sonnet.cost_mean) * 100)}%`;
+  return (
+    <>
+      <Table
+        head={["方案", "EX", "升级题数", "500 题成本", "成本 / 全 Sonnet"]}
+        align={["l", "r", "r", "r", "r"]}
+        rows={[
+          ["全用 Haiku", pct(r.haiku.ex_mean), "0", `$${r.haiku.cost_mean.toFixed(3)}`, ratio(r.haiku.cost_mean)],
+          ...Object.entries(r.rules).map(([k, v]) => [
+            `${names[k]}（回放）`,
+            `${pct(v.ex_mean)} ± ${((v.ex_std ?? 0) * 100).toFixed(2)}`,
+            Math.round(v.escalated_mean ?? 0).toString(),
+            `$${v.cost_mean.toFixed(3)}`,
+            ratio(v.cost_mean),
+          ]),
+          ["r1（实跑）", pct(r.live.ex), r.live.escalated.toString(), `$${r.live.cost.toFixed(3)}`, ratio(r.live.cost)],
+          ["全用 Sonnet", pct(r.sonnet.ex_mean), "500", `$${r.sonnet.cost_mean.toFixed(3)}`, "100%"],
+          ["理想路由（预知哪题会错）", pct(r.oracle.ex_mean), Math.round(r.oracle.escalated_mean ?? 0).toString(), `$${r.oracle.cost_mean.toFixed(3)}`, ratio(r.oracle.cost_mean)],
+        ]}
+      />
+      <p className="text-xs text-muted-foreground">
+        实跑与回放一致。按失败信号路由只能追回 Haiku 与 Sonnet 差距的 1/3 到一半：Haiku 的错题大多执行成功、没有报错，运行时看不出来；理想路由能到 {pct(r.oracle.ex_mean)}，提升空间在更好的“会不会错”判断器。
+      </p>
+    </>
+  );
+}
+
+function Chinese() {
+  const z = (data as unknown as { zh100: { models: Record<string, { en: number; zh: number; en_only: number; zh_only: number; p: number }> } }).zh100;
+  return (
+    <>
+      <Table
+        head={["模型", "英文", "中文", "英文独对 / 中文独对", "配对检验"]}
+        align={["l", "r", "r", "r", "r"]}
+        rows={Object.entries(z.models).map(([m, v]) => [m[0].toUpperCase() + m.slice(1), pct(v.en, 0), pct(v.zh, 0), `${v.en_only} / ${v.zh_only}`, pval(v.p)])}
+      />
+      <p className="text-xs text-muted-foreground">
+        中英文没有显著差别，两个模型方向还相反。取值映射题中英文持平：增强 schema 里本来就带取值说明。中文特有的失败主要来自问法歧义；首轮有 3 条译文偏离原意，已修正后重跑（问题日志 P18）。
+      </p>
+    </>
+  );
+}
+
+function ShopOps() {
+  const s = (data as unknown as { shop_ops: { models: { model: string; with_ev: number[]; no_ev: number[]; with_mean: number; no_mean: number }[] } }).shop_ops;
+  const chart = {
+    columns: ["模型", "有口径说明", "去掉口径说明"],
+    rows: s.models.map((m) => [m.model, +(m.with_mean * 100).toFixed(1), +(m.no_mean * 100).toFixed(1)]),
+    truncated: false,
+  };
+  return (
+    <>
+      <ChartView spec={{ type: "bar", x: "模型", y: ["有口径说明", "去掉口径说明"] }} data={chart} />
+      <Table
+        head={["模型", "有口径说明", "去掉口径说明", "下降"]}
+        align={["l", "r", "r", "r"]}
+        rows={s.models.map((m) => [
+          m.model,
+          m.with_ev.length > 1 ? `${pct(m.with_mean)}（${m.with_ev.length} 次）` : pct(m.with_mean),
+          m.no_ev.length > 1 ? `${pct(m.no_mean)}（${m.no_ev.length} 次）` : pct(m.no_mean),
+          `${((m.with_mean - m.no_mean) * 100).toFixed(1)} 点`,
+        ])}
+      />
+      <p className="text-xs text-muted-foreground">
+        40 题中 25 题依赖口径（有效订单、销售额、退款率等）；标准答案不变。去掉口径后，模型普遍把销售额算得更严（排除已退款），与公司口径不同。第 36 题（价格分档）两种条件下都判错，是输出形状不同导致的评测缺陷。
+      </p>
+    </>
   );
 }
 
@@ -284,6 +381,27 @@ export default function EvalPage() {
 
         <Section title="模型对比" note="Opus 有 241/500 条预测逐字复现标准答案，疑似训练数据污染，数字仅供参考。">
           <Models />
+        </Section>
+
+        <Section
+          title="智能路由"
+          note="Haiku 先答，触发纠错等失败信号才交给 Sonnet 从头重跑。三条规则事先定好、全部报告；离线回放用已有的 3 组配对运行，r1 另外实跑一次验证。"
+        >
+          <Routing />
+        </Section>
+
+        <Section
+          title="中文提问"
+          note="BIRD 同批 100 题翻译成中文问法（库里取值保持英文，29 题需要取值映射），与英文原题按题配对。"
+        >
+          <Chinese />
+        </Section>
+
+        <Section
+          title="电商经营分析（模拟数据）"
+          note="BIRD 是英文公开基准，缺业务场景；这里用固定种子生成的模拟电商库（6000 订单、611 售后）出了 40 道中文经营分析题。口径写清楚时便宜模型也能到 95%；把口径说明去掉，所有模型都掉 30 多个点，换更贵的模型也补不回来。"
+        >
+          <ShopOps />
         </Section>
 
         <Section

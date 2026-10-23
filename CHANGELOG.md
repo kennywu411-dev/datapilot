@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## v1.3 — 实验驱动选型：国产模型、中文评测、口径消融、智能路由（2026-10-23）
+
+### 新增
+- 国产 API 模型：`OpenAICompatLLM`（DeepSeek、通义千问，OpenAI 兼容接口），缓存命中单独计价、429/5xx 退避重试、账户错误（401/402/403）立即停止评测
+- 智能路由：`RoutedPipeline`（Haiku 先答，按失败信号升级 Sonnet 从头重跑）、三条事先定好的规则、`scripts/route_replay.py` 离线回放
+- 中文题集：BIRD 同批 100 题的中文问法（`evals/zh100/`，校对表 + `scripts/build_zh100.py`）
+- 电商经营分析：固定种子模拟库 `scripts/gen_shop_ops.py`（6000 订单、611 售后）+ 40 道中文经营分析题（`evals/shop_ops/`）+ 口径消融题集
+- `scripts/model_compare.py`：模型对比、配对检验与污染信号（P7 方法）
+- 演示视频：`scripts/record_demo.py`（无头 Chrome + CDP 录屏 + ffmpeg），README 首屏放 GIF
+- 看板新增：国产模型、智能路由、中文提问、电商经营分析（有口径 vs 去掉口径）
+- macOS 双击启动器 `DataPilot.app`（`scripts/app/`）
+
+### 修复
+- 额度用完的 403 被当成单题失败，qwen 首次全量作废（P15）
+- DeepSeek 偶发输出失控（P16，计为失败并记录）
+- 提示里附完整 JSON schema 被模型原样抄回（P17）：改为字段示例；JSON 宽松解析；no_sql 时记录模型原话
+- 中文译文 3 条偏离英文原意（P18）：修正后重跑
+- 后端 CORS 白名单改为环境变量 `DATAPILOT_CORS_ORIGINS`
+
+### 数字
+- 国产模型 500 题：qwen3.7-plus 68.0%、deepseek-flash 66.8%，均与 Haiku 打平（p≈0.8）、低于 Sonnet
+- 智能路由实跑 69.6%，成本为全 Sonnet 的 14%（离线回放预测 69.4%）
+- 中文 vs 英文 100 题：Haiku 64→69%、Sonnet 77→72%，无显著差别
+- 电商 40 题：有口径 92.5–97.5% → 去掉口径 55.0–65.8%
+- 本版 API 花费约 $3.2（含两次作废运行约 $0.19），全项目累计约 $31.7
+
 ## v1.2 — 后端补强：限流、多用户隔离、并发保护、压测（2026-10-23）
 
 ### 新增
