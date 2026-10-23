@@ -37,6 +37,7 @@ from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E4
 from datapilot.ex import evaluate_one  # noqa: E402
 from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
 from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
+from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
 # 实验序列见 docs/adr/002-D2实验设计.md
@@ -55,6 +56,10 @@ PIPELINES = {
         PipelineConfig(schema="enhanced", retrieval_k=3, value_check=True, max_corrections=3)
     ),
 }
+# 智能路由（v1.3）：E4 流程先用 Haiku，按规则升级到 Sonnet；模型名固定写 route
+ROUTE_MODELS = ("haiku", "sonnet")
+for _rule in RULES:
+    PIPELINES[f"routed_{_rule.split('_')[0]}"] = RoutedPipeline(PIPELINES["e4_correct"], _rule)
 # 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
@@ -219,7 +224,10 @@ def estimate(questions: list[dict], configs: list[Config]) -> float:
     for cfg in configs:
         if cfg.model in config.LOCAL_MODELS:
             continue
-        inp, out, _ = config.PRICING[config.model_id(cfg.model)]
+        # 路由按"两个模型都跑"估上限，实际只有升级的题才调用 Sonnet
+        names = ROUTE_MODELS if cfg.model == "route" else (cfg.model,)
+        prices = [config.PRICING[config.model_id(n)] for n in names]
+        inp, out = sum(p[0] for p in prices), sum(p[1] for p in prices)
         pipe = PIPELINES[cfg.pipeline]
         for q in questions:
             path = config.db_path(q["db_id"])
@@ -236,6 +244,11 @@ def estimate(questions: list[dict], configs: list[Config]) -> float:
 def validate(models: list[str], pipeline: str) -> None:
     """开跑前拦住不可能成功的配置：否则每题都记成 llm_error，续跑时还会被无限重试。"""
     if models == ["gold"]:
+        return
+    routed = pipeline.startswith("routed_")
+    if routed != (models == ["route"]):
+        raise SystemExit("路由流程（routed_*）只能配 --models route，route 也只能跑路由流程")
+    if routed:
         return
     known = set(config.MODELS) | set(config.LOCAL_MODELS) | set(config.API_MODELS)
     unknown = [m for m in models if m not in known]
@@ -272,7 +285,10 @@ def make_factory(mock: bool):
                 submit = {"name": "submit_answer", "input": {"sql": q["SQL"]}}
                 return ScriptedLLM([submit], model="gold")
             # 纠错流程可能追问，多备几份同样的答案；返回同一 SQL 时流程会结束
-            return ScriptedLLM([SQLAnswer(sql=q["SQL"])] * 4, model="gold")
+            gold = [SQLAnswer(sql=q["SQL"])] * 4
+            if cfg.pipeline.startswith("routed_"):
+                return LLMPair(ScriptedLLM(gold, model="gold"), ScriptedLLM(gold, model="gold"))
+            return ScriptedLLM(gold, model="gold")
 
         return mock
     import anthropic
@@ -285,6 +301,11 @@ def make_factory(mock: bool):
     api_client = httpx2.AsyncClient(timeout=300)
 
     def factory(cfg, q):
+        if cfg.model == "route":
+            cheap, strong = (
+                ClaudeLLM(config.MODELS[m], effort=cfg.effort, client=client) for m in ROUTE_MODELS
+            )
+            return LLMPair(cheap, strong)
         if cfg.model in config.LOCAL_MODELS:
             return LocalLLM(config.LOCAL_MODELS[cfg.model], client=local_client)
         if cfg.model in config.API_MODELS:
