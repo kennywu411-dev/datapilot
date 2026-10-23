@@ -10,6 +10,7 @@ export type Column = {
   primary_key: boolean;
   description: string;
   value_description: string;
+  restricted?: boolean; // 当前角色无权访问（行列级权限）
 };
 export type TableInfo = {
   table: string;
@@ -31,8 +32,8 @@ export type AskEvent =
   | { event: "error"; data: { message: string; sql?: string } }
   | { event: "done"; data: Done };
 
-async function getJSON<T>(path: string): Promise<T> {
-  const r = await fetch(`${API_BASE}${path}`);
+async function getJSON<T>(path: string, role?: string): Promise<T> {
+  const r = await fetch(`${API_BASE}${path}`, role ? { headers: { "x-role": role } } : undefined);
   if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
   return r.json();
 }
@@ -60,20 +61,27 @@ function userId(): string {
 export const api = {
   health: () => getJSON<{ store: string; model: string }>("/api/health"),
   databases: () => getJSON<{ db_id: string; tables: number }[]>("/api/databases"),
-  schema: (db: string) => getJSON<{ db_id: string; tables: TableInfo[] }>(`/api/databases/${db}/schema`),
+  schema: (db: string, role?: string) =>
+    getJSON<{ db_id: string; tables: TableInfo[] }>(`/api/databases/${db}/schema`, role),
+  roles: (db: string) => getJSON<{ role: string; label: string }[]>(`/api/databases/${db}/roles`),
   examples: (db: string) => getJSON<string[]>(`/api/databases/${db}/examples`),
 };
 
 /** 发起一次问数，逐个回调事件。返回 true 表示收到 done，false 表示中途断线。 */
 export async function ask(
-  body: { session_id: string; db_id: string; question: string },
+  body: { session_id: string; db_id: string; question: string; role?: string },
   onEvent: (e: AskEvent) => void,
   signal?: AbortSignal,
 ): Promise<boolean> {
   const r = await fetch(`${API_BASE}/api/ask`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-user-id": userId() },
-    body: JSON.stringify(body),
+    // 角色是演示用的客户端自报：项目没有登录系统，生产环境必须由网关按登录身份填写
+    headers: {
+      "content-type": "application/json",
+      "x-user-id": userId(),
+      ...(body.role ? { "x-role": body.role } : {}),
+    },
+    body: JSON.stringify({ session_id: body.session_id, db_id: body.db_id, question: body.question }),
     signal,
   });
   if (!r.ok || !r.body) {

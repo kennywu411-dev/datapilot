@@ -13,7 +13,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import SqlglotError
 
-from datapilot import config, tools
+from datapilot import config, rls, tools
 from datapilot.sql_guard import connect_readonly
 
 MAX_CANDIDATES = 5
@@ -62,8 +62,9 @@ def _resolve_tables(col: exp.Column, db_tables: dict[str, set[str]]) -> list[str
     return [t.name for t in tables if t.name in db_tables and col.name in db_tables[t.name]]
 
 
-def _candidates(conn: sqlite3.Connection, table: str, column: str, lit: str) -> list:
-    q, c = tools._q(table), tools._q(column)
+def _candidates(conn: sqlite3.Connection, q: str, column: str, lit: str) -> list:
+    """q：表的读取来源（表名，或受限角色下按权限过滤后的子查询）。"""
+    c = tools._q(column)
     like = f"SELECT DISTINCT {c} FROM {q} WHERE {c} LIKE ? ESCAPE '\\' LIMIT ?"
     probes = [
         (f"SELECT DISTINCT {c} FROM {q} WHERE {c} = ? COLLATE NOCASE LIMIT ?", lit),
@@ -85,7 +86,7 @@ def _candidates(conn: sqlite3.Connection, table: str, column: str, lit: str) -> 
     return []
 
 
-def check_values(db_id: str, sql: str) -> list[str]:
+def check_values(db_id: str, sql: str, role: str | None = None) -> list[str]:
     """返回问题描述列表（英文，直接作为纠错反馈）；无法解析或没有可核对的字面量时返回 []。"""
     try:
         tree = sqlglot.parse_one(sql, read="sqlite")
@@ -94,12 +95,17 @@ def check_values(db_id: str, sql: str) -> list[str]:
     comps = _comparisons(tree)
     if not comps:
         return []
+    # 受限角色下只核对可见的列，候选取值只来自可见的行（不能借纠错反馈泄露敏感值）
     db_tables = {
-        t["table"]: {c["name"] for c in tools.describe_table(db_id, t["table"])["columns"]}
+        t["table"]: {
+            c["name"]
+            for c in tools.describe_table(db_id, t["table"], role)["columns"]
+            if not c.get("restricted")
+        }
         for t in tools.list_tables(db_id)
     }
     issues = []
-    conn = connect_readonly(config.db_path(db_id))
+    conn = connect_readonly(config.db_path(db_id), rls.policy_for(db_id, role))
     deadline = time.monotonic() + CHECK_TIMEOUT_S
     conn.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 10_000)
     try:
@@ -107,14 +113,15 @@ def check_values(db_id: str, sql: str) -> list[str]:
             for table in _resolve_tables(col, db_tables):
                 if col.name not in db_tables[table]:
                     continue
+                src = tools.source(db_id, table, role)
                 for lit in lits:
                     exists = conn.execute(
-                        f"SELECT 1 FROM {tools._q(table)} WHERE {tools._q(col.name)} = ? LIMIT 1",
+                        f"SELECT 1 FROM {src} WHERE {tools._q(col.name)} = ? LIMIT 1",
                         (lit,),
                     ).fetchone()
                     if exists:
                         continue
-                    cands = _candidates(conn, table, col.name, lit)
+                    cands = _candidates(conn, src, col.name, lit)
                     hint = (
                         "similar existing values: " + ", ".join(repr(v) for v in cands)
                         if cands

@@ -1,6 +1,6 @@
 "use client";
 
-import { CaretRight, Database, Key, LinkSimple, Moon, Sun } from "@phosphor-icons/react";
+import { CaretRight, Database, Key, LinkSimple, Lock, Moon, Sun } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +26,14 @@ function TableItem({ t }: { t: TableInfo }) {
       {open && (
         <ul className="mb-1 ml-5 border-l pl-2">
           {t.columns.map((c) => {
+            if (c.restricted)
+              return (
+                <li key={c.name} className="flex items-center gap-1.5 py-0.5 text-xs text-muted-foreground/60">
+                  <span className="truncate line-through">{c.name}</span>
+                  <Lock size={11} className="shrink-0" />
+                  <span className="ml-auto shrink-0 text-[11px]">无权限</span>
+                </li>
+              );
             const desc = [c.description, c.value_description].filter(Boolean).join("\n");
             const row = (
               <li className="flex items-center gap-1.5 py-0.5 text-xs">
@@ -60,11 +68,17 @@ export function Sidebar({
   db,
   onDbChange,
   health,
+  roles = [],
+  role = "",
+  onRoleChange,
 }: {
   dbs: { db_id: string; tables: number }[];
   db: string;
   onDbChange: (db: string) => void;
   health: { store: string; model: string } | null;
+  roles?: { role: string; label: string }[];
+  role?: string;
+  onRoleChange?: (role: string) => void;
 }) {
   const [tables, setTables] = useState<TableInfo[] | null>(null);
   const dark = useIsDark();
@@ -72,8 +86,8 @@ export function Sidebar({
   useEffect(() => {
     if (!db) return;
     setTables(null);
-    api.schema(db).then((s) => setTables(s.tables)).catch(() => setTables([]));
-  }, [db]);
+    api.schema(db, role || undefined).then((s) => setTables(s.tables)).catch(() => setTables([]));
+  }, [db, role]);
 
   return (
     <aside className="flex h-full w-72 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
@@ -98,6 +112,25 @@ export function Sidebar({
             </option>
           ))}
         </select>
+        {roles.length > 0 && (
+          <>
+            <label htmlFor="role" className="mb-1.5 mt-3 block px-1 text-xs text-muted-foreground">
+              角色（行列级权限演示）
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => onRoleChange?.(e.target.value)}
+              className="h-9 w-full rounded-md border bg-background px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {roles.map((r) => (
+                <option key={r.role} value={r.role}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">

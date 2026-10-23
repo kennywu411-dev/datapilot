@@ -19,6 +19,7 @@ from typing import Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
+from datapilot import rls
 from datapilot.baseline import GenerationResult, SQLAnswer, clean_sql
 from datapilot.llm import LLM, LLMResult
 from datapilot.schema import ddl_for, enhanced_schema, retrieve_tables, schema_ddl
@@ -56,6 +57,7 @@ class Ctx(TypedDict):
     db_id: str
     user: str
     max_rows: int
+    role: str | None  # 行列级权限的角色（v1.4）；None 不受限
 
 
 class State(TypedDict, total=False):
@@ -75,8 +77,21 @@ class State(TypedDict, total=False):
     trace: list[dict]
 
 
-def build_system(cfg: PipelineConfig, db_path: Path, question: str, evidence: str) -> str:
+def build_system(
+    cfg: PipelineConfig, db_path: Path, question: str, evidence: str, role: str | None = None
+) -> str:
     db_id = Path(db_path).stem
+    policy = rls.policy_for(db_id, role)
+    if policy is not None:
+        # 受限角色只支持增强 schema：官方 DDL 是原样建表语句，会把无权访问的列和说明一起给出去
+        if cfg.schema != "enhanced":
+            raise ValueError("受限角色只支持 schema='enhanced'")
+        tables = None
+        if cfg.retrieval_k > 0:
+            tables = tuple(retrieve_tables(db_id, question, evidence, cfg.retrieval_k))
+        schema = enhanced_schema(db_id, tables, role)
+        note = "\n\n" + policy.prompt_note() if rls.PROMPT_NOTE else ""
+        return SYSTEM_TEMPLATE.format(schema=schema) + note
     if cfg.retrieval_k > 0:
         tables = retrieve_tables(db_id, question, evidence, cfg.retrieval_k)
         schema = (
@@ -144,6 +159,7 @@ async def _execute(state: State) -> State:
             state["sql"],
             timeout_s=EXEC_TIMEOUT_S,
             max_rows=state["ctx"]["max_rows"],
+            policy=rls.policy_for(state["ctx"]["db_id"], state["ctx"].get("role")),
         )
         return {
             "exec_error": "",
@@ -163,7 +179,9 @@ def _make_check(value_check: bool):
         elif state["rows"] == []:
             issues.append("empty result")
         if value_check and not state["exec_error"]:
-            issues += await asyncio.to_thread(check_values, state["ctx"]["db_id"], state["sql"])
+            issues += await asyncio.to_thread(
+                check_values, state["ctx"]["db_id"], state["sql"], state["ctx"].get("role")
+            )
         preview = state["rows"][:PREVIEW_ROWS] if state["rows"] else state["rows"]
         trace = state["trace"] + [{"step": "check", "issues": issues, "rows": preview}]
         return {"issues": issues, "trace": trace}
@@ -216,16 +234,19 @@ class FixedPipeline:
         g.add_conditional_edges("correct", _after_correct, ["execute", END])
         return g.compile()
 
-    async def astream(self, llm: LLM, db_path: str | Path, question: str, evidence: str):
+    async def astream(
+        self, llm: LLM, db_path: str | Path, question: str, evidence: str, role: str | None = None
+    ):
         """逐节点产出 (节点名, 更新)，最后产出 ("result", GenerationResult)。供前端显示进度。"""
         db_path = Path(db_path)
         ctx: Ctx = {
             "llm": llm,
-            "system": build_system(self.cfg, db_path, question, evidence),
+            "system": build_system(self.cfg, db_path, question, evidence, role),
             "db_path": db_path,
             "db_id": db_path.stem,
             "user": user_message(question, evidence),
             "max_rows": self.cfg.result_rows,
+            "role": role,
         }
         state: dict = {"ctx": ctx, "corrections": 0, "llm_calls": [], "trace": []}
         async for chunk in self.graph.astream(state, stream_mode="updates"):
@@ -248,15 +269,17 @@ class FixedPipeline:
         )
 
     async def __call__(
-        self, llm: LLM, db_path: str | Path, question: str, evidence: str
+        self, llm: LLM, db_path: str | Path, question: str, evidence: str, role: str | None = None
     ) -> GenerationResult:
         result = None
-        async for node, payload in self.astream(llm, db_path, question, evidence):
+        async for node, payload in self.astream(llm, db_path, question, evidence, role):
             if node == "result":
                 result = payload
         return result
 
-    def input_chars(self, db_path: str | Path, question: str, evidence: str) -> int:
-        return len(build_system(self.cfg, Path(db_path), question, evidence)) + len(
+    def input_chars(
+        self, db_path: str | Path, question: str, evidence: str, role: str | None = None
+    ) -> int:
+        return len(build_system(self.cfg, Path(db_path), question, evidence, role)) + len(
             user_message(question, evidence)
         )

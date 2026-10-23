@@ -15,6 +15,8 @@ const newId = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? c
 export default function Home() {
   const [dbs, setDbs] = useState<{ db_id: string; tables: number }[]>([]);
   const [db, setDb] = useState("");
+  const [roles, setRoles] = useState<{ role: string; label: string }[]>([]);
+  const [role, setRole] = useState("");
   const [health, setHealth] = useState<{ store: string; model: string } | null>(null);
   const [backendDown, setBackendDown] = useState(false);
   const [examples, setExamples] = useState<string[]>([]);
@@ -36,6 +38,17 @@ export default function Home() {
 
   useEffect(() => {
     if (db) api.examples(db).then(setExamples).catch(() => setExamples([]));
+    if (!db) return;
+    api
+      .roles(db)
+      .then((r) => {
+        setRoles(r);
+        setRole(r[0]?.role ?? "");
+      })
+      .catch(() => {
+        setRoles([]);
+        setRole("");
+      });
   }, [db]);
 
   useEffect(() => {
@@ -50,7 +63,7 @@ export default function Home() {
       const fresh: Turn = { id, question, status: "running", steps: [] };
       setTurns((ts) => (existingId ? ts.map((t) => (t.id === id ? fresh : t)) : [...ts, fresh]));
       try {
-        const complete = await ask({ session_id: session, db_id: db, question }, (e) => {
+        const complete = await ask({ session_id: session, db_id: db, question, role: role || undefined }, (e) => {
           patch(id, (t) => {
             switch (e.event) {
               case "step":
@@ -78,7 +91,7 @@ export default function Home() {
         patch(id, (t) => ({ ...t, status: "error", error: message }));
       }
     },
-    [db, session],
+    [db, session, role],
   );
 
   const submit = () => {
@@ -103,6 +116,12 @@ export default function Home() {
             health={health}
             onDbChange={(d) => {
               setDb(d);
+              resetConversation();
+            }}
+            roles={roles}
+            role={role}
+            onRoleChange={(r) => {
+              setRole(r);
               resetConversation();
             }}
           />

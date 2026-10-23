@@ -18,7 +18,7 @@ import unicodedata
 from collections import OrderedDict
 from collections.abc import AsyncIterator, Callable
 
-from datapilot import config, tools
+from datapilot import config, rls, tools
 from datapilot.llm import LLM, ClaudeLLM
 from datapilot.pipeline import FixedPipeline, PipelineConfig
 from datapilot.store import Store
@@ -154,26 +154,40 @@ class ChatService:
             self._locks.popitem(last=False)
         return lock
 
-    def _cache_key(self, db_id: str, question: str, context: str) -> str:
+    def _cache_key(self, db_id: str, question: str, context: str, role: str | None = None) -> str:
+        """key 里必须带角色：否则运营会读到分析师缓存下来的成本价（行列级权限的缓存泄露）。"""
         digest = hashlib.sha256(f"{normalize_question(question)}\n{context}".encode()).hexdigest()
-        return f"dp:cache:{db_id}:{CONFIG_VERSION}:{self.model}:{digest[:32]}"
+        return f"dp:cache:{db_id}:{CONFIG_VERSION}:{self.model}:{role or '-'}:{digest[:32]}"
 
     async def clear_cache(self, db_id: str) -> int:
         """数据库更新后清掉这个库的缓存。"""
         return await self.store.delete_prefix(f"dp:cache:{db_id}:")
 
     async def ask(
-        self, session_id: str, db_id: str, question: str, user_id: str = "anon"
+        self,
+        session_id: str,
+        db_id: str,
+        question: str,
+        user_id: str = "anon",
+        role: str | None = None,
     ) -> AsyncIterator[dict]:
         session_key = f"dp:session:{user_id}:{session_id}"
         async with self._lock(session_key):
-            async for e in self._ask(session_key, db_id, question):
+            async for e in self._ask(session_key, db_id, question, role):
                 yield e
 
-    async def _ask(self, session_key: str, db_id: str, question: str) -> AsyncIterator[dict]:
+    async def _ask(
+        self, session_key: str, db_id: str, question: str, role: str | None = None
+    ) -> AsyncIterator[dict]:
         start = time.perf_counter()
         if db_id not in tools.list_databases():
             yield {"event": "error", "data": {"message": f"未知数据库：{db_id}"}}
+            yield {"event": "done", "data": {"cached": False}}
+            return
+        try:
+            rls.policy_for(db_id, role)
+        except ValueError as e:
+            yield {"event": "error", "data": {"message": str(e)}}
             yield {"event": "done", "data": {"cached": False}}
             return
 
@@ -188,7 +202,7 @@ class ChatService:
             )
             for t in history
         )
-        cache_key = self._cache_key(db_id, question, context)
+        cache_key = self._cache_key(db_id, question, context, role)
 
         cached = await self.store.get_json(cache_key)
         if cached:
@@ -212,7 +226,7 @@ class ChatService:
                 self._replay(start, cached, session_key, session, db_id, question)
                 if cached
                 else self._generate(
-                    start, session_key, session, db_id, question, context, cache_key
+                    start, session_key, session, db_id, question, context, cache_key, role
                 )
             )
             async for e in events:
@@ -237,6 +251,7 @@ class ChatService:
         question: str,
         context: str,
         cache_key: str,
+        role: str | None = None,
     ) -> AsyncIterator[dict]:
         llm = self.llm_factory()
         full_question = (
@@ -246,7 +261,7 @@ class ChatService:
         )
         path = config.db_path(db_id)
         result, cost = None, 0.0
-        async for node, update in PIPELINE.astream(llm, path, full_question, ""):
+        async for node, update in PIPELINE.astream(llm, path, full_question, "", role):
             if node == "result":
                 result = update
                 continue
@@ -269,7 +284,11 @@ class ChatService:
         yield events[-1]
         if result.exec_error or result.rows is None:
             # 流程已经执行过这条 SQL 并确认失败（纠错次数用完），直接用那次的报错，不再执行一遍
-            message = f"SQL 执行失败：{result.exec_error}"
+            message = (
+                f"当前角色无权查看这部分数据：{result.exec_error}"
+                if "无权访问" in result.exec_error
+                else f"SQL 执行失败：{result.exec_error}"
+            )
             yield {"event": "error", "data": {"message": message, "sql": result.sql}}
             await self._remember(
                 session_key, session, db_id, question, result.sql, error=result.exec_error
@@ -286,7 +305,14 @@ class ChatService:
 
         answer = await llm.complete(
             ANSWER_SYSTEM,
-            [{"role": "user", "content": self._answer_prompt(question, result.sql, table)}],
+            [
+                {
+                    "role": "user",
+                    "content": self._answer_prompt(
+                        question, result.sql, table, rls.policy_for(db_id, role)
+                    ),
+                }
+            ],
             [],
         )
         cost += answer.cost_usd
@@ -298,7 +324,7 @@ class ChatService:
         yield {"event": "done", "data": self._done(start, False, cost)}
 
     @staticmethod
-    def _answer_prompt(question: str, sql: str, table: dict) -> str:
+    def _answer_prompt(question: str, sql: str, table: dict, policy=None) -> str:
         rows = table["rows"]
         preview = rows[:ANSWER_PREVIEW_ROWS]
         if len(preview) == len(rows):
@@ -307,7 +333,19 @@ class ChatService:
             scope = (
                 f"共 {len(rows)} 行，以下只展示前 {len(preview)} 行，回答时不要只依据这部分下结论"
             )
-        return f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果（{scope}）：{preview}"
+        prompt = f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果（{scope}）：{preview}"
+        if policy is not None and rls.PROMPT_NOTE:
+            hidden = "、".join(
+                f"{t}.{c}" for t, cs in sorted(policy.hidden.items()) for c in sorted(cs)
+            )
+            prompt += (
+                f"\n\n当前用户角色：{policy.label}。无权访问的列：{hidden or '无'}。"
+                + (f"行权限：{policy.note}。" if policy.note else "")
+                + "如果结果是 NO_PERMISSION 说明，或问题需要无权访问的数据，"
+                "明确告诉用户当前角色无权查看哪些数据，不要用其他数据代替，也不要编造。"
+                + ("回答时说明结果只包含你有权限看到的范围。" if policy.note else "")
+            )
+        return prompt
 
     async def _remember(self, key, session, db_id, question, sql, error: str = "") -> None:
         # 重新读一次：锁保证同一会话串行，但 session 是请求开始时读的

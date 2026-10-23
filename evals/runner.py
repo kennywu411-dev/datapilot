@@ -104,7 +104,7 @@ def stratified_sample(questions: list[dict], n: int, seed: int = 0) -> list[dict
     return sorted(picked, key=lambda q: q["question_id"])
 
 
-async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
+async def run_one(q: dict, cfg: Config, llm: LLM, role: str | None = None) -> dict:
     path = config.db_path(q["db_id"])
     row = {
         "question_id": q["question_id"],
@@ -114,7 +114,11 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     }
     start = time.perf_counter()
     try:
-        gen = await PIPELINES[cfg.pipeline](llm, path, q["question"], q["evidence"])
+        pipe = PIPELINES[cfg.pipeline]
+        if role is None:
+            gen = await pipe(llm, path, q["question"], q["evidence"])
+        else:  # 行列级权限（v1.4）：只有固定流程和路由支持角色
+            gen = await pipe(llm, path, q["question"], q["evidence"], role)
     except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
         raise
     except Exception as e:  # 记录为失败，不中断整个评测
@@ -145,7 +149,9 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
         status, correct, detail = "no_sql", False, f"{gen.stop_reason}: {said}"
     else:
         try:
-            out = await asyncio.to_thread(evaluate_one, path, gen.sql, q["SQL"])
+            out = await asyncio.to_thread(
+                evaluate_one, path, gen.sql, q["SQL"], policy=_policy(q["db_id"], role)
+            )
             status, correct, detail = out.status, out.correct, out.detail
         except Exception as e:  # 评测器意外错误：记为失败并保留 SQL，不中断整次运行
             status, correct, detail = "eval_error", False, f"{type(e).__name__}: {e}"
@@ -153,7 +159,9 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     first_correct = correct
     if gen.first_sql and gen.first_sql != gen.sql:
         try:
-            first = await asyncio.to_thread(evaluate_one, path, gen.first_sql, q["SQL"])
+            first = await asyncio.to_thread(
+                evaluate_one, path, gen.first_sql, q["SQL"], policy=_policy(q["db_id"], role)
+            )
             first_correct = first.correct
         except Exception:
             first_correct = False
@@ -181,6 +189,7 @@ async def run(
     run_dir: Path,
     concurrency: int,
     max_cost: float | None = None,
+    role: str | None = None,
 ) -> list[dict]:
     """max_cost：本次累计花费达到上限后不再发起新调用（已在途的请求会跑完，可能略超）。"""
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -203,7 +212,7 @@ async def run(
         async with sem:
             if max_cost is not None and spent >= max_cost:
                 return None
-            r = await run_one(q, cfg, llm_factory(cfg, q))
+            r = await run_one(q, cfg, llm_factory(cfg, q), role)
         async with lock:
             spent += r["cost_usd"]
             with (run_dir / "results.jsonl").open("a", encoding="utf-8") as f:
@@ -268,6 +277,21 @@ def validate(models: list[str], pipeline: str) -> None:
     ]
     if unpriced:
         raise SystemExit(f"{unpriced} 没有价格，先在 config.PRICING 里登记")
+
+
+def _policy(db_id: str, role: str | None):
+    from datapilot import rls
+
+    return rls.policy_for(db_id, role)
+
+
+def config_role_check(db_id: str, role: str) -> None:
+    from datapilot import rls
+
+    try:
+        rls.policy_for(db_id, role)
+    except ValueError as e:
+        raise SystemExit(str(e)) from None
 
 
 def check_keys(models: list[str]) -> None:
@@ -343,6 +367,7 @@ def main(argv=None) -> None:
     p.add_argument("--concurrency", type=int, default=8)
     p.add_argument("--tag", default="adhoc")
     p.add_argument("--resume", help="续跑的 run_id")
+    p.add_argument("--role", help="行列级权限的角色（如 shop_ops 的 ops / sh_manager）")
     p.add_argument("--max-cost", type=float, help="本次花费硬上限（美元），达到后停止发起新调用")
     p.add_argument("--yes", action="store_true", help="确认花费，真正调用 API")
     args = p.parse_args(argv)
@@ -359,6 +384,15 @@ def main(argv=None) -> None:
         questions = stratified_sample(questions, args.sample, args.seed)
     models = args.models.split(",")
     validate(models, args.pipeline)
+    if args.role:
+        pipe = PIPELINES[args.pipeline]
+        base = pipe.base if isinstance(pipe, RoutedPipeline) else pipe
+        if not isinstance(base, FixedPipeline) or base.cfg.schema != "enhanced":
+            raise SystemExit(
+                "--role 只支持增强 schema 的固定流程和路由流程（如 e4_correct、routed_r1）"
+            )
+        for db in {q["db_id"] for q in questions}:
+            config_role_check(db, args.role)
     mock = models == ["gold"]
     configs = [
         Config(m, args.pipeline, args.effort, r)
@@ -395,7 +429,15 @@ def main(argv=None) -> None:
     )
     try:
         asyncio.run(
-            run(questions, configs, make_factory(mock), run_dir, args.concurrency, args.max_cost)
+            run(
+                questions,
+                configs,
+                make_factory(mock),
+                run_dir,
+                args.concurrency,
+                args.max_cost,
+                args.role,
+            )
         )
     except FatalAPIError as e:
         raise SystemExit(f"账户错误，评测已停止：{e}\n处理后用 --resume {run_id} 续跑") from None

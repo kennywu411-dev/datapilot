@@ -68,17 +68,24 @@ class RoutedPipeline:
         self.escalate = RULES[rule]
 
     async def __call__(
-        self, llm: LLMPair, db_path: str | Path, question: str, evidence: str
+        self,
+        llm: LLMPair,
+        db_path: str | Path,
+        question: str,
+        evidence: str,
+        role: str | None = None,
     ) -> GenerationResult:
-        first = await self.base(llm.cheap, db_path, question, evidence)
+        first = await self.base(llm.cheap, db_path, question, evidence, role)
         if not self.escalate(first.sql, len(first.llm_calls), first.trace):
             return first
-        second = await self.base(llm.strong, db_path, question, evidence)
+        second = await self.base(llm.strong, db_path, question, evidence, role)
         second.llm_calls = first.llm_calls + second.llm_calls
         second.trace = first.trace + [{"step": "escalate", "rule": self.rule}] + second.trace
         # first_sql 保持强模型自己的第一版：runner 用它统计"纠错改对 / 改错"，
         # 换成便宜模型的第一版会把"换模型"误算成纠错效果
         return second
 
-    def input_chars(self, db_path: str | Path, question: str, evidence: str) -> int:
-        return self.base.input_chars(db_path, question, evidence)
+    def input_chars(
+        self, db_path: str | Path, question: str, evidence: str, role: str | None = None
+    ) -> int:
+        return self.base.input_chars(db_path, question, evidence, role)
