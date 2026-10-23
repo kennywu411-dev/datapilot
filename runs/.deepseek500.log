@@ -488,3 +488,20 @@
 [487/500] deepseek r0 q129 ✗ ok
 [488/500] deepseek r0 q145 ✗ ok
 [489/500] deepseek r0 q169 ✗ ok
+[490/500] deepseek r0 q186 ✗ ok
+[491/500] deepseek r0 q168 ✗ ok
+[492/500] deepseek r0 q192 ✓
+[493/500] deepseek r0 q116 ✓
+[494/500] deepseek r0 q119 ✓
+[495/500] deepseek r0 q152 ✗ ok
+[496/500] deepseek r0 q94 ✗ ok
+[497/500] deepseek r0 q194 ✓
+[498/500] deepseek r0 q173 ✗ ok
+[499/500] deepseek r0 q120 ✓
+[500/500] deepseek r0 q189 ✗ no_sql
+本次实际花费 $0.6658
+
+run_id=deepseek500-20261023-204115-ddaa
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| deepseek | e4_correct | medium | 500 | 66.8% | 62.6%–70.8% | 114/148 | 162/250 | 58/102 | $0.0013 | $0.666 | 3.2s / 28.5s | {'ok': 493, 'no_sql': 5, 'timeout': 2} |

@@ -366,3 +366,21 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 - 单价按 `config.PRICING` 计算（第三方整理价），待与两家控制台扣费核对。
 - deepseek-flash 每题输出约 1000 token，是其他模型的 10 倍，延迟长尾也来自这里；推测默认带推理过程（接口只返回 JSON 答案，推理内容未保存）。
 - 污染信号：两家国产模型逐字复现 0–1 题，与 Haiku / Sonnet 相当，远低于 Opus 的 8/20。
+
+## v1.3 国产 API 模型：deepseek-flash 500 题全量（2026-10-23）
+
+运行 ID：`deepseek500-20261023-204115-ddaa`（E4，1 次，花费 $0.666）。对比脚本 `scripts/model_compare.py`，结果 `runs/model-compare-v1.3.json`。Claude 参照为 E4 首次运行（Haiku / Sonnet：`e4-20261022-163051-724f`；Opus：`e4opus-20261022-175535-704b`）。
+
+| 模型 | EX | 95% CI | simple / moderate / challenging | 单题成本 | P50 / P95 延迟 | 逐字复现标准答案 | 标准答案用 T1 的 368 题里也用 T1 |
+|---|---|---|---|---|---|---|---|
+| Haiku | 67.4% | 63.2–71.4% | 78% / 65% / 58% | $0.00023 | 1.6s / 4.7s | 30 | 55 |
+| Sonnet | 72.0% | 67.9–75.8% | 84% / 69% / 61% | $0.00348 | 1.8s / 8.6s | 28 | 17 |
+| Opus（疑似污染） | 86.4% | 83.1–89.1% | 94% / 84% / 80% | $0.00570 | 2.1s / 4.2s | 189 | 265 |
+| **deepseek-flash** | **66.8%** | 62.6–70.8% | 77% / 65% / 57% | $0.00133 | 3.2s / 28.5s | 16 | 0 |
+
+- 配对检验：vs Haiku（67.4%）Haiku 独对 34、DeepSeek 独对 31，McNemar p=0.80，**无差别**；vs Sonnet（72.0%）Sonnet 独对 48、DeepSeek 独对 22，p=0.0026，**显著更低**。与 Haiku 三次均值 68.0% 相比低 1.2 个百分点。
+- 成本：单题 $0.00133，约为 Haiku 的 6 倍、Sonnet 的 38%（输出 token 多，每题约 1000）。
+- 状态：ok 493、no_sql 5（其中 4 题输出失控，见问题日志 P16）、timeout 2；纠错后执行报错 0。
+- 污染信号：逐字复现 16 题、T1 别名 0/368，均低于 Claude，没有背答案的迹象。
+- 选型含义：国产便宜档与 Haiku 准确率相当，但更贵、更慢；要接近 Sonnet 需要更强的档位（如 deepseek-v4-pro）。
+- 口径差异：JSON 模式（schema 附在 system 末尾）、temperature 0；Claude 用结构化输出 + adaptive thinking。
