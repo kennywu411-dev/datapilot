@@ -1,0 +1,322 @@
+[
+ {
+  "question_id": 1,
+  "db_id": "shop_ops",
+  "question": "一共有多少位超级会员？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM users WHERE tier = 'svip'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 2,
+  "db_id": "shop_ops",
+  "question": "数码品类有多少种商品？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM products WHERE category = 'digital'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 3,
+  "db_id": "shop_ops",
+  "question": "2025 年一共有多少单被取消？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM orders WHERE status = 'cancelled' AND created_at LIKE '2025%'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 4,
+  "db_id": "shop_ops",
+  "question": "来自成都的女性用户有多少人？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM users WHERE city = '成都' AND gender = 'F'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 5,
+  "db_id": "shop_ops",
+  "question": "标价最高的商品是什么？给出名称和标价。",
+  "evidence": "",
+  "SQL": "SELECT name, price FROM products ORDER BY price DESC LIMIT 1",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 6,
+  "db_id": "shop_ops",
+  "question": "2026 年 618 活动的折扣率是多少？",
+  "evidence": "",
+  "SQL": "SELECT discount_rate FROM campaigns WHERE name = '2026年618'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 7,
+  "db_id": "shop_ops",
+  "question": "因为发错货申请的售后工单有多少张？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM tickets WHERE reason = 'wrong_item'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 8,
+  "db_id": "shop_ops",
+  "question": "小程序渠道一共下了多少单？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM orders WHERE channel = 'mini_program'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 9,
+  "db_id": "shop_ops",
+  "question": "还在处理中的换货工单有几张？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM tickets WHERE type = 'exchange' AND status = 'open'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 10,
+  "db_id": "shop_ops",
+  "question": "2025 年 9 月注册的用户有多少？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM users WHERE register_date LIKE '2025-09%'",
+  "difficulty": "simple"
+ },
+ {
+  "question_id": 11,
+  "db_id": "shop_ops",
+  "question": "2025 年各品类的销售额分别是多少？",
+  "evidence": "",
+  "SQL": "SELECT p.category, SUM(o.amount) FROM orders o JOIN products p ON o.sku = p.sku WHERE o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY p.category",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 12,
+  "db_id": "shop_ops",
+  "question": "2025 年哪个月的订单量最多？给出月份（YYYY-MM）和订单数。",
+  "evidence": "",
+  "SQL": "SELECT substr(created_at, 1, 7), COUNT(*) FROM orders WHERE created_at LIKE '2025%' GROUP BY 1 ORDER BY 2 DESC LIMIT 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 13,
+  "db_id": "shop_ops",
+  "question": "售后工单最多的前 3 个品类是哪些？给出品类和工单数。",
+  "evidence": "",
+  "SQL": "SELECT p.category, COUNT(*) FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN products p ON o.sku = p.sku GROUP BY p.category ORDER BY 2 DESC LIMIT 3",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 14,
+  "db_id": "shop_ops",
+  "question": "各会员等级的客单价是多少？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT u.tier, ROUND(AVG(o.amount), 2) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE o.status NOT IN ('cancelled', 'pending') GROUP BY u.tier",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 15,
+  "db_id": "shop_ops",
+  "question": "2025 年的退款率是多少？用百分比表示，保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * SUM(status = 'refunded') / COUNT(*), 2) FROM orders WHERE paid_at IS NOT NULL AND created_at LIKE '2025%'",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 16,
+  "db_id": "shop_ops",
+  "question": "2026 年参加了活动的订单占有效订单的百分之多少？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * SUM(campaign_id IS NOT NULL) / COUNT(*), 2) FROM orders WHERE created_at LIKE '2026%' AND status NOT IN ('cancelled', 'pending')",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 17,
+  "db_id": "shop_ops",
+  "question": "2025 年哪个城市的用户在美妆上花钱最多？给出城市和金额。",
+  "evidence": "",
+  "SQL": "SELECT u.city, SUM(o.amount) FROM orders o JOIN users u ON o.user_id = u.user_id JOIN products p ON o.sku = p.sku WHERE p.category = 'beauty' AND o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY u.city ORDER BY 2 DESC LIMIT 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 18,
+  "db_id": "shop_ops",
+  "question": "2025 年双 11 大促一共卖出了多少件商品？",
+  "evidence": "",
+  "SQL": "SELECT SUM(o.qty) FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id WHERE c.name = '2025双11大促' AND o.status NOT IN ('cancelled', 'pending')",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 19,
+  "db_id": "shop_ops",
+  "question": "被拒绝的售后工单里，最常见的原因是什么？",
+  "evidence": "",
+  "SQL": "SELECT reason FROM tickets WHERE status = 'rejected' GROUP BY reason ORDER BY COUNT(*) DESC LIMIT 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 20,
+  "db_id": "shop_ops",
+  "question": "买过降噪耳机的用户有多少人？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(DISTINCT o.user_id) FROM orders o JOIN products p ON o.sku = p.sku WHERE p.name = '降噪耳机' AND o.status NOT IN ('cancelled', 'pending')",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 21,
+  "db_id": "shop_ops",
+  "question": "2026 年各下单渠道的订单数占比是多少？用百分比表示，保留一位小数。",
+  "evidence": "",
+  "SQL": "SELECT channel, ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM orders WHERE created_at LIKE '2026%'), 1) FROM orders WHERE created_at LIKE '2026%' GROUP BY channel",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 22,
+  "db_id": "shop_ops",
+  "question": "已完结的售后工单，从申请到完结平均用了多少天？保留一位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(AVG(julianday(closed_at) - julianday(created_at)), 1) FROM tickets WHERE status = 'closed'",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 23,
+  "db_id": "shop_ops",
+  "question": "2025 年毛利最高的品牌是哪个？",
+  "evidence": "",
+  "SQL": "SELECT p.brand FROM orders o JOIN products p ON o.sku = p.sku WHERE o.created_at LIKE '2025%' AND o.status IN ('paid', 'shipped', 'delivered') GROUP BY p.brand ORDER BY SUM(o.amount - p.cost * o.qty) DESC LIMIT 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 24,
+  "db_id": "shop_ops",
+  "question": "下单后超过 5 天才签收的订单有多少单？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM orders WHERE delivered_at IS NOT NULL AND julianday(delivered_at) - julianday(created_at) > 5",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 25,
+  "db_id": "shop_ops",
+  "question": "从来没有下过单的用户有多少人？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM users WHERE user_id NOT IN (SELECT user_id FROM orders)",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 26,
+  "db_id": "shop_ops",
+  "question": "2024 年 10 月到 12 月，每个月新注册了多少用户？",
+  "evidence": "",
+  "SQL": "SELECT substr(register_date, 1, 7), COUNT(*) FROM users WHERE register_date BETWEEN '2024-10-01' AND '2024-12-31' GROUP BY 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 27,
+  "db_id": "shop_ops",
+  "question": "退货退款类的售后工单，一共退了多少钱？",
+  "evidence": "",
+  "SQL": "SELECT SUM(refund_amount) FROM tickets WHERE type = 'return'",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 28,
+  "db_id": "shop_ops",
+  "question": "2025 年下单次数最多的 VIP 会员是谁？给出姓名和订单数。",
+  "evidence": "",
+  "SQL": "SELECT u.name, COUNT(*) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.tier = 'vip' AND o.created_at LIKE '2025%' GROUP BY u.user_id ORDER BY 2 DESC LIMIT 1",
+  "difficulty": "moderate"
+ },
+ {
+  "question_id": 29,
+  "db_id": "shop_ops",
+  "question": "2026 年 9 月的销售额环比变化了百分之多少？下降用负数表示，保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * (SUM(CASE WHEN created_at LIKE '2026-09%' THEN amount END) - SUM(CASE WHEN created_at LIKE '2026-08%' THEN amount END)) / SUM(CASE WHEN created_at LIKE '2026-08%' THEN amount END), 2) FROM orders WHERE status NOT IN ('cancelled', 'pending')",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 30,
+  "db_id": "shop_ops",
+  "question": "2026 年 1–9 月的销售额，同比增长了百分之多少？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * (SUM(CASE WHEN created_at BETWEEN '2026-01-01' AND '2026-09-30 23:59:59' THEN amount END) - SUM(CASE WHEN created_at BETWEEN '2025-01-01' AND '2025-09-30 23:59:59' THEN amount END)) / SUM(CASE WHEN created_at BETWEEN '2025-01-01' AND '2025-09-30 23:59:59' THEN amount END), 2) FROM orders WHERE status NOT IN ('cancelled', 'pending')",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 31,
+  "db_id": "shop_ops",
+  "question": "2026 年每个月数码品类的售后率是多少？用百分比表示，保留一位小数。",
+  "evidence": "",
+  "SQL": "SELECT substr(o.created_at, 1, 7), ROUND(100.0 * COUNT(DISTINCT t.order_id) / COUNT(DISTINCT o.order_id), 1) FROM orders o JOIN products p ON o.sku = p.sku LEFT JOIN tickets t ON t.order_id = o.order_id WHERE p.category = 'digital' AND o.status IN ('delivered', 'refunded') AND o.created_at LIKE '2026%' GROUP BY 1",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 32,
+  "db_id": "shop_ops",
+  "question": "2025 年的复购率是多少？用百分比表示，保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * SUM(n >= 2) / COUNT(*), 2) FROM (SELECT user_id, COUNT(*) AS n FROM orders WHERE created_at LIKE '2025%' AND status NOT IN ('cancelled', 'pending') GROUP BY user_id)",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 33,
+  "db_id": "shop_ops",
+  "question": "2025 年每个品类里，销售额最高的是哪个商品？给出品类和商品名称。",
+  "evidence": "",
+  "SQL": "SELECT category, name FROM (SELECT p.category, p.name, RANK() OVER (PARTITION BY p.category ORDER BY SUM(o.amount) DESC) AS rk FROM orders o JOIN products p ON o.sku = p.sku WHERE o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY p.sku) WHERE rk = 1",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 34,
+  "db_id": "shop_ops",
+  "question": "2025 年双 11 大促和 2026 年 618 都下过单的用户有多少人？",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM (SELECT o.user_id FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id WHERE c.name = '2025双11大促' AND o.status NOT IN ('cancelled', 'pending') INTERSECT SELECT o.user_id FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id WHERE c.name = '2026年618' AND o.status NOT IN ('cancelled', 'pending'))",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 35,
+  "db_id": "shop_ops",
+  "question": "2025 年申请过售后的用户里，超级会员占百分之多少？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(100.0 * COUNT(DISTINCT CASE WHEN u.tier = 'svip' THEN u.user_id END) / COUNT(DISTINCT u.user_id), 2) FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN users u ON o.user_id = u.user_id WHERE t.created_at LIKE '2025%'",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 36,
+  "db_id": "shop_ops",
+  "question": "把 2025 年的有效订单按实付金额分成 200 元以下、200–500 元、500–1000 元、1000 元及以上四档，每档各有多少单？只需给出各档的订单数。",
+  "evidence": "",
+  "SQL": "SELECT COUNT(*) FROM orders WHERE created_at LIKE '2025%' AND status NOT IN ('cancelled', 'pending') GROUP BY CASE WHEN amount < 200 THEN 1 WHEN amount < 500 THEN 2 WHEN amount < 1000 THEN 3 ELSE 4 END",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 37,
+  "db_id": "shop_ops",
+  "question": "首单在 2025 年的新客，首单平均实付多少钱？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(AVG(amount), 2) FROM (SELECT amount, created_at, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at) AS rn FROM orders WHERE status NOT IN ('cancelled', 'pending')) WHERE rn = 1 AND created_at LIKE '2025%'",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 38,
+  "db_id": "shop_ops",
+  "question": "2025 年的有效订单里，参加活动的平均实付金额比没参加活动的低多少元？保留两位小数。",
+  "evidence": "",
+  "SQL": "SELECT ROUND(AVG(CASE WHEN campaign_id IS NULL THEN amount END) - AVG(CASE WHEN campaign_id IS NOT NULL THEN amount END), 2) FROM orders WHERE created_at LIKE '2025%' AND status NOT IN ('cancelled', 'pending')",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 39,
+  "db_id": "shop_ops",
+  "question": "2025 年每个季度，哪个城市的用户贡献的销售额最高？给出季度（1–4）和城市。",
+  "evidence": "",
+  "SQL": "SELECT q, city FROM (SELECT (CAST(substr(o.created_at, 6, 2) AS INTEGER) + 2) / 3 AS q, u.city, RANK() OVER (PARTITION BY (CAST(substr(o.created_at, 6, 2) AS INTEGER) + 2) / 3 ORDER BY SUM(o.amount) DESC) AS rk FROM orders o JOIN users u ON o.user_id = u.user_id WHERE o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY 1, 2) WHERE rk = 1",
+  "difficulty": "challenging"
+ },
+ {
+  "question_id": 40,
+  "db_id": "shop_ops",
+  "question": "2025 年哪个月的退款金额占当月销售额的比例最高？给出月份（YYYY-MM）。",
+  "evidence": "",
+  "SQL": "SELECT m FROM (SELECT substr(o.created_at, 1, 7) AS m, SUM(o.amount) AS sales, (SELECT SUM(t.refund_amount) FROM tickets t JOIN orders o2 ON t.order_id = o2.order_id WHERE substr(o2.created_at, 1, 7) = substr(o.created_at, 1, 7)) AS refund FROM orders o WHERE o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY 1) ORDER BY refund / sales DESC LIMIT 1",
+  "difficulty": "challenging"
+ }
+]
