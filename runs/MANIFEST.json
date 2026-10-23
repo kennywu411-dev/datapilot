@@ -40,6 +40,7 @@
   "load_test": "load-20261023-140716",
   "gold_check": "gold-check-20261022-145326",
   "cn_models": {
-    "deepseek-flash": "deepseek500-20261023-204115-ddaa"
+    "deepseek-flash": "deepseek500-20261023-204115-ddaa",
+    "qwen3.7-plus": "qwen37-500-20261023-213824-dc9d"
   }
 }

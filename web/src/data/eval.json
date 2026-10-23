@@ -344,6 +344,28 @@
    "haiku_paired_ex": 0.674,
    "p_vs_sonnet": 0.00255,
    "sonnet_paired_ex": 0.72
+  },
+  {
+   "name": "qwen3.7-plus",
+   "run_id": "qwen37-500-20261023-213824-dc9d",
+   "n": 500,
+   "ex": 0.68,
+   "ci": [
+    0.6379,
+    0.7194
+   ],
+   "cost_per_q": 0.000364,
+   "p50": 3.06,
+   "p95": 6.67,
+   "by_difficulty": {
+    "simple": 0.7568,
+    "moderate": 0.676,
+    "challenging": 0.5784
+   },
+   "p_vs_haiku": 0.807,
+   "haiku_paired_ex": 0.674,
+   "p_vs_sonnet": 0.0422,
+   "sonnet_paired_ex": 0.72
   }
  ],
  "same100": {
