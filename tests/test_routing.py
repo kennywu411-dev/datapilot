@@ -48,7 +48,8 @@ def test_escalation_reruns_with_strong_and_bills_both(shop_db_dir):
     models = [c.model for c in out.llm_calls]
     assert "claude-haiku-5-5" in models and models[-1] == "claude-sonnet-5-5"
     assert any(t["step"] == "escalate" for t in out.trace)
-    assert out.first_sql == "SELECT nope FROM users"  # 第一版是便宜模型的
+    # first_sql 是强模型自己的第一版，纠错统计不把"换模型"算成纠错
+    assert out.first_sql == "SELECT id FROM users"
     # 强模型从头开始：它的第一条消息里没有便宜模型的历史
     assert (
         strong.calls[0]["messages"][0]["role"] == "user" and len(strong.calls[0]["messages"]) == 1

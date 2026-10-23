@@ -103,9 +103,13 @@ def create_app(
         app.state.service = service  # 测试注入；ASGI 传输不会触发 lifespan
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=os.environ.get(
-            "DATAPILOT_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
-        ).split(","),
+        allow_origins=[
+            o.strip()
+            for o in os.environ.get(
+                "DATAPILOT_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+            ).split(",")
+            if o.strip()
+        ],
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["*"],
     )

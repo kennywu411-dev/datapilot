@@ -335,7 +335,7 @@ def test_api_models_validate_factory_and_keys(monkeypatch):
     monkeypatch.setenv("DASHSCOPE_API_KEY", "k")
     llm = make_factory(False)(Config("qwen", "e4_correct", "medium", 0), {})
     assert isinstance(llm, OpenAICompatLLM)
-    assert llm.model == "qwen-plus" and llm.extra_body == {"enable_thinking": False}
+    assert llm.model == "qwen3.7-plus" and llm.extra_body == {"enable_thinking": False}
     assert llm.base_url.startswith("https://dashscope.aliyuncs.com")
 
 

@@ -285,7 +285,7 @@ class OpenAICompatLLM:
       与 Claude 对比时统一说明）
     - usage 拆出缓存命中部分单独计价：DeepSeek 返回 prompt_cache_hit_tokens，
       百炼返回 prompt_tokens_details.cached_tokens
-    - 429 / 5xx 指数退避重试（Claude SDK 自带 max_retries，这里没有 SDK，自己做）
+    - 429 / 5xx 和网络错误指数退避重试（Claude SDK 自带 max_retries，这里没有 SDK，自己做）
     """
 
     def __init__(
@@ -329,11 +329,17 @@ class OpenAICompatLLM:
 
     async def _post(self, body: dict) -> dict:
         for attempt in range(self.max_retries + 1):
-            resp = await self.client.post(
-                f"{self.base_url}/chat/completions",
-                json=body,
-                headers={"Authorization": f"Bearer {self.api_key}"},
-            )
+            try:
+                resp = await self.client.post(
+                    f"{self.base_url}/chat/completions",
+                    json=body,
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                )
+            except httpx2.TransportError:  # 连接失败、读超时：和 Claude SDK 一样重试
+                if attempt == self.max_retries:
+                    raise
+                await asyncio.sleep(RETRY_BASE_S * 2**attempt)
+                continue
             if resp.status_code in FATAL_STATUS:
                 raise FatalAPIError(f"HTTP {resp.status_code}：{resp.text[:300]}")
             if resp.status_code not in RETRY_STATUS or attempt == self.max_retries:

@@ -402,3 +402,22 @@ def test_openai_compat_fatal_status_not_retried():
             _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
         )
     assert len(seen) == 1
+
+
+def test_openai_compat_retries_transport_error(monkeypatch):
+    """连接失败 / 读超时重试，不直接记成这一题失败。"""
+    import datapilot.llm as llm_mod
+
+    monkeypatch.setattr(llm_mod, "RETRY_BASE_S", 0)
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        if len(seen) == 1:
+            raise httpx.ConnectError("boom", request=request)
+        return _chat_resp('{"sql": "SELECT 1"}')
+
+    res = asyncio.run(
+        _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+    )
+    assert len(seen) == 2 and res.parsed == SQLAnswer(sql="SELECT 1")

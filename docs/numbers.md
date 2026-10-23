@@ -369,6 +369,8 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 ## v1.3 国产 API 模型：deepseek-flash 500 题全量（2026-10-23）
 
+> **成本口径**：国产模型的花费按 `config.PRICING` 里的标价估算（第三方整理价；qwen3.7-plus 未计限时 8 折、DeepSeek 未计闲时半价），**未与两家控制台账单逐笔核对**，实际扣费可能更低。准确率和延迟是实测。
+
 运行 ID：`deepseek500-20261023-204115-ddaa`（E4，1 次，花费 $0.666）。对比脚本 `scripts/model_compare.py`，结果 `runs/model-compare-v1.3.json`。Claude 参照为 E4 首次运行（Haiku / Sonnet：`e4-20261022-163051-724f`；Opus：`e4opus-20261022-175535-704b`）。
 
 | 模型 | EX | 95% CI | simple / moderate / challenging | 单题成本 | P50 / P95 延迟 | 逐字复现标准答案 | 标准答案用 T1 的 368 题里也用 T1 |
@@ -449,7 +451,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 - 实跑与离线回放几乎一致（69.6% vs 69.4%，$0.230 vs $0.233），回放方法可信。
 - 配对检验（单次）：vs Haiku 路由独对 24、Haiku 独对 13，p=0.099；vs Sonnet Sonnet 独对 37、路由独对 25，p=0.16。介于两者之间，单次运行都不显著；回放 3 组里 2 组相对 Haiku 显著。
-- 成本约为全用 Sonnet 的 13%，延迟与 Haiku 相当（只有 4.4% 的题多一次 Sonnet 调用）。
+- 成本约为全用 Sonnet 的 14%（分母取 Sonnet E4 三次运行的平均成本 $1.60，与离线回放和看板同一口径；若用首次运行的 $1.74 则为 13%），延迟与 Haiku 相当（只有 4.4% 的题多一次 Sonnet 调用）。
 
 ## v1.3 中文问题评测（D2）：BIRD 同批 100 题（2026-10-23）
 

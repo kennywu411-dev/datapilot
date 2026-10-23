@@ -76,7 +76,8 @@ class RoutedPipeline:
         second = await self.base(llm.strong, db_path, question, evidence)
         second.llm_calls = first.llm_calls + second.llm_calls
         second.trace = first.trace + [{"step": "escalate", "rule": self.rule}] + second.trace
-        second.first_sql = first.first_sql
+        # first_sql 保持强模型自己的第一版：runner 用它统计"纠错改对 / 改错"，
+        # 换成便宜模型的第一版会把"换模型"误算成纠错效果
         return second
 
     def input_chars(self, db_path: str | Path, question: str, evidence: str) -> int:

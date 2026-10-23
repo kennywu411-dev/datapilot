@@ -33,7 +33,7 @@ API_MODELS = {
         "extra_body": {},
     },
     "qwen": {
-        "model": "qwen-plus",
+        "model": "qwen3.7-plus",  # 试跑后选定（比旧版 qwen-plus 新一代），登记的结果都是它
         "model_env": "QWEN_MODEL",
         "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
         "key_env": "DASHSCOPE_API_KEY",
@@ -55,15 +55,11 @@ PRICING = {
 }
 
 
-def api_model_id(name: str) -> str:
-    spec = API_MODELS[name]
-    return os.environ.get(spec["model_env"]) or spec["model"]
-
-
 def model_id(name: str) -> str:
-    """评测里的短名（haiku / deepseek …）→ 实际模型 ID。"""
+    """评测里的短名（haiku / deepseek …）→ 实际模型 ID；国产模型可用环境变量覆盖。"""
     if name in API_MODELS:
-        return api_model_id(name)
+        spec = API_MODELS[name]
+        return os.environ.get(spec["model_env"]) or spec["model"]
     return MODELS.get(name) or LOCAL_MODELS[name]
 
 
