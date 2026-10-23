@@ -350,3 +350,30 @@ def test_estimate_prices_api_models():
         pytest.skip("需要 BIRD 数据")
     est = estimate(q, [Config("deepseek", "e4_correct", "medium", 0)])
     assert 0 < est < 0.01
+
+
+def test_run_one_reraises_fatal_api_error(shop_db_dir):
+    """账户错误不能被吞成 llm_error：否则额度用完后剩下的题全记成失败（v1.3 百炼实测）。"""
+    import asyncio as _asyncio
+
+    import pytest
+
+    from datapilot.llm import FatalAPIError
+    from evals.runner import Config, run_one
+
+    class Boom:
+        model = "x"
+
+        async def complete(self, *a, **k):
+            raise FatalAPIError("HTTP 403")
+
+    q = {
+        "question_id": 1,
+        "db_id": "shop",
+        "difficulty": "simple",
+        "question": "q",
+        "evidence": "",
+        "SQL": "SELECT 1",
+    }
+    with pytest.raises(FatalAPIError):
+        _asyncio.run(run_one(q, Config("qwen", "baseline", "medium", 0), Boom()))

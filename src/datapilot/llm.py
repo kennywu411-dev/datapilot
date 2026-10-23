@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from functools import cache
@@ -235,6 +236,43 @@ class LocalLLM:
 
 RETRY_BASE_S = 1.0
 RETRY_STATUS = {429, 500, 502, 503, 504}
+FATAL_STATUS = {401, 402, 403}  # 密钥无效、欠费、额度用完：重试没用，整个评测应该停下
+
+
+class FatalAPIError(RuntimeError):
+    """账户层面的错误（不是这一题的问题）。评测遇到它就停，避免把剩下的题全记成失败。"""
+
+
+FENCE = re.compile(r"^```(?:json)?\s*|\s*```$")
+
+
+def parse_loose(text: str, output_format: type[BaseModel]) -> BaseModel | None:
+    """先按严格 JSON 解析；失败时去掉代码块包装、截取第一个 {...}、字段名不区分大小写再试。
+
+    国产模型在 JSON 模式下偶尔把 JSON 包进 ```json 代码块，或把 sql 写成 SQL（v1.3 实测）。
+    """
+    try:
+        return output_format.model_validate_json(text)
+    except ValidationError:
+        pass
+    body = FENCE.sub("", text.strip())
+    start, end = body.find("{"), body.rfind("}")
+    if start < 0 or end <= start:
+        return None
+    try:
+        obj = json.loads(body[start : end + 1])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(obj, dict):
+        return None
+    lower = {str(k).lower(): v for k, v in obj.items()}
+    fields = {
+        name: lower[name.lower()] for name in output_format.model_fields if name.lower() in lower
+    }
+    try:
+        return output_format.model_validate(fields)
+    except ValidationError:
+        return None
 
 
 class OpenAICompatLLM:
@@ -294,6 +332,8 @@ class OpenAICompatLLM:
                 json=body,
                 headers={"Authorization": f"Bearer {self.api_key}"},
             )
+            if resp.status_code in FATAL_STATUS:
+                raise FatalAPIError(f"HTTP {resp.status_code}：{resp.text[:300]}")
             if resp.status_code not in RETRY_STATUS or attempt == self.max_retries:
                 resp.raise_for_status()
                 return resp.json()
@@ -316,10 +356,7 @@ class OpenAICompatLLM:
         stop = "max_tokens" if choice.get("finish_reason") == "length" else "end_turn"
         parsed = None
         if output_format is not None and stop != "max_tokens":
-            try:
-                parsed = output_format.model_validate_json(text)
-            except ValidationError:
-                parsed = None
+            parsed = parse_loose(text, output_format)
         u = data.get("usage") or {}
         hit = u.get("prompt_cache_hit_tokens")
         if hit is None:

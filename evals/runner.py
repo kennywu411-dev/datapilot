@@ -35,7 +35,7 @@ from datapilot import config  # noqa: E402
 from datapilot.agent import SQLAgent  # noqa: E402
 from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
 from datapilot.ex import evaluate_one  # noqa: E402
-from datapilot.llm import LLM, ScriptedLLM  # noqa: E402
+from datapilot.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
 from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
 from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
@@ -115,6 +115,8 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     start = time.perf_counter()
     try:
         gen = await PIPELINES[cfg.pipeline](llm, path, q["question"], q["evidence"])
+    except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
+        raise
     except Exception as e:  # 记录为失败，不中断整个评测
         return {
             **row,
@@ -138,7 +140,9 @@ async def run_one(q: dict, cfg: Config, llm: LLM) -> dict:
     if gen.stop_reason == "refusal":
         status, correct, detail = "refusal", False, ""
     elif not gen.sql:
-        status, correct, detail = "no_sql", False, gen.stop_reason
+        # 记下模型最后一次的原话，排查解析失败用
+        said = gen.llm_calls[-1].text[:300] if gen.llm_calls else ""
+        status, correct, detail = "no_sql", False, f"{gen.stop_reason}: {said}"
     else:
         try:
             out = await asyncio.to_thread(evaluate_one, path, gen.sql, q["SQL"])
@@ -389,9 +393,12 @@ def main(argv=None) -> None:
     (run_dir / "config.json").write_text(
         json.dumps({**vars(args), "question_ids": [q["question_id"] for q in questions]}, indent=2)
     )
-    asyncio.run(
-        run(questions, configs, make_factory(mock), run_dir, args.concurrency, args.max_cost)
-    )
+    try:
+        asyncio.run(
+            run(questions, configs, make_factory(mock), run_dir, args.concurrency, args.max_cost)
+        )
+    except FatalAPIError as e:
+        raise SystemExit(f"账户错误，评测已停止：{e}\n处理后用 --resume {run_id} 续跑") from None
 
     from evals.report import load_rows
 

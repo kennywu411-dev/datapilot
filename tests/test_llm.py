@@ -372,3 +372,33 @@ def test_openai_compat_rejects_tools():
 
     with pytest.raises(ValueError, match="工具"):
         asyncio.run(_compat(lambda r: _chat_resp("")).complete("s", [], [{"name": "t"}]))
+
+
+def test_parse_loose_handles_fences_and_key_case():
+    from datapilot.llm import parse_loose
+
+    assert parse_loose('{"sql": "SELECT 1"}', SQLAnswer) == SQLAnswer(sql="SELECT 1")
+    assert parse_loose('```json\n{"sql": "SELECT 2"}\n```', SQLAnswer) == SQLAnswer(sql="SELECT 2")
+    assert parse_loose('{"SQL": "SELECT 3"}', SQLAnswer) == SQLAnswer(sql="SELECT 3")
+    assert parse_loose('好的：{"Sql": "SELECT 4"} 以上', SQLAnswer) == SQLAnswer(sql="SELECT 4")
+    assert parse_loose("SELECT 5", SQLAnswer) is None
+    assert parse_loose('{"query": "SELECT 6"}', SQLAnswer) is None
+
+
+def test_openai_compat_fatal_status_not_retried():
+    """403（如百炼"仅免费额度"用完）重试没用：直接抛 FatalAPIError，让评测停下。"""
+    import pytest
+
+    from datapilot.llm import FatalAPIError
+
+    seen = []
+
+    def handler(request):
+        seen.append(1)
+        return httpx.Response(403, json={"error": {"code": "AllocationQuota.FreeTierOnly"}})
+
+    with pytest.raises(FatalAPIError, match="403"):
+        asyncio.run(
+            _compat(handler).complete("s", [{"role": "user", "content": "q"}], [], SQLAnswer)
+        )
+    assert len(seen) == 1
