@@ -8,7 +8,7 @@ from pathlib import Path
 
 from rank_bm25 import BM25Okapi
 
-from datapilot import tools
+from datapilot import rls, tools
 from datapilot.sql_guard import connect_readonly
 
 EXAMPLE_VALUES = 3
@@ -46,11 +46,11 @@ def _one_line(s: str) -> str:
 
 
 @cache
-def _examples(db_id: str, table: str, column: str) -> tuple:
-    conn = connect_readonly(tools.config.db_path(db_id))
+def _examples(db_id: str, table: str, column: str, role: str | None = None) -> tuple:
+    conn = connect_readonly(tools.config.db_path(db_id), rls.policy_for(db_id, role))
     try:
         rows = conn.execute(
-            f"SELECT DISTINCT {tools._q(column)} FROM {tools._q(table)} "
+            f"SELECT DISTINCT {tools._q(column)} FROM {tools.source(db_id, table, role)} "
             f"WHERE {tools._q(column)} IS NOT NULL AND {tools._q(column)} != '' "
             f"LIMIT {EXAMPLE_VALUES}"
         ).fetchall()
@@ -59,17 +59,21 @@ def _examples(db_id: str, table: str, column: str) -> tuple:
     return tuple(r[0] for r in rows)
 
 
-def _render_table(db_id: str, table: str) -> str:
-    info = tools.describe_table(db_id, table)
+def _render_table(db_id: str, table: str, role: str | None = None) -> str:
+    info = tools.describe_table(db_id, table, role)
     entries: list[tuple[str, str]] = []  # (定义, 行尾注释)
     for c in info["columns"]:
+        if c.get("restricted"):
+            # 列名保留、标明受限：模型知道这列存在但不能用，才能如实告诉用户"无权查看"
+            entries.append((f"{_ident(c['name'])} {c['type']}", "当前角色无权访问，不能查询"))
+            continue
         notes = []
         if c["description"]:
             notes.append(_one_line(c["description"]))
         if c["value_description"]:
             notes.append("values: " + _one_line(c["value_description"]))
         if tools._is_text(c["type"] or ""):
-            ex = [_sql_literal(tools._clip(v)) for v in _examples(db_id, table, c["name"])]
+            ex = [_sql_literal(tools._clip(v)) for v in _examples(db_id, table, c["name"], role)]
             if ex:
                 notes.append("e.g. " + ", ".join(ex))
         pk = " PRIMARY KEY" if c["primary_key"] else ""
@@ -118,10 +122,13 @@ _SQL_KEYWORDS = set(
 
 
 @cache
-def enhanced_schema(db_id: str, tables: tuple[str, ...] | None = None) -> str:
-    """DDL + 每列行尾注释：BIRD 列说明、取值说明、文本列示例值。"""
+def enhanced_schema(
+    db_id: str, tables: tuple[str, ...] | None = None, role: str | None = None
+) -> str:
+    """DDL + 每列行尾注释：BIRD 列说明、取值说明、文本列示例值。
+    受限角色下示例值只来自可见的行，无权访问的列只留列名并标明。"""
     names = tables or tuple(t["table"] for t in tools.list_tables(db_id))
-    return "\n\n".join(_render_table(db_id, t) for t in names)
+    return "\n\n".join(_render_table(db_id, t, role) for t in names)
 
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")

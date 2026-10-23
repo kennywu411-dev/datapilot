@@ -11,8 +11,8 @@ import sqlite3
 import time
 from functools import cache
 
-from datapilot import config
-from datapilot.sql_guard import SQLRejected, connect_readonly, run_readonly
+from datapilot import config, rls
+from datapilot.sql_guard import SQLRejected, connect_readonly, run_readonly, table_columns
 
 SAMPLE_ROWS = 3
 SEARCH_TIMEOUT_S = 5.0
@@ -106,18 +106,42 @@ def _descriptions(db_id: str, table: str) -> dict[str, dict]:
     return out
 
 
-def describe_table(db_id: str, table: str) -> dict:
+def source(db_id: str, table: str, role: str | None) -> str:
+    """表在该角色下的读取来源：不受限时是表名，受限时是只含可见列、带行过滤的子查询。"""
+    policy = rls.policy_for(db_id, role)
+    return rls.source_sql(table, table_columns(str(_db(db_id).resolve()))[table], policy)
+
+
+def describe_table(db_id: str, table: str, role: str | None = None) -> dict:
+    """表结构与样例。受限角色下：不可见的列只给列名并标 restricted（不给说明、取值、样例），
+    样例只取可见列和可见的行。"""
     table = _table(db_id, table)
+    policy = rls.policy_for(db_id, role)
+    hidden = policy.hidden_in(table) if policy else set()
     desc = _descriptions(db_id, table)
-    conn = connect_readonly(_db(db_id))
+    conn = connect_readonly(_db(db_id), policy)
     try:
         cols = conn.execute(f"PRAGMA table_info({_q(table)})").fetchall()
         fks = conn.execute(f"PRAGMA foreign_key_list({_q(table)})").fetchall()
-        sample = conn.execute(f"SELECT * FROM {_q(table)} LIMIT {SAMPLE_ROWS}").fetchall()
+        sample = conn.execute(
+            f"SELECT * FROM {source(db_id, table, role)} LIMIT {SAMPLE_ROWS}"
+        ).fetchall()
     finally:
         conn.close()
     columns = []
     for _cid, name, ctype, _notnull, _default, pk in cols:
+        if name.lower() in hidden:
+            columns.append(
+                {
+                    "name": name,
+                    "type": ctype,
+                    "primary_key": bool(pk),
+                    "description": "",
+                    "value_description": "",
+                    "restricted": True,
+                }
+            )
+            continue
         d = desc.get(name.lower(), {})
         columns.append(
             {
@@ -142,9 +166,12 @@ def search_values(
     table: str | None = None,
     column: str | None = None,
     limit: int = 10,
+    role: str | None = None,
 ) -> dict:
-    """在文本列里模糊查找真实取值（大小写不敏感的 LIKE）。用户说"女性"，库里可能存的是 'F'。"""
+    """在文本列里模糊查找真实取值（大小写不敏感的 LIKE）。用户说"女性"，库里可能存的是 'F'。
+    受限角色下不搜不可见的列，只在可见的行里搜（防止用它探测敏感值）。"""
     path = _db(db_id)
+    policy = rls.policy_for(db_id, role)
     tables = [_table(db_id, table)] if table else [t["table"] for t in list_tables(db_id)]
     conn = connect_readonly(path)
     targets = []
@@ -152,25 +179,31 @@ def search_values(
         for t in tables:
             cols = conn.execute(f"PRAGMA table_info({_q(t)})").fetchall()
             names = {c[1] for c in cols}
+            hidden = policy.hidden_in(t) if policy else set()
             if column:
                 if column not in names:
                     raise ValueError(f"未知列：{t}.{column}")
+                if column.lower() in hidden:
+                    raise ValueError(f"当前角色（{policy.label}）无权访问 {t}.{column}")
                 targets.append((t, column))
             else:
-                targets += [(t, c[1]) for c in cols if _is_text(c[2])]
+                targets += [
+                    (t, c[1]) for c in cols if _is_text(c[2]) and c[1].lower() not in hidden
+                ]
     finally:
         conn.close()
 
     matches, skipped = [], []
     deadline = time.monotonic() + SEARCH_TIMEOUT_S
-    conn = connect_readonly(path)
+    conn = connect_readonly(path, policy)
     conn.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 10_000)
     try:
         for t, c in targets:
             if len(matches) >= limit:
                 break
             sql = (
-                f"SELECT DISTINCT {_q(c)} FROM {_q(t)} WHERE {_q(c)} LIKE ? ESCAPE '\\' "
+                f"SELECT DISTINCT {_q(c)} FROM {source(db_id, t, role)} "
+                f"WHERE {_q(c)} LIKE ? ESCAPE '\\' "
                 f"LIMIT {limit - len(matches)}"
             )
             try:
@@ -184,12 +217,12 @@ def search_values(
     return {"keyword": keyword, "matches": matches[:limit], "skipped": skipped}
 
 
-def run_sql(db_id: str, sql: str, max_rows: int = 50) -> dict:
+def run_sql(db_id: str, sql: str, max_rows: int = 50, role: str | None = None) -> dict:
     """只读执行单条 SELECT。错误以结构化结果返回（不抛异常），方便模型据此纠错。"""
     if max_rows < 0:
         return {"error": "bad_arguments", "message": f"max_rows 不能为负：{max_rows}"}
     try:
-        res = run_readonly(_db(db_id), sql, max_rows=max_rows)
+        res = run_readonly(_db(db_id), sql, max_rows=max_rows, policy=rls.policy_for(db_id, role))
     except SQLRejected as e:
         return {"error": "rejected", "message": str(e)}
     except TimeoutError as e:

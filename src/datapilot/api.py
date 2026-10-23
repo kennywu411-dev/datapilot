@@ -7,6 +7,7 @@
           DATAPILOT_MAX_INFLIGHT（同时调用模型的请求上限，默认 8）
           DATAPILOT_SIM_LATENCY_S（simulated 模式下每次模型调用的延迟，默认 2.0）
           DATAPILOT_CORS_ORIGINS（允许跨域的前端地址，逗号分隔，默认 localhost:3000）
+          DATAPILOT_ROLE（默认角色，行列级权限用；请求头 X-Role 可覆盖）
 
 用户识别：请求头 X-User-Id；没有时按客户端 IP。项目没有登录系统，这个头由前端或网关填，
 生产环境应换成网关校验过的身份（JWT 等），不能信任客户端自报。
@@ -28,7 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
-from datapilot import config, tools
+from datapilot import config, rls, tools
 from datapilot.llm import SimulatedLLM
 from datapilot.service import MAX_INFLIGHT, ChatService
 from datapilot.store import make_store
@@ -57,6 +58,15 @@ def _examples() -> dict[str, list[str]]:
             by_db.setdefault(q["db_id"], []).append(q["question"])
     rng = random.Random(0)
     return {db: rng.sample(v, min(4, len(v))) for db, v in by_db.items()}
+
+
+def role_of(request: Request) -> str | None:
+    """角色：请求头 X-Role，没有时用 DATAPILOT_ROLE。和 X-User-Id 一样是客户端自报，
+    项目没有登录系统；生产环境必须由网关根据登录身份填写，不能信任客户端。"""
+    role = request.headers.get("x-role") or os.environ.get("DATAPILOT_ROLE") or None
+    if role is not None and not _USER_ID.fullmatch(role):
+        raise HTTPException(400, "X-Role 格式不对")
+    return role
 
 
 def user_id_of(request: Request) -> str:
@@ -129,13 +139,22 @@ def create_app(
         return [{"db_id": d, "tables": len(tools.list_tables(d))} for d in tools.list_databases()]
 
     @app.get("/api/databases/{db_id}/schema")
-    async def schema(db_id: str):
+    async def schema(db_id: str, request: Request):
         if db_id not in tools.list_databases():
             raise HTTPException(404, f"未知数据库：{db_id}")
-        return {
-            "db_id": db_id,
-            "tables": [tools.describe_table(db_id, t["table"]) for t in tools.list_tables(db_id)],
-        }
+        role = role_of(request)
+        try:
+            tables = [
+                tools.describe_table(db_id, t["table"], role) for t in tools.list_tables(db_id)
+            ]
+        except ValueError as e:
+            raise HTTPException(403, str(e)) from e
+        return {"db_id": db_id, "role": role, "tables": tables}
+
+    @app.get("/api/databases/{db_id}/roles")
+    async def roles(db_id: str):
+        """该库定义的角色（演示用：前端据此显示角色切换）。"""
+        return [{"role": k, "label": v} for k, v in rls.roles_of(db_id).items()]
 
     @app.get("/api/databases/{db_id}/examples")
     async def examples(db_id: str):
@@ -158,10 +177,13 @@ def create_app(
     async def ask(req: AskRequest, request: Request):
         svc: ChatService = app.state.service
         user_id = user_id_of(request)
+        role = role_of(request)
         await check_rate(svc, user_id)
 
         async def events():
-            async for e in svc.ask(req.session_id, req.db_id, req.question, user_id=user_id):
+            async for e in svc.ask(
+                req.session_id, req.db_id, req.question, user_id=user_id, role=role
+            ):
                 yield {"event": e["event"], "data": json.dumps(e["data"], ensure_ascii=False)}
 
         # ping：长查询时定期发心跳注释行，防止代理或浏览器判定连接空闲而断开

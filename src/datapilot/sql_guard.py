@@ -8,6 +8,7 @@
    PRAGMA、CREATE TEMP TABLE（问题日志 P6），这一层补上；
 4. 超时：`set_progress_handler` 定期检查耗时，超时中断；
 5. 行数上限：`fetchmany`，避免几万行结果撑爆模型上下文。
+6. 行列级权限（传了 policy 时，v1.4）：语法树改写 + 按列拒绝的授权回调，见 rls.py。
 """
 
 from __future__ import annotations
@@ -15,11 +16,14 @@ from __future__ import annotations
 import sqlite3
 import time
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 
 import sqlglot
 from sqlglot import exp
 from sqlglot.errors import SqlglotError
+
+from datapilot import rls
 
 DEFAULT_TIMEOUT_S = 30.0  # 与官方评测 meta_time_out 一致
 DEFAULT_MAX_ROWS = 1000
@@ -81,12 +85,37 @@ def check_sql(sql: str) -> None:
         raise SQLRejected("查询中包含写操作")
 
 
-def connect_readonly(db_path: str | Path) -> sqlite3.Connection:
-    """只读连接 + 只放行读操作的授权回调；文件不存在时报错而不是新建空库。"""
+def connect_readonly(db_path: str | Path, policy: rls.Policy | None = None) -> sqlite3.Connection:
+    """只读连接 + 只放行读操作的授权回调；文件不存在时报错而不是新建空库。
+    传了 policy 时，授权回调还会拒绝读该角色不可见的列（行列级权限的兜底层）。"""
     uri = f"{Path(db_path).resolve().as_uri()}?mode=ro"
     conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
-    conn.set_authorizer(_authorizer)
+    conn.set_authorizer(_authorizer if policy is None else rls.make_authorizer(policy, _authorizer))
     return conn
+
+
+@cache
+def table_columns(db_path: str) -> dict[str, list[str]]:
+    """真实表名 → 列名（权限改写用）。表结构是静态的，按库文件缓存。"""
+    conn = connect_readonly(db_path)
+    try:
+        names = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")]
+        return {
+            n: [c[0] for c in conn.execute("SELECT name FROM pragma_table_info(?)", (n,))]
+            for n in names
+        }
+    finally:
+        conn.close()
+
+
+def apply_policy(db_path: str | Path, sql: str, policy: rls.Policy | None) -> str:
+    """按角色改写 SQL；违反权限抛 SQLRejected（消息说明哪一列无权访问）。"""
+    if policy is None:
+        return sql
+    try:
+        return rls.rewrite(sql, policy, table_columns(str(Path(db_path).resolve())))
+    except rls.AccessDenied as e:
+        raise SQLRejected(str(e)) from e
 
 
 def run_readonly(
@@ -96,6 +125,7 @@ def run_readonly(
     timeout_s: float = DEFAULT_TIMEOUT_S,
     max_rows: int | None = DEFAULT_MAX_ROWS,
     skip_guard: bool = False,
+    policy: rls.Policy | None = None,
 ) -> QueryResult:
     """在只读连接上执行 SQL。
 
@@ -109,8 +139,9 @@ def run_readonly(
             check_sql(sql)
         except SQLUnparseable:
             pass  # 交给 SQLite：语法真错会得到原生报错，写操作由只读连接和授权回调拦截
+    sql = apply_policy(db_path, sql, policy)  # 受限角色下无法解析的 SQL 在这里被拒绝
 
-    conn = connect_readonly(db_path)
+    conn = connect_readonly(db_path, policy)
     start = time.monotonic()
     deadline = start + timeout_s
     conn.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 10_000)

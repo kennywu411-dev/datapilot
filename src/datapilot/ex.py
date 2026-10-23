@@ -21,7 +21,10 @@ from typing import Literal
 
 from datapilot.sql_guard import DEFAULT_TIMEOUT_S, SQLRejected, run_readonly
 
-Status = Literal["ok", "pred_error", "pred_rejected", "pred_timeout", "timeout", "gold_error"]
+Status = Literal[
+    "ok", "pred_error", "pred_rejected", "pred_timeout", "timeout", "gold_error", "denied_ok"
+]
+NO_PERMISSION = "NO_PERMISSION"
 
 
 @dataclass(frozen=True)
@@ -41,10 +44,32 @@ def evaluate_one(
     gold_sql: str,
     *,
     timeout_s: float = DEFAULT_TIMEOUT_S,
+    policy=None,
 ) -> ExOutcome:
+    """policy（行列级权限，v1.4）：预测和标准都按同一角色执行，比较的是"该角色能看到的正确结果"。
+    标准答案本身在该角色下被拒（问题需要无权访问的列）时，预测被拒、或返回 NO_PERMISSION
+    说明，才算对（status=denied_ok）；给出任何其他结果都算错。"""
+    if policy is not None:
+        try:
+            run_readonly(db_path, gold_sql, timeout_s=timeout_s, max_rows=1, policy=policy)
+        except SQLRejected:
+            try:
+                pred = run_readonly(
+                    db_path, pred_sql, timeout_s=timeout_s, max_rows=5, policy=policy
+                )
+            except (SQLRejected, sqlite3.Error):
+                return ExOutcome(True, "denied_ok", "标准答案需要无权访问的数据，预测也被拒绝")
+            said = str(pred.rows)
+            if NO_PERMISSION in said:
+                return ExOutcome(
+                    True, "denied_ok", "标准答案需要无权访问的数据，预测如实返回无权限"
+                )
+            return ExOutcome(False, "ok", f"问题需要无权访问的数据，预测却给出了结果：{said[:120]}")
+        except (TimeoutError, sqlite3.Error):
+            pass  # 交给下面的正常流程报错
     # 与官方顺序一致：先预测、后标准，共用 timeout_s
     try:
-        pred = run_readonly(db_path, pred_sql, timeout_s=timeout_s, max_rows=None)
+        pred = run_readonly(db_path, pred_sql, timeout_s=timeout_s, max_rows=None, policy=policy)
     except SQLRejected as e:
         return ExOutcome(False, "pred_rejected", str(e))
     except TimeoutError as e:
@@ -56,7 +81,9 @@ def evaluate_one(
     try:
         if remaining <= 0:
             raise TimeoutError("预测 SQL 已用完时间预算")
-        gold = run_readonly(db_path, gold_sql, timeout_s=remaining, max_rows=None, skip_guard=True)
+        gold = run_readonly(
+            db_path, gold_sql, timeout_s=remaining, max_rows=None, skip_guard=True, policy=policy
+        )
     except TimeoutError as e:
         return ExOutcome(False, "timeout", f"预测+标准共超过 {timeout_s:g} 秒：{e}")
     except sqlite3.Error as e:
