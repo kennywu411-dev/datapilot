@@ -197,6 +197,45 @@ def main() -> None:
         ],
     }
 
+    # 智能路由（v1.3）：离线回放 3 条规则 + r1 实跑
+    if "route_replay" in MANIFEST:
+        rep = json.loads((RUNS / MANIFEST["route_replay"] / "summary.json").read_text())
+        live = rows(MANIFEST["route_live"])
+        esc = sum(
+            1 for r in live if any(t.get("step") == "escalate" for t in (r.get("trace") or []))
+        )
+        data["route"] = {
+            "replay_run": MANIFEST["route_replay"],
+            "live_run": MANIFEST["route_live"],
+            "haiku": rep["baselines"]["haiku"],
+            "sonnet": rep["baselines"]["sonnet"],
+            "oracle": rep["oracle"],
+            "rules": {
+                k: {kk: v[kk] for kk in ("ex_mean", "ex_std", "escalated_mean", "cost_mean")}
+                for k, v in rep["rules"].items()
+            },
+            "live": {
+                "ex": sum(r["correct"] for r in live) / len(live),
+                "escalated": esc,
+                "cost": round(sum(r["cost_usd"] for r in live), 4),
+            },
+        }
+
+    # 中文问题（v1.3 D2）：BIRD 同批 100 题，中英文配对
+    if "zh100" in MANIFEST:
+        z, e = rows(MANIFEST["zh100"]["zh"]), rows(MANIFEST["zh100"]["en"])
+        zh = {}
+        for m in ("haiku", "sonnet"):
+            c = compare(e, z, m)
+            zh[m] = {
+                "en": round(c["ex_a"], 4),
+                "zh": round(c["ex_b"], 4),
+                "en_only": len(c["a_only_correct"]),
+                "zh_only": len(c["b_only_correct"]),
+                "p": round(c["mcnemar_p"], 3),
+            }
+        data["zh100"] = {"runs": MANIFEST["zh100"], "models": zh}
+
     data["cache"] = json.loads((RUNS / CACHE / "summary.json").read_text())
     data["selfcheck"] = json.loads((RUNS / MANIFEST["gold_check"] / "summary.json").read_text())
 

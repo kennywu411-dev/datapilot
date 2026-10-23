@@ -2752,6 +2752,81 @@
    }
   ]
  },
+ "route": {
+  "replay_run": "route-replay-20261023-191456",
+  "live_run": "route-r1-20261023-222523-d6f6",
+  "haiku": {
+   "ex_runs": [
+    0.674,
+    0.678,
+    0.688
+   ],
+   "ex_mean": 0.68,
+   "cost_mean": 0.11060755166666666
+  },
+  "sonnet": {
+   "ex_runs": [
+    0.72,
+    0.726,
+    0.726
+   ],
+   "ex_mean": 0.724,
+   "cost_mean": 1.6001608666666667
+  },
+  "oracle": {
+   "ex_mean": 0.7753333333333333,
+   "escalated_mean": 160,
+   "cost_mean": 0.6717139183333334
+  },
+  "rules": {
+   "r1_any_fix": {
+    "ex_mean": 0.694,
+    "ex_std": 0.003464101615137758,
+    "escalated_mean": 27,
+    "cost_mean": 0.23303908499999998
+   },
+   "r2_unresolved": {
+    "ex_mean": 0.6866666666666666,
+    "ex_std": 0.005033222956847112,
+    "escalated_mean": 4,
+    "cost_mean": 0.15021121833333326
+   },
+   "r3_fix_or_complex": {
+    "ex_mean": 0.6986666666666667,
+    "ex_std": 0.00461880215351701,
+    "escalated_mean": 112,
+    "cost_mean": 0.5423154849999999
+   }
+  },
+  "live": {
+   "ex": 0.696,
+   "escalated": 22,
+   "cost": 0.2303
+  }
+ },
+ "zh100": {
+  "runs": {
+   "zh": "zh100v2-20261023-222812-9a3d",
+   "zh_first": "zh100-20261023-222450-2e9a",
+   "en": "en100-20261023-222450-63f7"
+  },
+  "models": {
+   "haiku": {
+    "en": 0.64,
+    "zh": 0.69,
+    "en_only": 2,
+    "zh_only": 7,
+    "p": 0.18
+   },
+   "sonnet": {
+    "en": 0.77,
+    "zh": 0.72,
+    "en_only": 9,
+    "zh_only": 4,
+    "p": 0.267
+   }
+  }
+ },
  "cache": {
   "run_id": "cache-bench-20261022-183428",
   "model": "sonnet",

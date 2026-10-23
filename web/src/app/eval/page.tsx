@@ -169,6 +169,53 @@ function Models() {
   );
 }
 
+function Routing() {
+  type R = { ex_mean: number; ex_std?: number; escalated_mean?: number; cost_mean: number };
+  const r = (data as unknown as { route: { haiku: R; sonnet: R; oracle: R; rules: Record<string, R>; live: { ex: number; escalated: number; cost: number } } }).route;
+  const names: Record<string, string> = { r1_any_fix: "r1：触发纠错就升级", r2_unresolved: "r2：纠错后仍有问题才升级", r3_fix_or_complex: "r3：r1 或关联 ≥ 3 张表" };
+  const ratio = (c: number) => `${Math.round((c / r.sonnet.cost_mean) * 100)}%`;
+  return (
+    <>
+      <Table
+        head={["方案", "EX", "升级题数", "500 题成本", "成本 / 全 Sonnet"]}
+        align={["l", "r", "r", "r", "r"]}
+        rows={[
+          ["全用 Haiku", pct(r.haiku.ex_mean), "0", `$${r.haiku.cost_mean.toFixed(3)}`, ratio(r.haiku.cost_mean)],
+          ...Object.entries(r.rules).map(([k, v]) => [
+            `${names[k]}（回放）`,
+            `${pct(v.ex_mean)} ± ${((v.ex_std ?? 0) * 100).toFixed(2)}`,
+            Math.round(v.escalated_mean ?? 0).toString(),
+            `$${v.cost_mean.toFixed(3)}`,
+            ratio(v.cost_mean),
+          ]),
+          ["r1（实跑）", pct(r.live.ex), r.live.escalated.toString(), `$${r.live.cost.toFixed(3)}`, ratio(r.live.cost)],
+          ["全用 Sonnet", pct(r.sonnet.ex_mean), "500", `$${r.sonnet.cost_mean.toFixed(3)}`, "100%"],
+          ["理想路由（预知哪题会错）", pct(r.oracle.ex_mean), Math.round(r.oracle.escalated_mean ?? 0).toString(), `$${r.oracle.cost_mean.toFixed(3)}`, ratio(r.oracle.cost_mean)],
+        ]}
+      />
+      <p className="text-xs text-muted-foreground">
+        实跑与回放一致。按失败信号路由只能追回 Haiku 与 Sonnet 差距的 1/3 到一半：Haiku 的错题大多执行成功、没有报错，运行时看不出来；理想路由能到 {pct(r.oracle.ex_mean)}，提升空间在更好的“会不会错”判断器。
+      </p>
+    </>
+  );
+}
+
+function Chinese() {
+  const z = (data as unknown as { zh100: { models: Record<string, { en: number; zh: number; en_only: number; zh_only: number; p: number }> } }).zh100;
+  return (
+    <>
+      <Table
+        head={["模型", "英文", "中文", "英文独对 / 中文独对", "配对检验"]}
+        align={["l", "r", "r", "r", "r"]}
+        rows={Object.entries(z.models).map(([m, v]) => [m[0].toUpperCase() + m.slice(1), pct(v.en, 0), pct(v.zh, 0), `${v.en_only} / ${v.zh_only}`, pval(v.p)])}
+      />
+      <p className="text-xs text-muted-foreground">
+        中英文没有显著差别，两个模型方向还相反。取值映射题中英文持平：增强 schema 里本来就带取值说明。中文特有的失败主要来自问法歧义；首轮有 3 条译文偏离原意，已修正后重跑（问题日志 P18）。
+      </p>
+    </>
+  );
+}
+
 function ShopOps() {
   const s = (data as unknown as { shop_ops: { models: { model: string; with_ev: number[]; no_ev: number[]; with_mean: number; no_mean: number }[] } }).shop_ops;
   const chart = {
@@ -334,6 +381,20 @@ export default function EvalPage() {
 
         <Section title="模型对比" note="Opus 有 241/500 条预测逐字复现标准答案，疑似训练数据污染，数字仅供参考。">
           <Models />
+        </Section>
+
+        <Section
+          title="智能路由"
+          note="Haiku 先答，触发纠错等失败信号才交给 Sonnet 从头重跑。三条规则事先定好、全部报告；离线回放用已有的 3 组配对运行，r1 另外实跑一次验证。"
+        >
+          <Routing />
+        </Section>
+
+        <Section
+          title="中文提问"
+          note="BIRD 同批 100 题翻译成中文问法（库里取值保持英文，29 题需要取值映射），与英文原题按题配对。"
+        >
+          <Chinese />
         </Section>
 
         <Section
