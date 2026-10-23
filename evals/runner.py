@@ -19,6 +19,7 @@ import argparse
 import asyncio
 import itertools
 import json
+import os
 import random
 import sys
 import time
@@ -216,9 +217,9 @@ async def run(
 def estimate(questions: list[dict], configs: list[Config]) -> float:
     total = 0.0
     for cfg in configs:
-        if cfg.model not in config.MODELS:
+        if cfg.model in config.LOCAL_MODELS:
             continue
-        inp, out, _ = config.PRICING[config.MODELS[cfg.model]]
+        inp, out, _ = config.PRICING[config.model_id(cfg.model)]
         pipe = PIPELINES[cfg.pipeline]
         for q in questions:
             path = config.db_path(q["db_id"])
@@ -236,12 +237,31 @@ def validate(models: list[str], pipeline: str) -> None:
     """开跑前拦住不可能成功的配置：否则每题都记成 llm_error，续跑时还会被无限重试。"""
     if models == ["gold"]:
         return
-    known = set(config.MODELS) | set(config.LOCAL_MODELS)
+    known = set(config.MODELS) | set(config.LOCAL_MODELS) | set(config.API_MODELS)
     unknown = [m for m in models if m not in known]
     if unknown:
         raise SystemExit(f"未知模型：{unknown}，可选：{sorted(known)}")
-    if pipeline == "agent" and any(m in config.LOCAL_MODELS for m in models):
-        raise SystemExit("本地模型不支持工具调用，不能跑 agent 流程")
+    if pipeline == "agent" and any(m not in config.MODELS for m in models):
+        raise SystemExit("本地模型和国产 API 模型只接了固定流程，不能跑 agent 流程")
+    # 没有价格就算不出花费，--max-cost 形同虚设（模型 ID 被环境变量换掉时会出现）
+    unpriced = [
+        config.model_id(m)
+        for m in models
+        if m in config.API_MODELS and config.model_id(m) not in config.PRICING
+    ]
+    if unpriced:
+        raise SystemExit(f"{unpriced} 没有价格，先在 config.PRICING 里登记")
+
+
+def check_keys(models: list[str]) -> None:
+    """真正调用前确认国产模型的密钥已填：否则每题都记成 llm_error。"""
+    missing = [
+        config.API_MODELS[m]["key_env"]
+        for m in models
+        if m in config.API_MODELS and not os.environ.get(config.API_MODELS[m]["key_env"])
+    ]
+    if missing:
+        raise SystemExit(f"缺少 {', '.join(missing)}：请在 .env 里填写")
 
 
 def make_factory(mock: bool):
@@ -258,14 +278,24 @@ def make_factory(mock: bool):
     import anthropic
     import httpx2
 
-    from datapilot.llm import ClaudeLLM, LocalLLM
+    from datapilot.llm import ClaudeLLM, LocalLLM, OpenAICompatLLM
 
     client = anthropic.AsyncAnthropic(max_retries=6)
     local_client = httpx2.AsyncClient(timeout=600)  # 与 Claude 一样共用一个客户端，不每题新建
+    api_client = httpx2.AsyncClient(timeout=300)
 
     def factory(cfg, q):
         if cfg.model in config.LOCAL_MODELS:
             return LocalLLM(config.LOCAL_MODELS[cfg.model], client=local_client)
+        if cfg.model in config.API_MODELS:
+            spec = config.API_MODELS[cfg.model]
+            return OpenAICompatLLM(
+                config.model_id(cfg.model),
+                base_url=spec["base_url"],
+                api_key=os.environ[spec["key_env"]],
+                client=api_client,
+                extra_body=spec["extra_body"],
+            )
         return ClaudeLLM(config.MODELS[cfg.model], effort=cfg.effort, client=client)
 
     return factory
@@ -326,6 +356,7 @@ def main(argv=None) -> None:
         print("加 --yes 确认后执行。")
         return
 
+    check_keys(models)
     run_dir.mkdir(parents=True, exist_ok=True)
     prev_cfg = run_dir / "config.json"
     if args.resume and prev_cfg.exists():

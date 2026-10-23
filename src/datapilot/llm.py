@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import time
 from dataclasses import dataclass, field
 from functools import cache
@@ -227,6 +228,110 @@ class LocalLLM:
             usage={
                 "input_tokens": data.get("prompt_eval_count", 0),
                 "output_tokens": data.get("eval_count", 0),
+            },
+            parsed=parsed,
+        )
+
+
+RETRY_BASE_S = 1.0
+RETRY_STATUS = {429, 500, 502, 503, 504}
+
+
+class OpenAICompatLLM:
+    """OpenAI 兼容接口（DeepSeek、阿里云百炼的通义千问）。回答"国内用什么模型"。
+
+    - 与 LocalLLM 一样只用于固定流程（不传 tools）
+    - 结构化输出用 JSON 模式（json_object）：两家都支持，json_schema 支持情况不一；
+      JSON 模式要求提示里出现 "json"，所以把 schema 附在 system 末尾
+    - temperature 0；extra_body 透传厂商参数（百炼用 enable_thinking=False 关掉思考，
+      与 Claude 对比时统一说明）
+    - usage 拆出缓存命中部分单独计价：DeepSeek 返回 prompt_cache_hit_tokens，
+      百炼返回 prompt_tokens_details.cached_tokens
+    - 429 / 5xx 指数退避重试（Claude SDK 自带 max_retries，这里没有 SDK，自己做）
+    """
+
+    def __init__(
+        self,
+        model: str,
+        base_url: str,
+        api_key: str,
+        client: httpx2.AsyncClient | None = None,
+        max_tokens: int = 4096,
+        extra_body: dict | None = None,
+        max_retries: int = 6,
+    ):
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+        self.api_key = api_key
+        self.max_tokens = max_tokens
+        self.extra_body = extra_body or {}
+        self.max_retries = max_retries
+        self.client = client or httpx2.AsyncClient(timeout=300)
+
+    async def complete(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        if tools:
+            raise ValueError("OpenAICompatLLM 只用于固定流程，不支持工具调用")
+        if output_format is not None:
+            schema = json.dumps(output_format.model_json_schema(), ensure_ascii=False)
+            system = (
+                f"{system}\n\nRespond with one JSON object matching this JSON schema:\n{schema}"
+            )
+        chat = [{"role": "system", "content": system}] + [
+            {"role": m["role"], "content": LocalLLM._text(m["content"])} for m in messages
+        ]
+        return await retry_on_max_tokens(lambda: self._once(chat, output_format))
+
+    async def _post(self, body: dict) -> dict:
+        for attempt in range(self.max_retries + 1):
+            resp = await self.client.post(
+                f"{self.base_url}/chat/completions",
+                json=body,
+                headers={"Authorization": f"Bearer {self.api_key}"},
+            )
+            if resp.status_code not in RETRY_STATUS or attempt == self.max_retries:
+                resp.raise_for_status()
+                return resp.json()
+            await asyncio.sleep(RETRY_BASE_S * 2**attempt)
+        raise AssertionError("unreachable")
+
+    async def _once(self, chat: list[dict], output_format: type[BaseModel] | None) -> LLMResult:
+        body: dict = {
+            "model": self.model,
+            "messages": chat,
+            "temperature": 0,
+            "max_tokens": self.max_tokens,
+            **self.extra_body,
+        }
+        if output_format is not None:
+            body["response_format"] = {"type": "json_object"}
+        data = await self._post(body)
+        choice = data["choices"][0]
+        text = choice.get("message", {}).get("content") or ""
+        stop = "max_tokens" if choice.get("finish_reason") == "length" else "end_turn"
+        parsed = None
+        if output_format is not None and stop != "max_tokens":
+            try:
+                parsed = output_format.model_validate_json(text)
+            except ValidationError:
+                parsed = None
+        u = data.get("usage") or {}
+        hit = u.get("prompt_cache_hit_tokens")
+        if hit is None:
+            hit = (u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0
+        return LLMResult(
+            content=[{"type": "text", "text": text}],
+            stop_reason=stop,
+            model=self.model,
+            usage={
+                "input_tokens": u.get("prompt_tokens", 0) - hit,
+                "output_tokens": u.get("completion_tokens", 0),
+                "cache_read_input_tokens": hit,
             },
             parsed=parsed,
         )

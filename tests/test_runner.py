@@ -224,7 +224,7 @@ def test_validate_rejects_unknown_model_and_local_agent():
 
     with pytest.raises(SystemExit, match="未知模型"):
         validate(["sonet"], "e4_correct")
-    with pytest.raises(SystemExit, match="不支持工具"):
+    with pytest.raises(SystemExit, match="固定流程"):
         validate(["qwen7b"], "agent")
     validate(["haiku", "qwen7b"], "e4_correct")
     validate(["gold"], "agent")
@@ -310,3 +310,43 @@ def test_resume_with_different_question_set_is_refused(tmp_path, monkeypatch, sh
         runner_mod.main(
             ["--models", "gold", "--questions", qfile("b.json", [1, 2, 3]), "--resume", run_id]
         )
+
+
+def test_api_models_validate_factory_and_keys(monkeypatch):
+    """国产 API 模型：只跑固定流程；必须有价格；调用前必须有密钥；工厂返回 OpenAICompatLLM。"""
+    import pytest
+
+    from datapilot.llm import OpenAICompatLLM
+    from evals.runner import Config, check_keys, make_factory, validate
+
+    validate(["deepseek", "qwen"], "e4_correct")
+    with pytest.raises(SystemExit, match="固定流程"):
+        validate(["deepseek"], "agent")
+    monkeypatch.setenv("QWEN_MODEL", "qwen-unpriced")
+    with pytest.raises(SystemExit, match="没有价格"):
+        validate(["qwen"], "e4_correct")
+    monkeypatch.delenv("QWEN_MODEL")
+
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    with pytest.raises(SystemExit, match="DEEPSEEK_API_KEY"):
+        check_keys(["haiku", "deepseek"])
+    check_keys(["haiku"])
+
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "k")
+    llm = make_factory(False)(Config("qwen", "e4_correct", "medium", 0), {})
+    assert isinstance(llm, OpenAICompatLLM)
+    assert llm.model == "qwen-plus" and llm.extra_body == {"enable_thinking": False}
+    assert llm.base_url.startswith("https://dashscope.aliyuncs.com")
+
+
+def test_estimate_prices_api_models():
+    from datapilot import config
+    from evals.runner import Config, estimate
+
+    q = [{"question_id": 1, "db_id": "superhero", "question": "x", "evidence": ""}]
+    if not config.db_path("superhero").exists():
+        import pytest
+
+        pytest.skip("需要 BIRD 数据")
+    est = estimate(q, [Config("deepseek", "e4_correct", "medium", 0)])
+    assert 0 < est < 0.01

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,13 +22,48 @@ DEFAULT_MODEL = MODELS["sonnet"]
 # 本地开源模型（Ollama），花费记为 0
 LOCAL_MODELS = {"qwen7b": "qwen2.5-coder:7b"}
 
+# 国产 API 模型（OpenAI 兼容接口），只跑固定流程。
+# 模型 ID 可用环境变量覆盖（以厂商 /models 返回为准）。
+API_MODELS = {
+    "deepseek": {
+        "model": "deepseek-v4-flash",
+        "model_env": "DEEPSEEK_MODEL",
+        "base_url": "https://api.deepseek.com/v1",
+        "key_env": "DEEPSEEK_API_KEY",
+        "extra_body": {},
+    },
+    "qwen": {
+        "model": "qwen-plus",
+        "model_env": "QWEN_MODEL",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "key_env": "DASHSCOPE_API_KEY",
+        "extra_body": {"enable_thinking": False},  # 关掉思考：思考模式输出价贵 4 倍
+    },
+}
+
 # 美元 / 百万 token：(输入, 输出, 缓存读取)。缓存写入按输入价 1.25 倍计。
 # 来源：Anthropic 官方价格（2026-10 核对），价格变动时只改这里。
 PRICING = {
     "claude-haiku-5-5": (0.10, 0.50, 0.01),
     "claude-sonnet-5-5": (2.00, 10.00, 0.20),
     "claude-opus-5-5": (4.00, 20.00, 0.20),
+    # 国产模型：2026-10 第三方整理价（官方页面有出入），试跑 20 题后按控制台账单核对再改。
+    # DeepSeek V4 Flash 按高峰价；通义千问按 1 美元 = 7.1 元折算（¥0.8 / ¥2 / 缓存 ¥0.16）
+    "deepseek-v4-flash": (0.30, 1.20, 0.03),
+    "qwen-plus": (0.113, 0.282, 0.023),
 }
+
+
+def api_model_id(name: str) -> str:
+    spec = API_MODELS[name]
+    return os.environ.get(spec["model_env"]) or spec["model"]
+
+
+def model_id(name: str) -> str:
+    """评测里的短名（haiku / deepseek …）→ 实际模型 ID。"""
+    if name in API_MODELS:
+        return api_model_id(name)
+    return MODELS.get(name) or LOCAL_MODELS[name]
 
 
 def db_path(db_id: str) -> Path:
