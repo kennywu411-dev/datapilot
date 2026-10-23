@@ -70,3 +70,45 @@ async def test_clear_cache(client):
     async with client as c:
         r = await c.delete("/api/cache/shop")
         assert r.json() == {"deleted": 0}
+
+
+def make_client(limit_per_min=2):
+    def factory():
+        return ScriptedLLM([SQLAnswer(sql="SELECT count(*) AS n FROM users"), "共 3 人。"] * 10)
+
+    svc = ChatService(MemoryStore(), llm_factory=factory)
+    app = create_app(service=svc, rate_limit_per_min=limit_per_min)
+    return httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t"), svc
+
+
+async def ask(c, user=None, question="多少人"):
+    headers = {"X-User-Id": user} if user else {}
+    body = {"session_id": "s1", "db_id": "shop", "question": question}
+    return await c.post("/api/ask", json=body, headers=headers)
+
+
+async def test_rate_limit_per_user_returns_429(shop_db_dir):
+    client, _ = make_client(limit_per_min=2)
+    async with client as c:
+        assert (await ask(c, "alice")).status_code == 200
+        assert (await ask(c, "alice")).status_code == 200
+        r = await ask(c, "alice")
+        assert r.status_code == 429
+        assert 1 <= int(r.headers["Retry-After"]) <= 60
+        assert "频繁" in r.json()["detail"]
+        assert (await ask(c, "bob")).status_code == 200  # 别的用户不受影响
+
+
+async def test_user_header_scopes_session(shop_db_dir):
+    client, svc = make_client()
+    async with client as c:
+        await ask(c, "alice")
+        await ask(c)  # 没有用户头：按客户端 IP 识别
+    assert await svc.store.get_json("dp:session:alice:s1")
+    assert await svc.store.get_json("dp:session:ip-127.0.0.1:s1")
+
+
+async def test_invalid_user_header_is_rejected(shop_db_dir):
+    client, _ = make_client()
+    async with client as c:
+        assert (await ask(c, "bad user:id")).status_code == 400

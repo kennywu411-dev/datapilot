@@ -72,7 +72,10 @@ export default function Home() {
         });
         if (!complete) patch(id, (t) => ({ ...t, status: "disconnected" }));
       } catch (err) {
-        patch(id, (t) => ({ ...t, status: "error", error: `无法连接后端：${(err as Error).message}` }));
+        // 后端明确拒绝（限流等）时原样展示，其余才是连不上
+        const e = err as Error;
+        const message = e.name === "HttpError" ? e.message : `无法连接后端：${e.message}`;
+        patch(id, (t) => ({ ...t, status: "error", error: message }));
       }
     },
     [db, session],

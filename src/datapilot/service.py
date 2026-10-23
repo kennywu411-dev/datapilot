@@ -4,6 +4,8 @@
 - 追问：会话保存最近几轮的问题和 SQL（Redis / 内存），同库追问时一并交给模型
 - 查询缓存：key = 库 + 配置版本 + 模型 + hash(规范化问题 + 追问上下文)，命中直接返回
 - 图表：按结果列类型用规则选，稳定、可解释，前端可手动切换
+- 多用户：会话 key 带用户 id，拿到别人的 session_id 也读不到别人的追问上下文；查询缓存按库共享
+- 并发保护：未命中缓存才会调用模型，这条路径用信号量限制在途请求数，排队超时就报繁忙
 """
 
 from __future__ import annotations
@@ -35,8 +37,12 @@ PIPELINE = FixedPipeline(
     )
 )
 LOCKS_MAX = 10_000
+MAX_INFLIGHT = 8  # 同时调用模型的请求上限，按 API 速率限制估算
+QUEUE_TIMEOUT_S = 10.0
+BUSY_MESSAGE = "系统繁忙，请稍后再试。"
 
 STEP_LABELS = {
+    "queue": "排队等待",
     "generate": "生成 SQL",
     "execute": "执行查询",
     "check": "检查结果",
@@ -117,6 +123,8 @@ class ChatService:
         store: Store,
         model: str = "sonnet",
         llm_factory: Callable[[], LLM] | None = None,
+        max_inflight: int = MAX_INFLIGHT,
+        queue_timeout_s: float = QUEUE_TIMEOUT_S,
     ):
         self.store = store
         self.model = model
@@ -125,6 +133,12 @@ class ChatService:
         # 同一会话的请求排队：会话读改写不是原子的，并发时后写会覆盖先写。
         # 只在单进程内有效；多进程部署需要换成 Redis 原子操作（RPUSH + LTRIM）
         self._locks: OrderedDict[str, asyncio.Lock] = OrderedDict()
+        # 只在单进程内有效；多进程部署时总上限 = 进程数 × max_inflight
+        if max_inflight < 1:
+            raise ValueError(f"max_inflight 至少为 1，收到 {max_inflight}")
+        self._inflight = asyncio.Semaphore(max_inflight)
+        self.max_inflight = max_inflight
+        self.queue_timeout_s = queue_timeout_s
 
     def _default_llm(self) -> LLM:
         if self._client is None:
@@ -133,9 +147,9 @@ class ChatService:
             self._client = anthropic.AsyncAnthropic(max_retries=6)
         return ClaudeLLM(config.MODELS[self.model], client=self._client)
 
-    def _lock(self, session_id: str) -> asyncio.Lock:
-        lock = self._locks.pop(session_id, None) or asyncio.Lock()
-        self._locks[session_id] = lock
+    def _lock(self, key: str) -> asyncio.Lock:
+        lock = self._locks.pop(key, None) or asyncio.Lock()
+        self._locks[key] = lock
         while len(self._locks) > LOCKS_MAX:
             self._locks.popitem(last=False)
         return lock
@@ -148,19 +162,21 @@ class ChatService:
         """数据库更新后清掉这个库的缓存。"""
         return await self.store.delete_prefix(f"dp:cache:{db_id}:")
 
-    async def ask(self, session_id: str, db_id: str, question: str) -> AsyncIterator[dict]:
-        async with self._lock(session_id):
-            async for e in self._ask(session_id, db_id, question):
+    async def ask(
+        self, session_id: str, db_id: str, question: str, user_id: str = "anon"
+    ) -> AsyncIterator[dict]:
+        session_key = f"dp:session:{user_id}:{session_id}"
+        async with self._lock(session_key):
+            async for e in self._ask(session_key, db_id, question):
                 yield e
 
-    async def _ask(self, session_id: str, db_id: str, question: str) -> AsyncIterator[dict]:
+    async def _ask(self, session_key: str, db_id: str, question: str) -> AsyncIterator[dict]:
         start = time.perf_counter()
         if db_id not in tools.list_databases():
             yield {"event": "error", "data": {"message": f"未知数据库：{db_id}"}}
             yield {"event": "done", "data": {"cached": False}}
             return
 
-        session_key = f"dp:session:{session_id}"
         session = await self.store.get_json(session_key) or {"db_id": db_id, "turns": []}
         history = session["turns"][-CONTEXT_TURNS:] if session.get("db_id") == db_id else []
         context = "".join(
@@ -176,12 +192,52 @@ class ChatService:
 
         cached = await self.store.get_json(cache_key)
         if cached:
-            for e in cached["events"]:
+            async for e in self._replay(start, cached, session_key, session, db_id, question):
                 yield e
-            await self._remember(session_key, session, db_id, question, cached["sql"])
-            yield {"event": "done", "data": self._done(start, True, 0.0)}
             return
 
+        if self._inflight.locked():
+            # 名额满了先告诉前端在排队，否则用户要干等到拿到名额才看到第一个事件（P14）
+            yield {"event": "step", "data": {"name": "queue", "label": STEP_LABELS["queue"]}}
+        try:
+            await asyncio.wait_for(self._inflight.acquire(), self.queue_timeout_s)
+        except TimeoutError:
+            yield {"event": "error", "data": {"message": BUSY_MESSAGE}}
+            yield {"event": "done", "data": self._done(start, False, 0.0)}
+            return
+        try:
+            # 排队期间别的请求可能已算出同一个问题：拿到名额后再查一次缓存，避免缓存击穿
+            cached = await self.store.get_json(cache_key)
+            events = (
+                self._replay(start, cached, session_key, session, db_id, question)
+                if cached
+                else self._generate(
+                    start, session_key, session, db_id, question, context, cache_key
+                )
+            )
+            async for e in events:
+                yield e
+        finally:
+            self._inflight.release()
+
+    async def _replay(
+        self, start: float, cached: dict, session_key: str, session: dict, db_id: str, question: str
+    ) -> AsyncIterator[dict]:
+        for e in cached["events"]:
+            yield e
+        await self._remember(session_key, session, db_id, question, cached["sql"])
+        yield {"event": "done", "data": self._done(start, True, 0.0)}
+
+    async def _generate(
+        self,
+        start: float,
+        session_key: str,
+        session: dict,
+        db_id: str,
+        question: str,
+        context: str,
+        cache_key: str,
+    ) -> AsyncIterator[dict]:
         llm = self.llm_factory()
         full_question = (
             f"{context}-- Current question (may refer to the previous ones): {question}"

@@ -71,3 +71,24 @@ async def test_make_store_uses_redis_when_up():
     if not _redis_available():
         pytest.skip("本机没有运行 Redis")
     assert isinstance(await make_store(REDIS_URL), RedisStore)
+
+
+async def test_incr_counts_within_window_and_expires(store):
+    assert await store.incr("dp:rl:u1:0", ttl_s=1) == 1
+    assert await store.incr("dp:rl:u1:0", ttl_s=1) == 2
+    assert await store.incr("dp:rl:u2:0", ttl_s=1) == 1  # 不同 key 各自计数
+    await asyncio.sleep(1.2)
+    assert await store.incr("dp:rl:u1:0", ttl_s=1) == 1  # 窗口过期后重新计数
+
+
+async def test_incr_is_atomic_under_concurrency(store):
+    counts = await asyncio.gather(*(store.incr("dp:rl:c:0", ttl_s=60) for _ in range(50)))
+    assert sorted(counts) == list(range(1, 51))
+
+
+async def test_memory_counters_do_not_evict_sessions():
+    s = MemoryStore(max_items=2)
+    await s.set_json("dp:session:a:s1", {"turns": []}, ttl_s=60)
+    for i in range(5):
+        await s.incr(f"dp:rl:u{i}:0", ttl_s=60)
+    assert await s.get_json("dp:session:a:s1") == {"turns": []}

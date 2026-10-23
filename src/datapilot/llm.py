@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from dataclasses import dataclass, field
 from functools import cache
@@ -271,3 +272,31 @@ class ScriptedLLM:
             for i, s in enumerate(steps)
         ]
         return LLMResult(content, "tool_use", self.model)
+
+
+class SimulatedLLM:
+    """压测用：只睡一段时间模拟模型延迟，返回固定 SQL 和回答，不调用任何 API、花费为 0。
+
+    用来测服务端自身（事件循环、存储、并发保护）的表现，不代表真实模型的准确率或延迟分布。
+    """
+
+    model = "simulated"
+
+    def __init__(self, latency_s: float = 2.0):
+        self.latency_s = latency_s
+
+    async def complete(
+        self,
+        system: str,
+        messages: list[dict],
+        tools: list[dict],
+        output_format: type[BaseModel] | None = None,
+    ) -> LLMResult:
+        await asyncio.sleep(self.latency_s)
+        if output_format is not None:
+            parsed = output_format.model_validate({"sql": "SELECT 1 AS n"})
+            text = parsed.model_dump_json()
+            return LLMResult(
+                [{"type": "text", "text": text}], "end_turn", self.model, parsed=parsed
+            )
+        return LLMResult([{"type": "text", "text": "结果是 1。"}], "end_turn", self.model)

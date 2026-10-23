@@ -13,5 +13,6 @@
   "local_model_100": "qwen100-20261022-175906-933f",
   "local_model_500": "qwen500-20261022-215451-f53b",
   "cache_bench": "cache-bench-20261022-183428",
+  "load_test": "load-20261023-140716",
   "gold_check": "gold-check-20261022-145326"
 }
