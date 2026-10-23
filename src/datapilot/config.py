@@ -26,7 +26,7 @@ LOCAL_MODELS = {"qwen7b": "qwen2.5-coder:7b"}
 # 模型 ID 可用环境变量覆盖（以厂商 /models 返回为准）。
 API_MODELS = {
     "deepseek": {
-        "model": "deepseek-v4-flash",
+        "model": "deepseek-flash",  # V4 Flash 在接口里的名字（/models 返回）
         "model_env": "DEEPSEEK_MODEL",
         "base_url": "https://api.deepseek.com/v1",
         "key_env": "DEEPSEEK_API_KEY",
@@ -48,9 +48,10 @@ PRICING = {
     "claude-sonnet-5-5": (2.00, 10.00, 0.20),
     "claude-opus-5-5": (4.00, 20.00, 0.20),
     # 国产模型：2026-10 第三方整理价（官方页面有出入），试跑 20 题后按控制台账单核对再改。
-    # DeepSeek V4 Flash 按高峰价；通义千问按 1 美元 = 7.1 元折算（¥0.8 / ¥2 / 缓存 ¥0.16）
-    "deepseek-v4-flash": (0.30, 1.20, 0.03),
-    "qwen-plus": (0.113, 0.282, 0.023),
+    # DeepSeek V4 Flash 按高峰价；通义千问按 1 美元 = 7.1 元折算
+    "deepseek-flash": (0.30, 1.20, 0.03),
+    "qwen-plus": (0.113, 0.282, 0.023),  # ¥0.8 / ¥2 / 缓存 ¥0.16
+    "qwen3.7-plus": (0.282, 1.127, 0.056),  # ¥2 / ¥8 / 缓存 ¥0.4（官方页面标价，限时 8 折未计）
 }
 
 
