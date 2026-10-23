@@ -85,6 +85,10 @@ ROLES: dict[str, dict[str, Policy]] = {
     },
 }
 
+# 是否把权限说明告诉模型（只影响模型能否如实告知；强制靠改写和授权回调，与此无关）。
+# 评测消融时关掉，用来单独测代码层的拦截效果。
+PROMPT_NOTE = True
+
 META_TABLES = {"sqlite_master", "sqlite_schema", "sqlite_temp_master", "sqlite_temp_schema"}
 
 

@@ -90,7 +90,8 @@ def build_system(
         if cfg.retrieval_k > 0:
             tables = tuple(retrieve_tables(db_id, question, evidence, cfg.retrieval_k))
         schema = enhanced_schema(db_id, tables, role)
-        return SYSTEM_TEMPLATE.format(schema=schema) + "\n\n" + policy.prompt_note()
+        note = "\n\n" + policy.prompt_note() if rls.PROMPT_NOTE else ""
+        return SYSTEM_TEMPLATE.format(schema=schema) + note
     if cfg.retrieval_k > 0:
         tables = retrieve_tables(db_id, question, evidence, cfg.retrieval_k)
         schema = (

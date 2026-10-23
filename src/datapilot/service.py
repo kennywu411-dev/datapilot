@@ -334,7 +334,7 @@ class ChatService:
                 f"共 {len(rows)} 行，以下只展示前 {len(preview)} 行，回答时不要只依据这部分下结论"
             )
         prompt = f"问题：{question}\nSQL：{sql}\n列：{table['columns']}\n结果（{scope}）：{preview}"
-        if policy is not None:
+        if policy is not None and rls.PROMPT_NOTE:
             hidden = "、".join(
                 f"{t}.{c}" for t, cs in sorted(policy.hidden.items()) for c in sorted(cs)
             )
