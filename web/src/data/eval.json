@@ -368,6 +368,69 @@
    "sonnet_paired_ex": 0.72
   }
  ],
+ "shop_ops": {
+  "n": 40,
+  "runs": {
+   "claude": "shop-20261023-220333-1947",
+   "cn": "shop-cn-20261023-220333-f418",
+   "claude_noev": "shop-noev-20261023-221707-882e",
+   "cn_noev": "shop-noev-cn-20261023-221834-7484"
+  },
+  "models": [
+   {
+    "model": "Haiku",
+    "with_ev": [
+     0.95,
+     0.95,
+     0.975
+    ],
+    "no_ev": [
+     0.625,
+     0.65,
+     0.7
+    ],
+    "with_mean": 0.9583,
+    "no_mean": 0.6583
+   },
+   {
+    "model": "Sonnet",
+    "with_ev": [
+     0.975,
+     0.975,
+     0.975
+    ],
+    "no_ev": [
+     0.625,
+     0.65,
+     0.65
+    ],
+    "with_mean": 0.975,
+    "no_mean": 0.6417
+   },
+   {
+    "model": "deepseek-flash",
+    "with_ev": [
+     0.95
+    ],
+    "no_ev": [
+     0.625
+    ],
+    "with_mean": 0.95,
+    "no_mean": 0.625
+   },
+   {
+    "model": "qwen3.7-plus",
+    "with_ev": [
+     0.925
+    ],
+    "no_ev": [
+     0.55
+    ],
+    "with_mean": 0.925,
+    "no_mean": 0.55
+   }
+  ]
+ },
  "same100": {
   "qwen2.5-coder:7b": {
    "n": 100,

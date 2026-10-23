@@ -169,6 +169,33 @@ function Models() {
   );
 }
 
+function ShopOps() {
+  const s = (data as unknown as { shop_ops: { models: { model: string; with_ev: number[]; no_ev: number[]; with_mean: number; no_mean: number }[] } }).shop_ops;
+  const chart = {
+    columns: ["模型", "有口径说明", "去掉口径说明"],
+    rows: s.models.map((m) => [m.model, +(m.with_mean * 100).toFixed(1), +(m.no_mean * 100).toFixed(1)]),
+    truncated: false,
+  };
+  return (
+    <>
+      <ChartView spec={{ type: "bar", x: "模型", y: ["有口径说明", "去掉口径说明"] }} data={chart} />
+      <Table
+        head={["模型", "有口径说明", "去掉口径说明", "下降"]}
+        align={["l", "r", "r", "r"]}
+        rows={s.models.map((m) => [
+          m.model,
+          m.with_ev.length > 1 ? `${pct(m.with_mean)}（${m.with_ev.length} 次）` : pct(m.with_mean),
+          m.no_ev.length > 1 ? `${pct(m.no_mean)}（${m.no_ev.length} 次）` : pct(m.no_mean),
+          `${((m.with_mean - m.no_mean) * 100).toFixed(1)} 点`,
+        ])}
+      />
+      <p className="text-xs text-muted-foreground">
+        40 题中 25 题依赖口径（有效订单、销售额、退款率等）；标准答案不变。去掉口径后，模型普遍把销售额算得更严（排除已退款），与公司口径不同。第 36 题（价格分档）两种条件下都判错，是输出形状不同导致的评测缺陷。
+      </p>
+    </>
+  );
+}
+
 type Case = (typeof data.failure.cases)[number];
 
 function CaseRow({ c }: { c: Case }) {
@@ -307,6 +334,13 @@ export default function EvalPage() {
 
         <Section title="模型对比" note="Opus 有 241/500 条预测逐字复现标准答案，疑似训练数据污染，数字仅供参考。">
           <Models />
+        </Section>
+
+        <Section
+          title="电商经营分析（模拟数据）"
+          note="BIRD 是英文公开基准，缺业务场景；这里用固定种子生成的模拟电商库（6000 订单、611 售后）出了 40 道中文经营分析题。口径写清楚时便宜模型也能到 95%；把口径说明去掉，所有模型都掉 30 多个点，换更贵的模型也补不回来。"
+        >
+          <ShopOps />
         </Section>
 
         <Section

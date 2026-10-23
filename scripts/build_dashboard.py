@@ -123,6 +123,37 @@ def main() -> None:
         cn.append(item)
     data["cn_models"] = cn
 
+    # 电商经营分析（模拟数据，v1.3）：有口径 vs 去掉口径，同 40 题
+    shop = MANIFEST.get("shop_ops")
+    if shop:
+        with_ev = rows(shop["claude"]) + rows(shop["cn"])
+        no_ev = rows(shop["claude_noev"]) + rows(shop["cn_noev"])
+        names = {
+            "haiku": "Haiku",
+            "sonnet": "Sonnet",
+            "deepseek": "deepseek-flash",
+            "qwen": "qwen3.7-plus",
+        }
+        items = []
+        for m, label in names.items():
+
+            def runs_of(rs, m=m):
+                reps = sorted({r["repeat"] for r in rs if r["model"] == m})
+                return [[r for r in rs if r["model"] == m and r["repeat"] == k] for k in reps]
+
+            w, n = runs_of(with_ev), runs_of(no_ev)
+            ex = lambda rr: [round(sum(r["correct"] for r in x) / len(x), 4) for x in rr]  # noqa: E731
+            items.append(
+                {
+                    "model": label,
+                    "with_ev": ex(w),
+                    "no_ev": ex(n),
+                    "with_mean": round(statistics.mean(ex(w)), 4),
+                    "no_mean": round(statistics.mean(ex(n)), 4),
+                }
+            )
+        data["shop_ops"] = {"n": 40, "runs": shop, "models": items}
+
     # 同 100 题：本地开源模型 vs Claude
     q = rows(QWEN)
     ids = {x["question_id"] for x in q}
