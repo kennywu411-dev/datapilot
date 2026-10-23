@@ -6,6 +6,7 @@
           DATAPILOT_RATE_LIMIT（每用户每分钟问数次数，默认 20）
           DATAPILOT_MAX_INFLIGHT（同时调用模型的请求上限，默认 8）
           DATAPILOT_SIM_LATENCY_S（simulated 模式下每次模型调用的延迟，默认 2.0）
+          DATAPILOT_CORS_ORIGINS（允许跨域的前端地址，逗号分隔，默认 localhost:3000）
 
 用户识别：请求头 X-User-Id；没有时按客户端 IP。项目没有登录系统，这个头由前端或网关填，
 生产环境应换成网关校验过的身份（JWT 等），不能信任客户端自报。
@@ -102,7 +103,9 @@ def create_app(
         app.state.service = service  # 测试注入；ASGI 传输不会触发 lifespan
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_origins=os.environ.get(
+            "DATAPILOT_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+        ).split(","),
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["*"],
     )
