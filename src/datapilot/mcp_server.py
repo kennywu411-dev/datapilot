@@ -15,10 +15,15 @@ from __future__ import annotations
 import os
 
 from mcp.server.mcpserver import MCPServer
+from mcp.types import ToolAnnotations
 
 from datapilot import tools
 
 ROLE = os.environ.get("DATAPILOT_ROLE") or None
+
+# 规范默认值是 read_only=False、open_world=True：不声明，客户端会把工具当成有外部副作用。
+# 这里的工具只读本地 SQLite，两个提示都和默认值相反，声明出来才有信息量。
+READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 
 server = MCPServer(
     "datapilot",
@@ -29,25 +34,25 @@ server = MCPServer(
 )
 
 
-@server.tool()
+@server.tool(annotations=READ_ONLY)
 def list_databases() -> list[str]:
     """列出可查询的数据库 db_id。"""
     return tools.list_databases()
 
 
-@server.tool()
+@server.tool(annotations=READ_ONLY)
 def list_tables(db_id: str) -> list[dict]:
     """列出数据库里的表和各表列数。"""
     return tools.list_tables(db_id)
 
 
-@server.tool()
+@server.tool(annotations=READ_ONLY)
 def describe_table(db_id: str, table: str) -> dict:
     """表结构：列名、类型、主键、外键、列说明和取值说明、3 行样例。"""
     return tools.describe_table(db_id, table, ROLE)
 
 
-@server.tool()
+@server.tool(annotations=READ_ONLY)
 def search_values(
     db_id: str, keyword: str, table: str | None = None, column: str | None = None, limit: int = 10
 ) -> dict:
@@ -55,7 +60,7 @@ def search_values(
     return tools.search_values(db_id, keyword, table, column, limit, ROLE)
 
 
-@server.tool()
+@server.tool(annotations=READ_ONLY)
 def run_sql(db_id: str, sql: str, max_rows: int = 50) -> dict:
     """只读执行单条 SELECT，返回列名和行（最多 max_rows 行）；出错时返回 error 和 message。"""
     return tools.run_sql(db_id, sql, max_rows, ROLE)

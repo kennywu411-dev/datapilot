@@ -125,3 +125,19 @@ def test_mcp_server_exposes_tools(db_dir):
 
     data = res.structured_content or json.loads(res.content[0].text)
     assert res.is_error is False and data["rows"] == [[3]]
+
+
+def test_mcp_tools_declare_read_only_annotations(db_dir):
+    from mcp import Client
+
+    from datapilot.mcp_server import server
+
+    async def go():
+        async with Client(server) as client:
+            return (await client.list_tools()).tools
+
+    for tool in asyncio.run(go()):
+        # 不声明时客户端按规范默认值处理：read_only=False、open_world=True，会被当成有外部副作用
+        assert tool.annotations is not None, tool.name
+        assert tool.annotations.read_only_hint is True, tool.name
+        assert tool.annotations.open_world_hint is False, tool.name
