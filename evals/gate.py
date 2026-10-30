@@ -81,6 +81,11 @@ def main() -> int:
     p.add_argument("--max-drop", type=float, default=0.10)
     args = p.parse_args()
 
+    if not config.QUESTIONS_PATH.exists():
+        print(f"[gate] 找不到题库 {config.QUESTIONS_PATH}")
+        print("[gate] 先运行：uv run python scripts/download_data.py")
+        return 2
+
     if args.offline:
         failures = offline_checks()
         for f in failures:
