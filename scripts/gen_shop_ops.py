@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+import argparse
 import random
 import sqlite3
 import sys
@@ -171,6 +172,10 @@ HOUR_W = [1, 1, 1, 1, 1, 1, 2, 3, 4, 5, 6, 6, 7, 6, 6, 6, 6, 7, 8, 9, 10, 10, 8,
 
 
 def main() -> None:
+    argparse.ArgumentParser(
+        description=f"生成模拟电商经营库 shop_ops 到 {OUT.relative_to(ROOT)}（固定种子，可重复）",
+        epilog="接入系统：uv run python scripts/add_database.py shop_ops data/source/shop_ops.sqlite",
+    ).parse_args()
     rng = random.Random(SEED)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     if OUT.exists():

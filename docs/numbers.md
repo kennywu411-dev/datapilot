@@ -4,7 +4,7 @@
 
 ## 数据（2026-10-22）
 
-来源：`uv run python scripts/data_stats.py`（题目用 HF `birdsql/bird_mini_dev`，数据库用官方完整包 minidev.zip）
+来源：`uv run python scripts/data_stats.py`（题目用 HF `birdsql/bird_mini_dev` 修订 f65faf4（2026-01-18 版，下载脚本已固定到这一修订；2026-10-26 起 HF 的 main 分支是另一版题库），数据库用官方完整包 minidev.zip）
 
 | 项 | 数值 |
 |---|---|

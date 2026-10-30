@@ -1,6 +1,8 @@
 """下载 BIRD Mini-Dev（CC BY-SA 4.0）。
 
-- 题目与标准 SQL：Hugging Face `birdsql/bird_mini_dev`（官方 README 称其为 canonical 版本）
+- 题目与标准 SQL：Hugging Face `birdsql/bird_mini_dev`（官方 README 称其为 canonical 版本），
+  固定取 2026-01-18 的修订 f65faf4：2026-10-26 起 main 分支换成了另一版题库（题号、题目都不同，
+  文件名也改为 mini_dev_sqlite.jsonl），而本仓库所有运行记录和门禁对应的是 f65faf4 这一版
 - SQLite 数据库：官方完整包 minidev.zip（约 801MB），只解出 SQLite 数据库
 
 用法：uv run python scripts/download_data.py
@@ -24,10 +26,9 @@ DB_DIR = DATA / "dev_databases"
 QUESTIONS = DATA / "mini_dev_sqlite.json"
 
 HF_ENDPOINT = os.environ.get("HF_ENDPOINT", "https://huggingface.co").rstrip("/")
-HF_FILE = (
-    f"{HF_ENDPOINT}/datasets/birdsql/bird_mini_dev/resolve/main/data/"
-    "mini_dev_sqlite-00000-of-00001.json"
-)
+HF_REVISION = "f65faf4ae3b638c1fa6df1d3370c8d92c8366301"  # 2026-01-18；运行记录用的就是这一版
+HF_REPO = f"{HF_ENDPOINT}/datasets/birdsql/bird_mini_dev/resolve/{HF_REVISION}"
+HF_FILE = f"{HF_REPO}/data/mini_dev_sqlite-00000-of-00001.json"
 ZIP_URL = "https://bird-bench.oss-cn-beijing.aliyuncs.com/minidev.zip"
 ZIP_PATH = RAW / "minidev.zip"
 
@@ -39,13 +40,19 @@ def download(url: str, dest: Path) -> None:
     tmp = dest.with_suffix(dest.suffix + ".part")
     print(f"下载 {url}")
     with urllib.request.urlopen(url, timeout=60) as resp, tmp.open("wb") as f:
-        total = int(resp.headers.get("Content-Length", 0))
+        total = int(resp.headers.get("Content-Length") or 0)
         done = 0
         while chunk := resp.read(1 << 20):
             f.write(chunk)
             done += len(chunk)
-            if total and done % (50 << 20) < (1 << 20):
-                print(f"  {done / total:6.1%}  {done >> 20} / {total >> 20} MB", flush=True)
+            if done % (50 << 20) < (1 << 20):
+                if total:
+                    print(
+                        f"  {done / total:6.1%}  {done / 2**20:.1f} / {total / 2**20:.1f} MB",
+                        flush=True,
+                    )
+                else:
+                    print(f"  已下载 {done / 2**20:.1f} MB（服务器未给出总大小）", flush=True)
     tmp.rename(dest)
 
 
@@ -92,6 +99,9 @@ def extract_sqlite(zip_path: Path) -> None:
 
 def main() -> int:
     """可选参数 --zip <路径>：直接使用本机已有的 minidev.zip（复现时免重复下载 800MB）。"""
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        return 0
     RAW.mkdir(parents=True, exist_ok=True)
     zip_path = ZIP_PATH
     if "--zip" in sys.argv:

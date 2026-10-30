@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import random
 import re
@@ -23,6 +24,7 @@ import time
 from contextlib import asynccontextmanager
 from functools import cache
 
+import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,10 +36,26 @@ from datapilot.llm import SimulatedLLM
 from datapilot.service import MAX_INFLIGHT, ChatService
 from datapilot.store import make_store
 
+log = logging.getLogger(__name__)
+
 HEARTBEAT_S = 15
 RATE_LIMIT_PER_MIN = 20
 RATE_WINDOW_S = 60
 _USER_ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+NO_KEY_MESSAGE = "未设置 ANTHROPIC_API_KEY，请在 .env 中填写后重启"
+INTERNAL_ERROR_MESSAGE = "服务内部错误，请查看服务端日志"
+
+
+def api_key_missing() -> bool:
+    """SDK 从 ANTHROPIC_API_KEY（或 ANTHROPIC_AUTH_TOKEN）读凭据；两者都没有时问数必然失败。"""
+    return not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
+
+
+def is_auth_error(e: BaseException) -> bool:
+    """没配 key 时 SDK 在发请求前抛 TypeError；key 错误时服务端返回 401。"""
+    if isinstance(e, anthropic.AuthenticationError):
+        return True
+    return isinstance(e, TypeError) and "Could not resolve authentication method" in str(e)
 
 
 class AskRequest(BaseModel):
@@ -104,6 +122,11 @@ def create_app(
     async def lifespan(app: FastAPI):
         if service is None:
             load_dotenv(config.ROOT / ".env")
+            if os.environ.get("DATAPILOT_MODEL", "sonnet") != "simulated" and api_key_missing():
+                log.warning(
+                    "未设置 ANTHROPIC_API_KEY：服务可以启动，但问数会失败。"
+                    "请复制 .env.example 为 .env 并填写后重启"
+                )
             store = await make_store(os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
             app.state.service = _make_service(store)
         yield
@@ -180,11 +203,26 @@ def create_app(
         role = role_of(request)
         await check_rate(svc, user_id)
 
+        def sse(event: str, data: dict) -> dict:
+            return {"event": event, "data": json.dumps(data, ensure_ascii=False)}
+
         async def events():
-            async for e in svc.ask(
-                req.session_id, req.db_id, req.question, user_id=user_id, role=role
-            ):
-                yield {"event": e["event"], "data": json.dumps(e["data"], ensure_ascii=False)}
+            # 流已经是 200 了，异常只能变成 error 事件发出去，不能让前端收到一段空流或 traceback
+            try:
+                async for e in svc.ask(
+                    req.session_id, req.db_id, req.question, user_id=user_id, role=role
+                ):
+                    yield sse(e["event"], e["data"])
+            except Exception as e:
+                if is_auth_error(e):
+                    message = NO_KEY_MESSAGE
+                else:
+                    log.exception("问数失败：%s", e)
+                    message = INTERNAL_ERROR_MESSAGE
+                yield sse("error", {"message": message})
+                yield sse(
+                    "done", {"cached": False, "latency_s": 0.0, "cost_usd": 0.0, "model": svc.model}
+                )
 
         # ping：长查询时定期发心跳注释行，防止代理或浏览器判定连接空闲而断开
         return EventSourceResponse(events(), ping=HEARTBEAT_S)

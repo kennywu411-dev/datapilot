@@ -168,10 +168,14 @@ uv run python scripts/load_test.py --base http://127.0.0.1:8010
 uv sync
 npm --prefix web install
 
-# 2. 下载 BIRD Mini-Dev（题目约 280KB，数据库完整包约 801MB）
+# 2. 下载 BIRD Mini-Dev（题目文件 + 数据库完整包约 801MB）
 uv run python scripts/download_data.py
 
-# 3. 填 API key
+# 2b. 可选：生成并接入模拟电商库 shop_ops（口径消融与行列级权限演示用，固定种子不花钱）
+uv run python scripts/gen_shop_ops.py
+uv run python scripts/add_database.py shop_ops data/source/shop_ops.sqlite
+
+# 3. 填 API key（不填也能启动，但问数会报「未设置 ANTHROPIC_API_KEY」）
 cp .env.example .env   # 编辑 .env，填 ANTHROPIC_API_KEY
 
 # 4. 跑测试与评测自检（不花钱）
@@ -184,6 +188,8 @@ redis-server --save "" &          # 可选
 uv run uvicorn datapilot.api:app --port 8000
 npm --prefix web run dev          # 打开 http://localhost:3000
 ```
+
+后端接口都在 `/api/*` 下（健康检查 `GET /api/health`）；前端通过环境变量 `NEXT_PUBLIC_API_BASE` 找后端，默认 `http://localhost:8000`。没有 Redis 时服务自动退回内存存储，`uv run pytest -q` 会跳过 6 个需要 Redis 的测试，其余照常通过。
 
 也可以用 Docker 一键启动（后端 + 前端 + Redis；数据目录只读挂载，不进镜像）：
 

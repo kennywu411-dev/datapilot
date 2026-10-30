@@ -60,6 +60,24 @@ async def test_ask_streams_sse(client):
         assert next(e for e in events if e["event"] == "chart")["data"]["type"] == "kpi"
 
 
+async def test_ask_reports_missing_api_key_as_error_event(shop_db_dir):
+    def no_key():
+        raise TypeError(
+            '"Could not resolve authentication method. Expected one of api_key, auth_token, '
+            'or credentials to be set."'
+        )
+
+    app = create_app(service=ChatService(MemoryStore(), llm_factory=no_key))
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+        r = await c.post(
+            "/api/ask", json={"session_id": "s1", "db_id": "shop", "question": "多少人"}
+        )
+        assert r.status_code == 200
+        events = parse_sse(r.text)
+        assert [e["event"] for e in events] == ["error", "done"]
+        assert "ANTHROPIC_API_KEY" in events[0]["data"]["message"]
+
+
 async def test_ask_validates_input(client):
     async with client as c:
         r = await c.post("/api/ask", json={"session_id": "s1", "db_id": "shop", "question": ""})

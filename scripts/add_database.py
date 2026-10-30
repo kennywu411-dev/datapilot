@@ -87,6 +87,9 @@ def add_database(db_id: str, source: Path) -> Path:
 
 
 def main() -> None:
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        sys.exit(0)
     if len(sys.argv) != 3:
         print(__doc__)
         sys.exit(1)

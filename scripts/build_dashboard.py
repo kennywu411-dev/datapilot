@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import statistics
 import sys
@@ -19,14 +20,21 @@ from evals.report import load_rows, pct, wilson  # noqa: E402
 RUNS = ROOT / "runs"
 OUT = ROOT / "web" / "src" / "data" / "eval.json"
 
-# 运行 ID 集中在 runs/MANIFEST.json，重跑实验后只改那里
-MANIFEST = json.loads((RUNS / "MANIFEST.json").read_text(encoding="utf-8"))
-LADDER = [tuple(x) for x in MANIFEST["ladder"]]
-OPUS_E4 = MANIFEST["opus_e4"]
-E4_REP = MANIFEST["e4_repeats"]
-QWEN = MANIFEST["local_model_100"]
-QWEN500 = MANIFEST["local_model_500"]
-CACHE = MANIFEST["cache_bench"]
+# 运行 ID 集中在 runs/MANIFEST.json，重跑实验后只改那里；在 main() 里读，--help 不碰文件
+MANIFEST: dict = {}
+LADDER: list[tuple] = []
+OPUS_E4 = E4_REP = QWEN = QWEN500 = CACHE = ""
+
+
+def load_manifest() -> None:
+    global MANIFEST, LADDER, OPUS_E4, E4_REP, QWEN, QWEN500, CACHE
+    MANIFEST = json.loads((RUNS / "MANIFEST.json").read_text(encoding="utf-8"))
+    LADDER = [tuple(x) for x in MANIFEST["ladder"]]
+    OPUS_E4 = MANIFEST["opus_e4"]
+    E4_REP = MANIFEST["e4_repeats"]
+    QWEN = MANIFEST["local_model_100"]
+    QWEN500 = MANIFEST["local_model_500"]
+    CACHE = MANIFEST["cache_bench"]
 
 
 def rows(run: str) -> list[dict]:
@@ -57,6 +65,10 @@ def stats(rs: list[dict]) -> dict:
 
 
 def main() -> None:
+    argparse.ArgumentParser(
+        description=f"从 runs/MANIFEST.json 登记的运行记录生成看板数据 {OUT.relative_to(ROOT)}"
+    ).parse_args()
+    load_manifest()
     data: dict = {"generated_from": "runs/（由 scripts/build_dashboard.py 生成）"}
 
     # 逐项实验阶梯（Sonnet 主、Haiku 验证）+ 相对上一步的配对检验
