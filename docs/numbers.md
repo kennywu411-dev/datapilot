@@ -475,7 +475,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 ### 正确性自检（不花钱）
 
-- 绕过测试 43 个全部通过（`tests/test_rls.py`）：别名、子查询、JOIN、`SELECT *`、UNION、`main.表名`、自己写的 CTE / 同名 CTE、只在 WHERE / ORDER BY 里用敏感列、元数据表、`pragma_table_info`、`temp.` 库、无法解析的 SQL、search_values 探测、值核对候选值、表结构与样例、缓存按角色隔离、MCP 工具不接受角色参数。
+- 绕过测试 46 个全部通过（`tests/test_rls.py`；原 43 个，代码审查修复同名 CTE 绕过（问题日志 P20）后补 3 个回归测试）：别名、子查询、JOIN、`SELECT *`、UNION、`main.表名`、自己写的 CTE / 同名 CTE、只在 WHERE / ORDER BY 里用敏感列、元数据表、`pragma_table_info`、`temp.` 库、无法解析的 SQL、search_values 探测、值核对候选值、表结构与样例、缓存按角色隔离、MCP 工具不接受角色参数。
 - 改写不改变正常查询的结果：40 道电商标准答案在运营角色下 38 题结果与原样执行完全一致，2 题（q23 要成本价、q28 要姓名）被拒；上海区域经理同样只拒这 2 题。
 
 ### 模型评测
