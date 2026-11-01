@@ -1,0 +1,2900 @@
+{
+ "generated_from": "runs/（由 scripts/build_dashboard.py 生成）",
+ "ladder": [
+  {
+   "key": "E0",
+   "label": "基线（官方提示词）",
+   "run_id": "baseline-93aca7",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.718,
+    "ci": [
+     0.677,
+     0.7557
+    ],
+    "cost_per_q": 0.005375,
+    "p50": 1.7,
+    "p95": 2.73,
+    "by_difficulty": {
+     "simple": 0.8311,
+     "moderate": 0.68,
+     "challenging": 0.6471
+    }
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.63,
+    "ci": [
+     0.5868,
+     0.6712
+    ],
+    "cost_per_q": 0.000342,
+    "p50": 2.01,
+    "p95": 4.19,
+    "by_difficulty": {
+     "simple": 0.7703,
+     "moderate": 0.592,
+     "challenging": 0.5196
+    }
+   }
+  },
+  {
+   "key": "E1",
+   "label": "提示缓存",
+   "run_id": "e1-aed243",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.708,
+    "ci": [
+     0.6667,
+     0.7461
+    ],
+    "cost_per_q": 0.002639,
+    "p50": 1.69,
+    "p95": 2.81,
+    "by_difficulty": {
+     "simple": 0.8108,
+     "moderate": 0.684,
+     "challenging": 0.6176
+    },
+    "p_vs_prev": 0.4996
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.642,
+    "ci": [
+     0.599,
+     0.6828
+    ],
+    "cost_per_q": 0.000177,
+    "p50": 1.71,
+    "p95": 3.78,
+    "by_difficulty": {
+     "simple": 0.777,
+     "moderate": 0.596,
+     "challenging": 0.5588
+    },
+    "p_vs_prev": 0.4799
+   }
+  },
+  {
+   "key": "E2",
+   "label": "+ Schema 增强",
+   "run_id": "e2-13bd10",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.716,
+    "ci": [
+     0.6749,
+     0.7538
+    ],
+    "cost_per_q": 0.003469,
+    "p50": 1.75,
+    "p95": 2.91,
+    "by_difficulty": {
+     "simple": 0.8243,
+     "moderate": 0.692,
+     "challenging": 0.6176
+    },
+    "p_vs_prev": 0.5847
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.654,
+    "ci": [
+     0.6113,
+     0.6944
+    ],
+    "cost_per_q": 0.000202,
+    "p50": 1.58,
+    "p95": 3.77,
+    "by_difficulty": {
+     "simple": 0.7973,
+     "moderate": 0.616,
+     "challenging": 0.5392
+    },
+    "p_vs_prev": 0.4799
+   }
+  },
+  {
+   "key": "E3",
+   "label": "+ 值核对",
+   "run_id": "e3-896e4c",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.728,
+    "ci": [
+     0.6874,
+     0.7652
+    ],
+    "cost_per_q": 0.002518,
+    "p50": 1.72,
+    "p95": 4.12,
+    "by_difficulty": {
+     "simple": 0.8378,
+     "moderate": 0.716,
+     "challenging": 0.598
+    },
+    "p_vs_prev": 0.2379
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.67,
+    "ci": [
+     0.6276,
+     0.7098
+    ],
+    "cost_per_q": 0.000198,
+    "p50": 1.51,
+    "p95": 4.29,
+    "by_difficulty": {
+     "simple": 0.7838,
+     "moderate": 0.648,
+     "challenging": 0.5588
+    },
+    "p_vs_prev": 0.2295
+   }
+  },
+  {
+   "key": "E4",
+   "label": "+ 执行纠错（最终）",
+   "run_id": "e4-3463b8",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.72,
+    "ci": [
+     0.6791,
+     0.7576
+    ],
+    "cost_per_q": 0.00348,
+    "p50": 1.82,
+    "p95": 8.64,
+    "by_difficulty": {
+     "simple": 0.8446,
+     "moderate": 0.692,
+     "challenging": 0.6078
+    },
+    "p_vs_prev": 0.424
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.674,
+    "ci": [
+     0.6317,
+     0.7136
+    ],
+    "cost_per_q": 0.000228,
+    "p50": 1.56,
+    "p95": 4.7,
+    "by_difficulty": {
+     "simple": 0.7838,
+     "moderate": 0.648,
+     "challenging": 0.5784
+    },
+    "p_vs_prev": 0.8318
+   }
+  },
+  {
+   "key": "Agent",
+   "label": "自主调用工具",
+   "run_id": "agent-002a4f",
+   "sonnet": {
+    "n": 500,
+    "ex": 0.72,
+    "ci": [
+     0.6791,
+     0.7576
+    ],
+    "cost_per_q": 0.005421,
+    "p50": 2.82,
+    "p95": 5.22,
+    "by_difficulty": {
+     "simple": 0.8446,
+     "moderate": 0.684,
+     "challenging": 0.6275
+    },
+    "p_vs_e4": 1.0
+   },
+   "haiku": {
+    "n": 500,
+    "ex": 0.658,
+    "ci": [
+     0.6154,
+     0.6982
+    ],
+    "cost_per_q": 0.000544,
+    "p50": 3.97,
+    "p95": 8.63,
+    "by_difficulty": {
+     "simple": 0.7635,
+     "moderate": 0.624,
+     "challenging": 0.5882
+    },
+    "p_vs_e4": 0.3409
+   }
+  }
+ ],
+ "haiku_e0_to_e4_p": 0.0081,
+ "final": {
+  "haiku": {
+   "n": 500,
+   "ex": 0.674,
+   "ci": [
+    0.6317,
+    0.7136
+   ],
+   "cost_per_q": 0.000228,
+   "p50": 1.56,
+   "p95": 4.7,
+   "by_difficulty": {
+    "simple": 0.7838,
+    "moderate": 0.648,
+    "challenging": 0.5784
+   },
+   "runs": [
+    0.674,
+    0.678,
+    0.688
+   ],
+   "mean": 0.68,
+   "std": 0.0072
+  },
+  "sonnet": {
+   "n": 500,
+   "ex": 0.72,
+   "ci": [
+    0.6791,
+    0.7576
+   ],
+   "cost_per_q": 0.00348,
+   "p50": 1.82,
+   "p95": 8.64,
+   "by_difficulty": {
+    "simple": 0.8446,
+    "moderate": 0.692,
+    "challenging": 0.6078
+   },
+   "runs": [
+    0.72,
+    0.726,
+    0.726
+   ],
+   "mean": 0.724,
+   "std": 0.0035
+  },
+  "opus": {
+   "n": 500,
+   "ex": 0.864,
+   "ci": [
+    0.8312,
+    0.8913
+   ],
+   "cost_per_q": 0.0057,
+   "p50": 2.15,
+   "p95": 4.21,
+   "by_difficulty": {
+    "simple": 0.9392,
+    "moderate": 0.844,
+    "challenging": 0.8039
+   },
+   "runs": null,
+   "contamination_note": true
+  },
+  "qwen": {
+   "n": 500,
+   "ex": 0.538,
+   "ci": [
+    0.4942,
+    0.5812
+   ],
+   "cost_per_q": 0.0,
+   "p50": 5.45,
+   "p95": 18.16,
+   "by_difficulty": {
+    "simple": 0.6824,
+    "moderate": 0.512,
+    "challenging": 0.3922
+   },
+   "runs": null,
+   "run_id": "qwen500-91ec91",
+   "paired_n": 500,
+   "haiku_paired_ex": 0.674,
+   "p_vs_haiku": 5.8e-09
+  }
+ },
+ "cn_models": [
+  {
+   "name": "deepseek-flash",
+   "run_id": "deepseek500-ae215c",
+   "n": 500,
+   "ex": 0.668,
+   "ci": [
+    0.6256,
+    0.7079
+   ],
+   "cost_per_q": 0.001332,
+   "p50": 3.17,
+   "p95": 28.54,
+   "by_difficulty": {
+    "simple": 0.7703,
+    "moderate": 0.648,
+    "challenging": 0.5686
+   },
+   "p_vs_haiku": 0.804,
+   "haiku_paired_ex": 0.674,
+   "p_vs_sonnet": 0.00255,
+   "sonnet_paired_ex": 0.72
+  },
+  {
+   "name": "qwen3.7-plus",
+   "run_id": "qwen37-500-a6bbd0",
+   "n": 500,
+   "ex": 0.68,
+   "ci": [
+    0.6379,
+    0.7194
+   ],
+   "cost_per_q": 0.000364,
+   "p50": 3.06,
+   "p95": 6.67,
+   "by_difficulty": {
+    "simple": 0.7568,
+    "moderate": 0.676,
+    "challenging": 0.5784
+   },
+   "p_vs_haiku": 0.807,
+   "haiku_paired_ex": 0.674,
+   "p_vs_sonnet": 0.0422,
+   "sonnet_paired_ex": 0.72
+  }
+ ],
+ "shop_ops": {
+  "n": 40,
+  "runs": {
+   "claude": "shop-8740b7",
+   "cn": "shop-cn-b102c6",
+   "claude_noev": "shop-noev-094a10",
+   "cn_noev": "shop-noev-cn-8cf5c9"
+  },
+  "models": [
+   {
+    "model": "Haiku",
+    "with_ev": [
+     0.95,
+     0.95,
+     0.975
+    ],
+    "no_ev": [
+     0.625,
+     0.65,
+     0.7
+    ],
+    "with_mean": 0.9583,
+    "no_mean": 0.6583
+   },
+   {
+    "model": "Sonnet",
+    "with_ev": [
+     0.975,
+     0.975,
+     0.975
+    ],
+    "no_ev": [
+     0.625,
+     0.65,
+     0.65
+    ],
+    "with_mean": 0.975,
+    "no_mean": 0.6417
+   },
+   {
+    "model": "deepseek-flash",
+    "with_ev": [
+     0.95
+    ],
+    "no_ev": [
+     0.625
+    ],
+    "with_mean": 0.95,
+    "no_mean": 0.625
+   },
+   {
+    "model": "qwen3.7-plus",
+    "with_ev": [
+     0.925
+    ],
+    "no_ev": [
+     0.55
+    ],
+    "with_mean": 0.925,
+    "no_mean": 0.55
+   }
+  ]
+ },
+ "same100": {
+  "qwen2.5-coder:7b": {
+   "n": 100,
+   "ex": 0.56,
+   "ci": [
+    0.4623,
+    0.6533
+   ],
+   "cost_per_q": 0.0,
+   "p50": 4.97,
+   "p95": 19.12,
+   "by_difficulty": {
+    "simple": 0.6667,
+    "moderate": 0.58,
+    "challenging": 0.35
+   }
+  },
+  "haiku": {
+   "n": 100,
+   "ex": 0.66,
+   "ci": [
+    0.5628,
+    0.7454
+   ],
+   "cost_per_q": 0.00021,
+   "p50": 1.53,
+   "p95": 4.35,
+   "by_difficulty": {
+    "simple": 0.7333,
+    "moderate": 0.7,
+    "challenging": 0.45
+   }
+  },
+  "sonnet": {
+   "n": 100,
+   "ex": 0.76,
+   "ci": [
+    0.6677,
+    0.8331
+   ],
+   "cost_per_q": 0.00396,
+   "p50": 1.75,
+   "p95": 7.22,
+   "by_difficulty": {
+    "simple": 0.8333,
+    "moderate": 0.78,
+    "challenging": 0.6
+   }
+  },
+  "opus": {
+   "n": 100,
+   "ex": 0.88,
+   "ci": [
+    0.8019,
+    0.93
+   ],
+   "cost_per_q": 0.004742,
+   "p50": 2.22,
+   "p95": 3.5,
+   "by_difficulty": {
+    "simple": 0.9,
+    "moderate": 0.88,
+    "challenging": 0.85
+   }
+  }
+ },
+ "failure": {
+  "source_run": "e4-3463b8",
+  "n_failures": 140,
+  "names": {
+   "A": "模型错",
+   "B": "标准答案错",
+   "C": "题目歧义",
+   "D": "评测缺陷",
+   "E": "两者都错",
+   "F": "系统故障"
+  },
+  "counts": {
+   "A": 2,
+   "B": 28,
+   "C": 11,
+   "D": 4,
+   "E": 3,
+   "F": 2
+  },
+  "cases": [
+   {
+    "qid": 23,
+    "db": "california_schools",
+    "difficulty": "moderate",
+    "question": "List the names of schools with more than 30 difference in enrollements between K-12 and ages 5-17? Please also give the full street adress of the schools.",
+    "evidence": "Diffrence in enrollement = `Enrollment (K-12)` - `Enrollment (Ages 5-17)`",
+    "gold_sql": "SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30",
+    "pred_sql": "SELECT f.\"School Name\", s.Street, s.City, s.Zip, s.State FROM frpm f JOIN schools s ON f.CDSCode = s.CDSCode WHERE f.\"Enrollment (K-12)\" - f.\"Enrollment (Ages 5-17)\" > 30",
+    "gold": {
+     "columns": [
+      "School",
+      "Street"
+     ],
+     "n": 1239,
+     "rows": [
+      [
+       "Alameda County Community",
+       "313 West Winton Avenue"
+      ],
+      [
+       "California School for the Deaf-Fremont",
+       "39350 Gallaudet Drive"
+      ],
+      [
+       "Alameda High",
+       "2201 Encinal Avenue"
+      ],
+      [
+       "Encinal High",
+       "210 Central Avenue"
+      ],
+      [
+       "Island High (Continuation)",
+       "1900 Third Street"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "School Name",
+      "Street",
+      "City",
+      "Zip",
+      "State"
+     ],
+     "n": 1239,
+     "rows": [
+      [
+       "Alameda County Community",
+       "313 West Winton Avenue",
+       "Hayward",
+       "94544-1136",
+       "CA"
+      ],
+      [
+       "California School for the Deaf-Fremont",
+       "39350 Gallaudet Drive",
+       "Fremont",
+       "94538-2308",
+       "CA"
+      ],
+      [
+       "Alameda High",
+       "2201 Encinal Avenue",
+       "Alameda",
+       "94501-4406",
+       "CA"
+      ],
+      [
+       "Encinal High",
+       "210 Central Avenue",
+       "Alameda",
+       "94501-3278",
+       "CA"
+      ],
+      [
+       "Island High (Continuation)",
+       "1900 Third Street",
+       "Alameda",
+       "94501-1851",
+       "CA"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "题目要 full street address；模型多返回了 City/Zip/State。“完整地址”有歧义"
+   },
+   {
+    "qid": 27,
+    "db": "california_schools",
+    "difficulty": "moderate",
+    "question": "What is the average score in writing for the schools that were opened after 1991 or closed before 2000? List the school names along with the score. Also, list the communication number of the schools if there is any.",
+    "evidence": "Communication number refers to phone number.",
+    "gold_sql": "SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds WHERE strftime('%Y', T2.OpenDate) > '1991' OR strftime('%Y', T2.ClosedDate) < '2000'",
+    "pred_sql": "SELECT s.School, sat.AvgScrWrite, s.Phone FROM schools s JOIN satscores sat ON s.CDSCode = sat.cds WHERE strftime('%Y', s.OpenDate) > '1991' OR strftime('%Y', s.ClosedDate) < '2000'",
+    "gold": {
+     "columns": [
+      "School",
+      "AvgScrWrite",
+      "Phone"
+     ],
+     "n": 8574,
+     "rows": [
+      [
+       "FAME Public Charter",
+       "505",
+       "None"
+      ],
+      [
+       "Envision Academy for Arts & Technology",
+       "395",
+       "(510) 596-8901"
+      ],
+      [
+       "Aspire California College Preparatory Academy",
+       "None",
+       "None"
+      ],
+      [
+       "Community School for Creative Education",
+       "None",
+       "(510) 686-4131"
+      ],
+      [
+       "Yu Ming Charter",
+       "None",
+       "(510) 452-2063"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "School",
+      "AvgScrWrite",
+      "Phone"
+     ],
+     "n": 813,
+     "rows": [
+      [
+       "FAME Public Charter",
+       "505",
+       "None"
+      ],
+      [
+       "Envision Academy for Arts & Technology",
+       "395",
+       "(510) 596-8901"
+      ],
+      [
+       "Aspire California College Preparatory Academy",
+       "None",
+       "None"
+      ],
+      [
+       "Alameda Science and Technology Institute",
+       "555",
+       "(510) 748-4021"
+      ],
+      [
+       "Nea Community Learning Center",
+       "None",
+       "(510) 748-4008"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "标准答案 LEFT JOIN 保留无成绩学校（8574 行），模型 INNER JOIN（813 行）。问“写作平均分”，无成绩的学校是否该列出有歧义"
+   },
+   {
+    "qid": 28,
+    "db": "california_schools",
+    "difficulty": "challenging",
+    "question": "Consider the average difference between K-12 enrollment and 15-17 enrollment of schools that are locally funded, list the names and DOC type of schools which has a difference above this average.",
+    "evidence": "Difference between K-12 enrollment and 15-17 enrollment can be computed by `Enrollment (K-12)` - `Enrollment (Ages 5-17)`",
+    "gold_sql": "SELECT T2.School, T2.DOC FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.FundingType = 'Locally funded' AND (T1.`Enrollment (K-12)` - T1.`Enrollment (Ages 5-17)`) > (SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded')",
+    "pred_sql": "SELECT s.School, s.DOCType FROM frpm f JOIN schools s ON f.CDSCode = s.CDSCode WHERE (f.\"Enrollment (K-12)\" - f.\"Enrollment (Ages 5-17)\") > (SELECT AVG(f2.\"Enrollment (K-12)\" - f2.\"Enrollment (Ages 5-17)\") FROM frpm f2 JOIN schools s2 ON f2.CDSCode = s2.CDSCode WHERE s2.FundingType = 'Locally funded') AND s.FundingType = 'Locally funded'",
+    "gold": {
+     "columns": [
+      "School",
+      "DOC"
+     ],
+     "n": 57,
+     "rows": [
+      [
+       "Mountain Oaks",
+       "00"
+      ],
+      [
+       "Castle Rock",
+       "00"
+      ],
+      [
+       "Charter Community School Home Study Academy",
+       "00"
+      ],
+      [
+       "Clovis Online Charter",
+       "54"
+      ],
+      [
+       "Washington Elementary",
+       "52"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "School",
+      "DOCType"
+     ],
+     "n": 57,
+     "rows": [
+      [
+       "Mountain Oaks",
+       "County Office of Education (COE)"
+      ],
+      [
+       "Castle Rock",
+       "County Office of Education (COE)"
+      ],
+      [
+       "Charter Community School Home Study Academy",
+       "County Office of Education (COE)"
+      ],
+      [
+       "Clovis Online Charter",
+       "Unified School District"
+      ],
+      [
+       "Washington Elementary",
+       "Elementary School District"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "题目说 “DOC type”，模型选了字面最匹配的 DOCType 列（描述文字），标准答案用 DOC（代码）"
+   },
+   {
+    "qid": 37,
+    "db": "california_schools",
+    "difficulty": "moderate",
+    "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+    "evidence": "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, State, Zip code",
+    "gold_sql": "SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC LIMIT 1",
+    "pred_sql": "SELECT s.Street, s.City, s.Zip, s.State FROM satscores t JOIN schools s ON s.CDSCode = t.cds WHERE t.NumTstTakr > 0 ORDER BY CAST(t.NumGE1500 AS REAL) / t.NumTstTakr ASC LIMIT 1",
+    "gold": {
+     "columns": [
+      "Street",
+      "City",
+      "State",
+      "Zip"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "2125 Jefferson Avenue",
+       "Berkeley",
+       "CA",
+       "94703-1414"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "Street",
+      "City",
+      "Zip",
+      "State"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1900 Third Street",
+       "Alameda",
+       "94501-1851",
+       "CA"
+      ]
+     ]
+    },
+    "category": "E",
+    "reason": "两边都把 NumGE1500 为 NULL 的学校排在最前（SQLite 升序 NULL 在前），都不是真正最低比率；标准答案列顺序也和题目要求的 Street, City, Zip, State 不一致"
+   },
+   {
+    "qid": 41,
+    "db": "california_schools",
+    "difficulty": "simple",
+    "question": "List the names of virtual schools that are among the top 5 in their respective counties based on average reading scores.",
+    "evidence": "Exclusively virtual refers to Virtual = 'F'; respective counties means PARTITION BY County",
+    "gold_sql": "SELECT School FROM (SELECT T2.School,T1.AvgScrRead, RANK() OVER (PARTITION BY T2.County ORDER BY T1.AvgScrRead DESC) AS rnk FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' ) ranked_schools WHERE rnk <= 5",
+    "pred_sql": "SELECT School FROM (SELECT s.School AS School, RANK() OVER (PARTITION BY s.County ORDER BY t.AvgScrRead DESC) AS rk FROM schools s JOIN satscores t ON s.CDSCode = t.cds WHERE s.Virtual = 'F' AND t.AvgScrRead IS NOT NULL) WHERE rk <= 5",
+    "gold": {
+     "columns": [
+      "School"
+     ],
+     "n": 34,
+     "rows": [
+      [
+       "Dunlap Leadership Academy"
+      ],
+      [
+       "Academy of Arts and Sciences: Fresno"
+      ],
+      [
+       "Insight School of California"
+      ],
+      [
+       "California Virtual Academy @ Kings"
+      ],
+      [
+       "National University Academy, Armona"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "School"
+     ],
+     "n": 4,
+     "rows": [
+      [
+       "California Virtual Academy @ Los Angeles"
+      ],
+      [
+       "Insight @ Los Angeles"
+      ],
+      [
+       "Capistrano Connections Academy"
+      ],
+      [
+       "California Connections Academy @ Ripon"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案把没有阅读成绩（NULL）的学校也算进“前 5 名”；按成绩排名应排除 NULL"
+   },
+   {
+    "qid": 115,
+    "db": "financial",
+    "difficulty": "challenging",
+    "question": "For the branch which located in the south Bohemia with biggest number of inhabitants, what is the percentage of the male clients?",
+    "evidence": "Percentage of the male clients = DIVIDE(COUNT(male clients), COUNT(clients)) * 100; Male refers to gender = 'M', A3 is the region name. A4 contains the information about inhabitants.",
+    "gold_sql": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'south Bohemia' GROUP BY T2.A4 ORDER BY T2.A4 DESC LIMIT 1",
+    "pred_sql": "SELECT CAST(SUM(CASE WHEN c.gender = 'M' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) FROM client c WHERE c.district_id = (SELECT district_id FROM district WHERE A3 = 'south Bohemia' ORDER BY CAST(A4 AS INTEGER) DESC LIMIT 1)",
+    "gold": {
+     "columns": [
+      "CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "44.26229508196721"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "CAST(SUM(CASE WHEN c.gender = 'M' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "40.0"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "A4（人口）是 TEXT，标准答案按字符串排序，'93931' 排在 '177686' 前，选错了人口最多的地区；模型 CAST 后正确（已查证）"
+   },
+   {
+    "qid": 129,
+    "db": "financial",
+    "difficulty": "moderate",
+    "question": "Which are the top ten withdrawals (non-credit card) by district names for the month of January 1996?",
+    "evidence": "Non-credit card withdraws refers to type = 'VYDAJ'; January 1996 can be found by date LIKE '1996-01%' in the database; A2 means district names",
+    "gold_sql": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ' AND T3.date LIKE '1996-01%' ORDER BY A2 ASC LIMIT 10",
+    "pred_sql": "SELECT d.A2 FROM trans t JOIN account a ON t.account_id = a.account_id JOIN district d ON a.district_id = d.district_id WHERE t.type = 'VYDAJ' AND t.date LIKE '1996-01%' ORDER BY t.amount DESC LIMIT 10",
+    "gold": {
+     "columns": [
+      "A2"
+     ],
+     "n": 10,
+     "rows": [
+      [
+       "Benesov"
+      ],
+      [
+       "Beroun"
+      ],
+      [
+       "Blansko"
+      ],
+      [
+       "Breclav"
+      ],
+      [
+       "Brno - mesto"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "A2"
+     ],
+     "n": 10,
+     "rows": [
+      [
+       "Trutnov"
+      ],
+      [
+       "Pelhrimov"
+      ],
+      [
+       "Zlin"
+      ],
+      [
+       "Olomouc"
+      ],
+      [
+       "Frydek - Mistek"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目问取款最多的前 10，标准答案按地区名字母序取前 10，与“top withdrawals”无关"
+   },
+   {
+    "qid": 207,
+    "db": "toxicology",
+    "difficulty": "challenging",
+    "question": "What elements are in a double type bond?",
+    "evidence": "double type bond refers to bond_type = '=';",
+    "gold_sql": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN bond AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN connected AS T3 ON T1.atom_id = T3.atom_id WHERE T2.bond_type = '='",
+    "pred_sql": "SELECT DISTINCT a.element FROM atom a JOIN connected c ON a.atom_id = c.atom_id JOIN bond b ON c.bond_id = b.bond_id WHERE b.bond_type = '='",
+    "gold": {
+     "columns": [
+      "element"
+     ],
+     "n": 13,
+     "rows": [
+      [
+       "c"
+      ],
+      [
+       "o"
+      ],
+      [
+       "cl"
+      ],
+      [
+       "h"
+      ],
+      [
+       "s"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "element"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "c"
+      ],
+      [
+       "o"
+      ],
+      [
+       "n"
+      ],
+      [
+       "s"
+      ],
+      [
+       "ca"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案按 molecule_id 关联原子和键：分子里有双键就把所有原子算进来；模型经 connected 表取真正参与双键的原子"
+   },
+   {
+    "qid": 215,
+    "db": "toxicology",
+    "difficulty": "challenging",
+    "question": "How many atoms with iodine and with sulfur type elements are there in single bond molecules?",
+    "evidence": "with iodine element refer to element = 'i'; with sulfur element refers to element = 's'; single type bond refers to bond_type = '-'; Should consider the distinct atoms when counting;",
+    "gold_sql": "SELECT COUNT(DISTINCT CASE WHEN T1.element = 'i' THEN T1.atom_id ELSE NULL END) AS iodine_nums , COUNT(DISTINCT CASE WHEN T1.element = 's' THEN T1.atom_id ELSE NULL END) AS sulfur_nums FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id INNER JOIN bond AS T3 ON T2.bond_id = T3.bond_id WHERE T3.bond_type = '-'",
+    "pred_sql": "SELECT COUNT(DISTINCT CASE WHEN a.element = 'i' THEN a.atom_id END) AS iodine_count, COUNT(DISTINCT CASE WHEN a.element = 's' THEN a.atom_id END) AS sulfur_count FROM atom a WHERE a.element IN ('i','s') AND a.molecule_id IN (SELECT molecule_id FROM bond WHERE bond_type = '-')",
+    "gold": {
+     "columns": [
+      "iodine_nums",
+      "sulfur_nums"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "3",
+       "77"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "iodine_count",
+      "sulfur_count"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "3",
+       "94"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "“single bond molecules”：模型按分子级（含单键的分子里的原子），标准答案按原子是否连着单键。题面更接近模型的理解"
+   },
+   {
+    "qid": 218,
+    "db": "toxicology",
+    "difficulty": "challenging",
+    "question": "What percentage of carcinogenic-type molecules does not contain fluorine?",
+    "evidence": "label = '+' mean molecules are carcinogenic; contain fluorine refers to element = 'f'; percentage = DIVIDE(SUM(element = 'f') * 100, COUNT(molecule_id)) where label = '+'; Should consider the distinct atoms when counting;",
+    "gold_sql": "SELECT CAST(COUNT(DISTINCT CASE WHEN T1.element <> 'f' THEN T2.molecule_id ELSE NULL END) AS REAL) * 100 / COUNT(DISTINCT T2.molecule_id) FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+'",
+    "pred_sql": "SELECT 100.0 * COUNT(DISTINCT CASE WHEN m.molecule_id NOT IN (SELECT molecule_id FROM atom WHERE element = 'f') THEN m.molecule_id END) / COUNT(DISTINCT m.molecule_id) FROM molecule m WHERE m.label = '+'",
+    "gold": {
+     "columns": [
+      "CAST(COUNT(DISTINCT CASE WHEN T1.element <> 'f' THEN T2.molecule_id ELSE NULL END) AS REAL) * 100 / COUNT(DISTINCT T2.molecule_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "100.0"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "100.0 * COUNT(DISTINCT CASE WHEN m.molecule_id NOT IN (SELECT molecule_id FROM atom WHERE element = 'f') THEN m.molecule_id END) / COUNT(DISTINCT m.molecule_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "99.34210526315789"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案统计“含非氟原子的分子”占比，几乎恒为 100%，不是“不含氟的分子”；模型逻辑正确"
+   },
+   {
+    "qid": 231,
+    "db": "toxicology",
+    "difficulty": "challenging",
+    "question": "Which bond type accounted for the majority of the bonds found in molecule TR010 and state whether or not this molecule is carcinogenic?",
+    "evidence": "TR010 is the molecule id; majority of the bond found refers to MAX(COUNT(bond_type)); ",
+    "gold_sql": "SELECT T.bond_type FROM ( SELECT T1.bond_type, COUNT(T1.molecule_id) FROM bond AS T1  WHERE T1.molecule_id = 'TR010' GROUP BY T1.bond_type ORDER BY COUNT(T1.molecule_id) DESC LIMIT 1 ) AS T",
+    "pred_sql": "SELECT b.bond_type, m.label FROM bond b JOIN molecule m ON b.molecule_id = m.molecule_id WHERE b.molecule_id = 'TR010' GROUP BY b.bond_type ORDER BY COUNT(b.bond_id) DESC LIMIT 1",
+    "gold": {
+     "columns": [
+      "bond_type"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "-"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "bond_type",
+      "label"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "-",
+       "-"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目同时问键型和是否致癌，标准答案只返回键型，漏了致癌标签"
+   },
+   {
+    "qid": 245,
+    "db": "toxicology",
+    "difficulty": "moderate",
+    "question": "What is the average number of bonds the atoms with the element iodine have?",
+    "evidence": "atoms with the element iodine refers to element = 'i'; average = DIVIDE(COUND(bond_id), COUNT(atom_id)) where element = 'i'",
+    "gold_sql": "SELECT CAST(COUNT(T2.bond_id) AS REAL) / COUNT(T1.atom_id) FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T1.element = 'i'",
+    "pred_sql": "",
+    "gold": {
+     "columns": [
+      "CAST(COUNT(T2.bond_id) AS REAL) / COUNT(T1.atom_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1.0"
+      ]
+     ]
+    },
+    "pred": null,
+    "category": "F",
+    "reason": "生成失控（P8），撞到 16000 token 上限没有产出 SQL；已修复"
+   },
+   {
+    "qid": 281,
+    "db": "toxicology",
+    "difficulty": "challenging",
+    "question": "Tally the toxicology element of the 4th atom of each molecule that was carcinogenic.",
+    "evidence": "label = '+' means molecules are carcinogenic; 4th atom of each molecule refers to substr(atom_id, 7, 1) = '4'; ",
+    "gold_sql": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+' AND SUBSTR(T1.atom_id, -1) = '4' AND LENGTH(T1.atom_id) = 7",
+    "pred_sql": "SELECT a.element, COUNT(*) AS cnt FROM atom a JOIN molecule m ON a.molecule_id = m.molecule_id WHERE m.label = '+' AND substr(a.atom_id, 7, 1) = '4' GROUP BY a.element",
+    "gold": {
+     "columns": [
+      "element"
+     ],
+     "n": 8,
+     "rows": [
+      [
+       "cl"
+      ],
+      [
+       "c"
+      ],
+      [
+       "br"
+      ],
+      [
+       "n"
+      ],
+      [
+       "o"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "element",
+      "cnt"
+     ],
+     "n": 9,
+     "rows": [
+      [
+       "br",
+       "6"
+      ],
+      [
+       "c",
+       "145"
+      ],
+      [
+       "cl",
+       "9"
+      ],
+      [
+       "f",
+       "1"
+      ],
+      [
+       "h",
+       "59"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "“Tally” 可理解为计数（模型按元素计数，多一列）或列出元素（标准答案）；标准答案的过滤条件也与 evidence 写法不同"
+   },
+   {
+    "qid": 341,
+    "db": "card_games",
+    "difficulty": "simple",
+    "question": "What are the borderless cards available without powerful foils?",
+    "evidence": "borderless' refers to borderColor; poweful foils refers to cardKingdomFoilId paired with cardKingdomId AND cardKingdomId is not null",
+    "gold_sql": "SELECT id FROM cards WHERE borderColor = 'borderless' AND (cardKingdomId IS NULL OR cardKingdomId IS NULL)",
+    "pred_sql": "SELECT id FROM cards WHERE borderColor = 'borderless' AND (cardKingdomFoilId IS NULL OR cardKingdomId IS NULL)",
+    "gold": {
+     "columns": [
+      "id"
+     ],
+     "n": 67,
+     "rows": [
+      [
+       "23004"
+      ],
+      [
+       "25350"
+      ],
+      [
+       "25355"
+      ],
+      [
+       "25357"
+      ],
+      [
+       "25359"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "id"
+     ],
+     "n": 72,
+     "rows": [
+      [
+       "23004"
+      ],
+      [
+       "25350"
+      ],
+      [
+       "25355"
+      ],
+      [
+       "25357"
+      ],
+      [
+       "25359"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案笔误：cardKingdomId IS NULL OR cardKingdomId IS NULL（同一条件写两遍）；evidence 说的是 cardKingdomFoilId，模型按 evidence 写"
+   },
+   {
+    "qid": 383,
+    "db": "card_games",
+    "difficulty": "simple",
+    "question": "How many of the banned cards are white border?",
+    "evidence": "banned card refers to status = 'Banned'; white border refers to borderColor = 'white';",
+    "gold_sql": "SELECT COUNT(T1.id) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T2.status = 'Banned' AND T1.borderColor = 'white'",
+    "pred_sql": "SELECT COUNT(DISTINCT c.id) FROM cards c JOIN legalities l ON c.uuid = l.uuid WHERE l.status = 'Banned' AND c.borderColor = 'white'",
+    "gold": {
+     "columns": [
+      "COUNT(T1.id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "258"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "COUNT(DISTINCT c.id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "89"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案按 legalities 行计数，一张卡在多个赛制被禁就重复计数（258）；问“多少张卡”应去重（89）"
+   },
+   {
+    "qid": 391,
+    "db": "card_games",
+    "difficulty": "moderate",
+    "question": "Among the Artifact cards, which are black color and comes with foreign languague translation?",
+    "evidence": "Artifact card refers to originalType = 'Artifact'; black color refers to colors = 'B'; foreign language refers to language in foreign_data",
+    "gold_sql": "SELECT DISTINCT T1.name FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T1.uuid = T2.uuid WHERE T1.originalType = 'Artifact' AND T1.colors = 'B'",
+    "pred_sql": "SELECT DISTINCT cards.id FROM cards INNER JOIN foreign_data ON foreign_data.uuid = cards.uuid WHERE cards.originalType = 'Artifact' AND cards.colors = 'B'",
+    "gold": {
+     "columns": [
+      "name"
+     ],
+     "n": 8,
+     "rows": [
+      [
+       "Executioner's Capsule"
+      ],
+      [
+       "Immortal Coil"
+      ],
+      [
+       "Onyx Goblet"
+      ],
+      [
+       "Netherborn Altar"
+      ],
+      [
+       "Scepter of Fugue"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "id"
+     ],
+     "n": 10,
+     "rows": [
+      [
+       "902"
+      ],
+      [
+       "5512"
+      ],
+      [
+       "5516"
+      ],
+      [
+       "5518"
+      ],
+      [
+       "9268"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "“which are” 没说返回名称还是 ID；模型返回 id，标准答案返回 name"
+   },
+   {
+    "qid": 402,
+    "db": "card_games",
+    "difficulty": "moderate",
+    "question": "What is the percentage of Story Spotlight cards that do not have a text box? List them by their ID.",
+    "evidence": "Story Spotlight cards that do not have a text box refers to isStorylight = 1 and isTextless = 0; Percentage = DIVIDE(SUM(count(id) where isStorylight = 1 AND isTextless = 0 ), SUM(count(id))) * 100",
+    "gold_sql": "SELECT CAST(SUM(CASE WHEN isTextless = 0 AND  isStorySpotlight = 1 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(id) FROM cards",
+    "pred_sql": "SELECT id, (SELECT 100.0 * SUM(CASE WHEN isStorySpotlight = 1 AND isTextless = 0 THEN 1 ELSE 0 END) / COUNT(id) FROM cards) AS percentage FROM cards WHERE isStorySpotlight = 1 AND isTextless = 0 ORDER BY id",
+    "gold": {
+     "columns": [
+      "CAST(SUM(CASE WHEN isTextless = 0 AND  isStorySpotlight = 1 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "0.18302770053852382"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "id",
+      "percentage"
+     ],
+     "n": 104,
+     "rows": [
+      [
+       "4569",
+       "0.18302770053852382"
+      ],
+      [
+       "4590",
+       "0.18302770053852382"
+      ],
+      [
+       "4612",
+       "0.18302770053852382"
+      ],
+      [
+       "4650",
+       "0.18302770053852382"
+      ],
+      [
+       "4687",
+       "0.18302770053852382"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目要求百分比并“按 ID 列出”，标准答案只返回百分比"
+   },
+   {
+    "qid": 473,
+    "db": "card_games",
+    "difficulty": "moderate",
+    "question": "Is the set of cards with Adarkar Valkyrie only available outside the United States?",
+    "evidence": "card set Adarkar Valkyrie refers to name = 'Adarkar Valkyrie'; isForeignOnly = 1 means only available outside the United States;",
+    "gold_sql": "SELECT IIF(isForeignOnly = 1, 'YES', 'NO') FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T1.name = 'Adarkar Valkyrie'",
+    "pred_sql": "SELECT s.isForeignOnly FROM cards c JOIN sets s ON c.setCode = s.code WHERE c.name = 'Adarkar Valkyrie'",
+    "gold": {
+     "columns": [
+      "IIF(isForeignOnly = 1, 'YES', 'NO')"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "NO"
+      ],
+      [
+       "NO"
+      ],
+      [
+       "NO"
+      ],
+      [
+       "NO"
+      ],
+      [
+       "NO"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "isForeignOnly"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ]
+     ]
+    },
+    "category": "D",
+    "reason": "语义相同：标准答案 'YES'/'NO'，模型 0/1。表示方式不同被判错"
+   },
+   {
+    "qid": 586,
+    "db": "codebase_community",
+    "difficulty": "challenging",
+    "question": "Which user added a bounty amount of 50 to the post title mentioning variance?",
+    "evidence": "bounty amount of 50 refers to BountyAmount = 50; user refers to DisplayName; title mentioning variance refers to Title include 'variance'",
+    "gold_sql": "SELECT T3.DisplayName, T1.Title FROM posts AS T1 INNER JOIN votes AS T2 ON T1.Id = T2.PostId INNER JOIN users AS T3 ON T3.Id = T2.UserId WHERE T2.BountyAmount = 50 AND T1.Title LIKE '%variance%'",
+    "pred_sql": "SELECT DISTINCT u.DisplayName FROM votes v JOIN posts p ON v.PostId = p.Id JOIN users u ON v.UserId = u.Id WHERE v.BountyAmount = 50 AND p.Title LIKE '%variance%'",
+    "gold": {
+     "columns": [
+      "DisplayName",
+      "Title"
+     ],
+     "n": 2,
+     "rows": [
+      [
+       "chl",
+       "How to combine confidence intervals for a variance component of a mixed-effects model when using multiple imputation"
+      ],
+      [
+       "shabbychef",
+       "Unbiased estimation of covariance matrix for multiply censored data"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "DisplayName"
+     ],
+     "n": 2,
+     "rows": [
+      [
+       "chl"
+      ],
+      [
+       "shabbychef"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目问 “Which user”，evidence 说 user 指 DisplayName；标准答案多返回了 Title"
+   },
+   {
+    "qid": 637,
+    "db": "codebase_community",
+    "difficulty": "moderate",
+    "question": "State all the tags used by Mark Meckes in his posts that doesn't have comments.",
+    "evidence": "used by Mark Meckes refers to DisplayName = 'Mark Meckes'; Doen't have comments refers to CommentCount = 0;",
+    "gold_sql": "SELECT T3.Tags FROM users AS T1 INNER JOIN postHistory AS T2 ON T1.Id = T2.UserId INNER JOIN posts AS T3 ON T3.Id = T2.PostId WHERE T1.DisplayName = 'Mark Meckes' AND T3.CommentCount = 0",
+    "pred_sql": "SELECT DISTINCT p.Tags FROM posts p JOIN users u ON p.OwnerUserId = u.Id WHERE u.DisplayName = 'Mark Meckes' AND p.CommentCount = 0 AND p.Tags IS NOT NULL",
+    "gold": {
+     "columns": [
+      "Tags"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "<books>"
+      ],
+      [
+       "<books>"
+      ],
+      [
+       "<books>"
+      ],
+      [
+       "<books>"
+      ],
+      [
+       "None"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "Tags"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "<books>"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "“his posts” 应是他发的帖（OwnerUserId）；标准答案经 postHistory 关联（含编辑过的帖），结果有重复和 NULL"
+   },
+   {
+    "qid": 701,
+    "db": "codebase_community",
+    "difficulty": "challenging",
+    "question": "Among all the posts posted by the most influential user, identify the percentage with a score above 50.",
+    "evidence": "The higher reputation the user has the more influence; percentage = DIVIDE(COUNT(stats_posts.Id where Score > 50 and MAX(Reputation))), COUNT(stats_posts.Id where MAX(Reputation));",
+    "gold_sql": "SELECT CAST(SUM(CASE WHEN T2.Score > 50 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.Id) FROM users T1 INNER JOIN posts T2 ON T1.Id = T2.OwnerUserId INNER JOIN ( SELECT MAX(Reputation) AS max_reputation FROM users ) T3 ON T1.Reputation = T3.max_reputation",
+    "pred_sql": "SELECT 100.0 * SUM(CASE WHEN p.Score > 50 THEN 1 ELSE 0 END) / COUNT(p.Id) FROM posts p WHERE p.OwnerUserId = (SELECT Id FROM users ORDER BY Reputation DESC LIMIT 1)",
+    "gold": {
+     "error": "TimeoutError: 查询超过 30 秒被中断"
+    },
+    "pred": {
+     "columns": [
+      "100.0 * SUM(CASE WHEN p.Score > 50 THEN 1 ELSE 0 END) / COUNT(p.Id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "0.6644518272425249"
+      ]
+     ]
+    },
+    "category": "D",
+    "reason": "标准 SQL 单独执行 158 秒，官方口径下必然超时；模型结果 0.6644… 与标准答案的真实结果一致"
+   },
+   {
+    "qid": 736,
+    "db": "superhero",
+    "difficulty": "moderate",
+    "question": "Who is the dumbest superhero?",
+    "evidence": "the dumbest superhero refers to MIN(attribute_value) where attribute_name = 'Intelligence'",
+    "gold_sql": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence' ORDER BY T2.attribute_value LIMIT 1",
+    "pred_sql": "SELECT s.superhero_name FROM superhero s JOIN hero_attribute ha ON s.id = ha.hero_id JOIN attribute a ON a.id = ha.attribute_id WHERE a.attribute_name = 'Intelligence' AND ha.attribute_value = (SELECT MIN(ha2.attribute_value) FROM hero_attribute ha2 JOIN attribute a2 ON a2.id = ha2.attribute_id WHERE a2.attribute_name = 'Intelligence')",
+    "gold": {
+     "columns": [
+      "superhero_name"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Ammo"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "superhero_name"
+     ],
+     "n": 3,
+     "rows": [
+      [
+       "Ammo"
+      ],
+      [
+       "Ando Masahashi"
+      ],
+      [
+       "Jack-Jack"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "智力最低有 3 人并列，标准答案 LIMIT 1 任取一个，模型返回全部并列者"
+   },
+   {
+    "qid": 772,
+    "db": "superhero",
+    "difficulty": "challenging",
+    "question": "List the eyes, hair and skin colour of all female superheroes published by Dark Horse Comics.",
+    "evidence": "eyes refers to eye_colour_id; hair refers to hair_colour_id; skin colour refers to skin_colour_id; female superheroes refers to gender = 'Female'; published by Dark Horse Comics refers to publisher_name = 'Dark Horse Comics';",
+    "gold_sql": "SELECT T1.eye_colour_id, T1.hair_colour_id, T1.skin_colour_id FROM superhero AS T1 INNER JOIN publisher AS T2 ON T2.id = T1.publisher_id INNER JOIN gender AS T3 ON T3.id = T1.gender_id WHERE T2.publisher_name = 'Dark Horse Comics' AND T3.gender = 'Female'",
+    "pred_sql": "SELECT e.colour AS eye_colour, h.colour AS hair_colour, s.colour AS skin_colour FROM superhero sh JOIN gender g ON sh.gender_id = g.id JOIN publisher p ON sh.publisher_id = p.id LEFT JOIN colour e ON sh.eye_colour_id = e.id LEFT JOIN colour h ON sh.hair_colour_id = h.id LEFT JOIN colour s ON sh.skin_colour_id = s.id WHERE g.gender = 'Female' AND p.publisher_name = 'Dark Horse Comics'",
+    "gold": {
+     "columns": [
+      "eye_colour_id",
+      "hair_colour_id",
+      "skin_colour_id"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "14",
+       "6",
+       "1"
+      ],
+      [
+       "9",
+       "9",
+       "1"
+      ],
+      [
+       "1",
+       "1",
+       "1"
+      ],
+      [
+       "1",
+       "1",
+       "28"
+      ],
+      [
+       "30",
+       "4",
+       "1"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "eye_colour",
+      "hair_colour",
+      "skin_colour"
+     ],
+     "n": 5,
+     "rows": [
+      [
+       "Green",
+       "Blond",
+       "No Colour"
+      ],
+      [
+       "Brown",
+       "Brown",
+       "No Colour"
+      ],
+      [
+       "No Colour",
+       "No Colour",
+       "No Colour"
+      ],
+      [
+       "No Colour",
+       "No Colour",
+       "Silver"
+      ],
+      [
+       "Violet",
+       "Black",
+       "No Colour"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "evidence 说 eyes 指 eye_colour_id（返回 ID），模型返回了颜色名称。常识上颜色名更合理，但不符合 evidence"
+   },
+   {
+    "qid": 798,
+    "db": "superhero",
+    "difficulty": "moderate",
+    "question": "What is the publisher for Hawkman, Karate Kid and Speedy?",
+    "evidence": "publisher refers to publisher_name; Hawkman refers to superhero_name = 'Hawkman'; Karate Kid refers to superhero_name = 'Karate Kid'; Speedy refers to superhero_name = 'Speedy';",
+    "gold_sql": "SELECT T2.publisher_name FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T1.superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')",
+    "pred_sql": "SELECT s.superhero_name, p.publisher_name FROM superhero s LEFT JOIN publisher p ON s.publisher_id = p.id WHERE s.superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')",
+    "gold": {
+     "columns": [
+      "publisher_name"
+     ],
+     "n": 3,
+     "rows": [
+      [
+       "DC Comics"
+      ],
+      [
+       "DC Comics"
+      ],
+      [
+       "DC Comics"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "superhero_name",
+      "publisher_name"
+     ],
+     "n": 3,
+     "rows": [
+      [
+       "Hawkman",
+       "DC Comics"
+      ],
+      [
+       "Karate Kid",
+       "DC Comics"
+      ],
+      [
+       "Speedy",
+       "DC Comics"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "模型多返回了英雄名一列；问“publisher”只要出版商"
+   },
+   {
+    "qid": 892,
+    "db": "formula_1",
+    "difficulty": "moderate",
+    "question": "State the driver with the most points scored. Find his full name with that points.",
+    "evidence": "the most points scored refers to max(points); Full name of the driver refers to drivers.forename and drivers.surname;",
+    "gold_sql": "SELECT T3.forename, T3.surname, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId ORDER BY T2.points DESC LIMIT 1",
+    "pred_sql": "SELECT d.forename, d.surname, r.points FROM results r JOIN drivers d ON d.driverId = r.driverId ORDER BY r.points DESC LIMIT 1",
+    "gold": {
+     "columns": [
+      "forename",
+      "surname",
+      "points"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Sebastian",
+       "Vettel",
+       "397.0"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "forename",
+      "surname",
+      "points"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Lewis",
+       "Hamilton",
+       "50.0"
+      ]
+     ]
+    },
+    "category": "A",
+    "reason": "“得分最多的车手”应看积分榜（driverStandings，Vettel 397），模型用单场比赛得分（results，最高 50），选错了表"
+   },
+   {
+    "qid": 906,
+    "db": "formula_1",
+    "difficulty": "moderate",
+    "question": "Which was Lewis Hamilton first race? What was his points recorded for his first race event?",
+    "evidence": "first race refers to min(Year); Lewis Hamiltonrefers to the full name of the driver; Full name of the driver refers to drivers.forename and drivers.surname;",
+    "gold_sql": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton' ORDER BY T1.year ASC LIMIT 1",
+    "pred_sql": "SELECT r.name, res.points FROM results res JOIN drivers d ON d.driverId = res.driverId JOIN races r ON r.raceId = res.raceId WHERE d.forename = 'Lewis' AND d.surname = 'Hamilton' ORDER BY r.year ASC, r.round ASC LIMIT 1",
+    "gold": {
+     "columns": [
+      "name",
+      "points"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Malaysian Grand Prix",
+       "14.0"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "name",
+      "points"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Malaysian Grand Prix",
+       "8.0"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目问“第一场比赛记录的得分”，应为单场得分 8（results）；标准答案用积分榜累计分 14（已查证）"
+   },
+   {
+    "qid": 930,
+    "db": "formula_1",
+    "difficulty": "simple",
+    "question": "In which Formula_1 race did Lewis Hamilton rank the highest?",
+    "evidence": "rank the highest refers to min(rank); Lewis Hamilton refers to the full name of the driver; Full name of the driver refers to drivers.forename and drivers.surname;",
+    "gold_sql": "SELECT name FROM races WHERE raceId IN ( SELECT raceId FROM results WHERE rank = 1 AND driverId = ( SELECT driverId FROM drivers WHERE forename = 'Lewis' AND surname = 'Hamilton' ) )",
+    "pred_sql": "SELECT r.name FROM results AS res JOIN drivers AS d ON res.driverId = d.driverId JOIN races AS r ON res.raceId = r.raceId WHERE d.forename = 'Lewis' AND d.surname = 'Hamilton' AND res.rank IS NOT NULL AND res.rank > 0 ORDER BY res.rank ASC LIMIT 1",
+    "gold": {
+     "columns": [
+      "name"
+     ],
+     "n": 37,
+     "rows": [
+      [
+       "Chinese Grand Prix"
+      ],
+      [
+       "Malaysian Grand Prix"
+      ],
+      [
+       "Japanese Grand Prix"
+      ],
+      [
+       "Chinese Grand Prix"
+      ],
+      [
+       "Spanish Grand Prix"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "name"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Chinese Grand Prix"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "“排名最高的那场比赛”：标准答案返回所有排名第 1 的比赛（37 场），模型返回 1 场"
+   },
+   {
+    "qid": 931,
+    "db": "formula_1",
+    "difficulty": "moderate",
+    "question": "What was the fastest lap speed among all drivers in the 2009 Spanish Grand Prix?",
+    "evidence": "the fastest lap speed among all refers to max(fastestLapSpeed); Spanish Grand Prix refers to races.name = 'Spanish Grand Prix';",
+    "gold_sql": "SELECT T2.fastestLapSpeed FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId WHERE T1.name = 'Spanish Grand Prix' AND T1.year = 2009 AND T2.fastestLapSpeed IS NOT NULL ORDER BY T2.fastestLapSpeed DESC LIMIT 1",
+    "pred_sql": "SELECT MAX(CAST(results.fastestLapSpeed AS REAL)) FROM results JOIN races ON results.raceId = races.raceId WHERE races.name = 'Spanish Grand Prix' AND races.year = 2009",
+    "gold": {
+     "columns": [
+      "fastestLapSpeed"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "202.484"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "MAX(CAST(results.fastestLapSpeed AS REAL))"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "202.484"
+      ]
+     ]
+    },
+    "category": "D",
+    "reason": "数值相同 202.484：标准答案是 TEXT '202.484'，模型 CAST 成 REAL，类型不同被判错"
+   },
+   {
+    "qid": 963,
+    "db": "formula_1",
+    "difficulty": "moderate",
+    "question": "How many French drivers who obtain the laptime less than 02:00.00?",
+    "evidence": "lap time less than 02:00.00 refers to seconds < 120;",
+    "gold_sql": "SELECT COUNT(T1.driverId) FROM drivers AS T1 INNER JOIN lapTimes AS T2 on T1.driverId = T2.driverId WHERE T1.nationality = 'French' AND (CAST(SUBSTR(T2.time, 1, 2) AS INTEGER) * 60 + CAST(SUBSTR(T2.time, 4, 2) AS INTEGER) + CAST(SUBSTR(T2.time, 7, 2) AS REAL) / 1000) < 120",
+    "pred_sql": "SELECT COUNT(DISTINCT d.driverId) FROM drivers d JOIN lapTimes l ON d.driverId = l.driverId WHERE d.nationality = 'French' AND l.milliseconds < 120000",
+    "gold": {
+     "columns": [
+      "COUNT(T1.driverId)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "23295"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "COUNT(DISTINCT d.driverId)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "9"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问“多少名法国车手”，标准答案数的是圈速记录行数（23295）；且时间解析 SUBSTR(time,7,2)/1000 写错"
+   },
+   {
+    "qid": 967,
+    "db": "formula_1",
+    "difficulty": "simple",
+    "question": "State code numbers of top 3 yougest drivers. How many Netherlandic drivers among them?",
+    "evidence": "youngest driver refers to Max (year(dob)); Netherlandic and Dutch refer to the same country",
+    "gold_sql": "SELECT COUNT(*) FROM ( SELECT T1.nationality FROM drivers AS T1 ORDER BY JULIANDAY(T1.dob) DESC LIMIT 3) AS T3 WHERE T3.nationality = 'Dutch'",
+    "pred_sql": "SELECT code, SUM(nationality = 'Dutch') OVER () AS dutch_count FROM (SELECT code, nationality FROM drivers ORDER BY dob DESC LIMIT 3)",
+    "gold": {
+     "columns": [
+      "COUNT(*)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "code",
+      "dutch_count"
+     ],
+     "n": 3,
+     "rows": [
+      [
+       "STR",
+       "1"
+      ],
+      [
+       "VER",
+       "1"
+      ],
+      [
+       "OCO",
+       "1"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目要求给出前 3 名的代号并统计荷兰车手数，标准答案只返回计数"
+   },
+   {
+    "qid": 989,
+    "db": "formula_1",
+    "difficulty": "moderate",
+    "question": "Who is the champion of the Canadian Grand Prix in 2008? Indicate his finish time.",
+    "evidence": "Only the time of the champion shows in the format of \"hour: minutes: seconds.millionsecond\";",
+    "gold_sql": "SELECT T1.time FROM results AS T1 INNER JOIN races AS T2 ON T1.raceId = T2.raceId WHERE T2.name = 'Canadian Grand Prix' AND T2.year = 2008 AND T1.time LIKE '_:%:__.___'",
+    "pred_sql": "SELECT d.forename, d.surname, r.time FROM results r JOIN races ra ON r.raceId = ra.raceId JOIN drivers d ON r.driverId = d.driverId WHERE ra.name = 'Canadian Grand Prix' AND ra.year = 2008 AND r.positionOrder = 1",
+    "gold": {
+     "columns": [
+      "time"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1:36:24.227"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "forename",
+      "surname",
+      "time"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Robert",
+       "Kubica",
+       "1:36:24.227"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问“谁是冠军并给出成绩”，标准答案只返回成绩，漏了车手"
+   },
+   {
+    "qid": 1058,
+    "db": "european_football_2",
+    "difficulty": "challenging",
+    "question": "Who has the highest average finishing rate between the highest and shortest football player?",
+    "evidence": "finishing rate refers to finishing; highest average finishing rate = MAX(AVG(finishing)); highest football player refers to MAX(height); shortest football player refers to MIN(height);",
+    "gold_sql": "SELECT A FROM ( SELECT AVG(finishing) result, 'Max' A FROM Player AS T1 INNER JOIN Player_Attributes AS T2 ON T1.player_api_id = T2.player_api_id WHERE T1.height = ( SELECT MAX(height) FROM Player ) UNION SELECT AVG(finishing) result, 'Min' A FROM Player AS T1 INNER JOIN Player_Attributes AS T2 ON T1.player_api_id = T2.player_api_id WHERE T1.height = ( SELECT MIN(height) FROM Player ) ) ORDER BY result DESC LIMIT 1",
+    "pred_sql": "",
+    "gold": {
+     "columns": [
+      "A"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "Min"
+      ]
+     ]
+    },
+    "pred": null,
+    "category": "F",
+    "reason": "生成失控（P8），没有产出 SQL；已修复"
+   },
+   {
+    "qid": 1080,
+    "db": "european_football_2",
+    "difficulty": "moderate",
+    "question": "Among the players whose preferred foot was the left foot when attacking, how many of them would remain in his position when the team attacked?",
+    "evidence": "preferred foot when attacking was the left refers to preferred_foot = 'left'; players who would remain in his position when the team attacked refers to attacking_work_rate = 'low';",
+    "gold_sql": "SELECT COUNT(player_api_id) FROM Player_Attributes WHERE preferred_foot = 'left' AND attacking_work_rate = 'low'",
+    "pred_sql": "SELECT COUNT(DISTINCT player_api_id) FROM Player_Attributes WHERE preferred_foot = 'left' AND attacking_work_rate = 'low'",
+    "gold": {
+     "columns": [
+      "COUNT(player_api_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1569"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "COUNT(DISTINCT player_api_id)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "189"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问“多少名球员”，标准答案数的是属性快照行（1569），模型去重球员（189）"
+   },
+   {
+    "qid": 1094,
+    "db": "european_football_2",
+    "difficulty": "challenging",
+    "question": "How much higher in percentage is Ariel Borysiuk's overall rating than that of Paulin Puel?",
+    "evidence": "how much higher in percentage = MULTIPLY(DIVIDE(SUBTRACT(overall_rating WHERE player_name = 'Ariel Borysiuk', overall_rating WHERE player_name = 'Paulin Puel'), overall_rating WHERE player_name = 'Paulin Puel'), 100);",
+    "gold_sql": "SELECT (SUM(CASE WHEN t1.player_name = 'Ariel Borysiuk' THEN t2.overall_rating ELSE 0 END) * 1.0 - SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END)) * 100 / SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id",
+    "pred_sql": "SELECT (CAST((SELECT pa.overall_rating FROM Player_Attributes pa JOIN Player p ON p.player_api_id = pa.player_api_id WHERE p.player_name = 'Ariel Borysiuk') - (SELECT pa.overall_rating FROM Player_Attributes pa JOIN Player p ON p.player_api_id = pa.player_api_id WHERE p.player_name = 'Paulin Puel') AS REAL) * 100) / (SELECT pa.overall_rating FROM Player_Attributes pa JOIN Player p ON p.player_api_id = pa.player_api_id WHERE p.player_name = 'Paulin Puel') AS percentage",
+    "gold": {
+     "columns": [
+      "(SUM(CASE WHEN t1.player_name = 'Ariel Borysiuk' THEN t2.overall_rating ELSE 0 END) * 1.0 - SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END)) * 100 / SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "133.7260677466863"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "percentage"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "15.254237288135593"
+      ]
+     ]
+    },
+    "category": "E",
+    "reason": "球员有多期评分快照：标准答案把所有快照相加，模型的标量子查询任取一期。两者都没有明确选哪一期"
+   },
+   {
+    "qid": 1107,
+    "db": "european_football_2",
+    "difficulty": "moderate",
+    "question": "When was the first time did Kevin Constant have his highest crossing score? Give the date.",
+    "evidence": "Kevin Constant refers to player_name = 'Kevin Constant'; highest crossing score refers to MAX(crossing)",
+    "gold_sql": "SELECT `date` FROM ( SELECT t2.crossing, t2.`date` FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_fifa_api_id = t2.player_fifa_api_id WHERE t1.player_name = 'Kevin Constant' ORDER BY t2.crossing DESC) ORDER BY date DESC LIMIT 1",
+    "pred_sql": "SELECT pa.date FROM Player_Attributes pa JOIN Player p ON pa.player_api_id = p.player_api_id WHERE p.player_name = 'Kevin Constant' AND pa.crossing = (SELECT MAX(pa2.crossing) FROM Player_Attributes pa2 JOIN Player p2 ON pa2.player_api_id = p2.player_api_id WHERE p2.player_name = 'Kevin Constant') ORDER BY pa.date ASC LIMIT 1",
+    "gold": {
+     "columns": [
+      "date"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "2016-04-21 00:00:00"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "date"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "2013-02-15 00:00:00"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问“第一次”达到最高传中分的日期，标准答案按日期倒序取最晚一次，且没有限定为最高分"
+   },
+   {
+    "qid": 1135,
+    "db": "european_football_2",
+    "difficulty": "moderate",
+    "question": "Please provide top four football players' IDs who are among the lowest potential players and prefer to use the right foot when attacking.",
+    "evidence": "lowest potential players refers to MIN(potential); prefer to use the right foot when attacking refers to preferred_foot = 'right'",
+    "gold_sql": "SELECT id FROM Player_Attributes WHERE preferred_foot = 'right' ORDER BY potential ASC LIMIT 4",
+    "pred_sql": "SELECT DISTINCT player_api_id FROM Player_Attributes WHERE preferred_foot = 'right' AND potential IS NOT NULL ORDER BY potential ASC LIMIT 4",
+    "gold": {
+     "columns": [
+      "id"
+     ],
+     "n": 4,
+     "rows": [
+      [
+       "132235"
+      ],
+      [
+       "132236"
+      ],
+      [
+       "66213"
+      ],
+      [
+       "66214"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "player_api_id"
+     ],
+     "n": 4,
+     "rows": [
+      [
+       "66995"
+      ],
+      [
+       "25338"
+      ],
+      [
+       "41865"
+      ],
+      [
+       "67396"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案返回属性表的行 id 而非球员 ID，且没排除 potential 为 NULL 的行（升序 NULL 在前）"
+   },
+   {
+    "qid": 1144,
+    "db": "european_football_2",
+    "difficulty": "simple",
+    "question": "Please state the finishing rate and curve score of the player who has the heaviest weight.",
+    "evidence": "finishing rate refer to finishing; curve score refer to curve; heaviest weight refers to MAX(weight)",
+    "gold_sql": "SELECT id, finishing, curve FROM Player_Attributes WHERE player_api_id = ( SELECT player_api_id FROM Player ORDER BY weight DESC LIMIT 1 ) LIMIT 1",
+    "pred_sql": "SELECT pa.finishing, pa.curve FROM Player_Attributes pa WHERE pa.player_api_id = (SELECT player_api_id FROM Player ORDER BY weight DESC LIMIT 1) LIMIT 1",
+    "gold": {
+     "columns": [
+      "id",
+      "finishing",
+      "curve"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "98022",
+       "13",
+       "13"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "finishing",
+      "curve"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "13",
+       "13"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案多返回 id 列（题目只要 finishing 和 curve），且用了没有 ORDER BY 的 LIMIT（P3）"
+   },
+   {
+    "qid": 1175,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "How old was the patient who had the highest hemoglobin count at the time of the examination, and what is the doctor's diagnosis?",
+    "evidence": "How old the patient refers to SUBTRACT(year(`Examination Date`), year(Birthday)); the highest hemoglobin count refers to MAX(HGB)",
+    "gold_sql": "SELECT STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday), T1.Diagnosis FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID ORDER BY T2.HGB DESC LIMIT 1",
+    "pred_sql": "SELECT CAST(substr(E.\"Examination Date\",1,4) AS INTEGER) - CAST(substr(P.Birthday,1,4) AS INTEGER) AS age, P.Diagnosis FROM Patient P JOIN Examination E ON P.ID = E.ID JOIN Laboratory L ON P.ID = L.ID WHERE L.HGB IS NOT NULL ORDER BY L.HGB DESC LIMIT 1",
+    "gold": {
+     "columns": [
+      "STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday)",
+      "Diagnosis"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "28",
+       "SLE"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "age",
+      "Diagnosis"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "23",
+       "SJS"
+      ]
+     ]
+    },
+    "category": "E",
+    "reason": "evidence 说用 Examination Date 算年龄，标准答案用了 Laboratory 的 Date；模型按 evidence 关联 Examination，却因此把没有检查记录的病人排除了，选出的病人也变了"
+   },
+   {
+    "qid": 1179,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "For the patient who was diagnosed with SLE on 1994/2/19, what was his/her anti-Cardiolipin antibody concentration status on 1993/11/12?",
+    "evidence": "diagnosed with SLE refers to Diagnosis = 'SLE'; 1994/2/19 refers to Description = '1994-02-19'; anti-Cardiolipin refers to aCL IgM; 1993/11/12 refers to Examination Date = '1993/11/12'",
+    "gold_sql": "SELECT `aCL IgA`, `aCL IgG`, `aCL IgM` FROM Examination WHERE ID IN ( SELECT ID FROM Patient WHERE Diagnosis = 'SLE' AND Description = '1994-02-19' ) AND `Examination Date` = '1993-11-12'",
+    "pred_sql": "SELECT E.\"aCL IgM\" FROM Examination E JOIN Patient P ON E.ID = P.ID WHERE P.Diagnosis = 'SLE' AND P.Description = '1994-02-19' AND E.\"Examination Date\" = '1993-11-12'",
+    "gold": {
+     "columns": [
+      "aCL IgA",
+      "aCL IgG",
+      "aCL IgM"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "3",
+       "5.1",
+       "4.1"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "aCL IgM"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "4.1"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "evidence 明确 anti-Cardiolipin 指 aCL IgM，标准答案却返回 IgA/IgG/IgM 三列"
+   },
+   {
+    "qid": 1205,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "Was the patient with the number 57266's uric acid within a normal range?",
+    "evidence": "uric acid within a normal range refers to UA > 8.0 and SEX = 'M'OR UA > 6.5 and SEX = 'F'",
+    "gold_sql": "SELECT CASE WHEN (T1.SEX = 'F' AND T2.UA > 6.5) OR (T1.SEX = 'M' AND T2.UA > 8.0) THEN true ELSE false END FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.ID = 57266",
+    "pred_sql": "SELECT CASE WHEN (P.SEX = 'M' AND L.UA > 8.0) OR (P.SEX = 'F' AND L.UA > 6.5) THEN 'Yes' ELSE 'No' END AS normal FROM Laboratory L JOIN Patient P ON L.ID = P.ID WHERE L.ID = 57266",
+    "gold": {
+     "columns": [
+      "CASE WHEN (T1.SEX = 'F' AND T2.UA > 6.5) OR (T1.SEX = 'M' AND T2.UA > 8.0) THEN true ELSE false END"
+     ],
+     "n": 67,
+     "rows": [
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ],
+      [
+       "0"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "normal"
+     ],
+     "n": 67,
+     "rows": [
+      [
+       "No"
+      ],
+      [
+       "No"
+      ],
+      [
+       "No"
+      ],
+      [
+       "No"
+      ],
+      [
+       "No"
+      ]
+     ]
+    },
+    "category": "D",
+    "reason": "语义相同：标准答案 true/false（1/0），模型 'Yes'/'No'"
+   },
+   {
+    "qid": 1227,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "What is the average age of the male patient with high cholesterol?",
+    "evidence": "average age = DIVIDE(SUM(SUBTRACT(YEAR(NOW()), YEAR(birthday))), COUNT(ID)); male patient refers to sex = 'M'; high cholesterol refers to `T-CHO` > = 250;",
+    "gold_sql": "SELECT AVG(STRFTIME('%Y', date('NOW')) - STRFTIME('%Y', T1.Birthday)) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.`T-CHO` >= 250 AND T1.SEX = 'M'",
+    "pred_sql": "SELECT AVG(CAST(strftime('%Y','now') AS INTEGER) - CAST(strftime('%Y', P.Birthday) AS INTEGER)) FROM Patient P WHERE P.SEX = 'M' AND P.ID IN (SELECT ID FROM Laboratory WHERE \"T-CHO\" >= 250)",
+    "gold": {
+     "columns": [
+      "AVG(STRFTIME('%Y', date('NOW')) - STRFTIME('%Y', T1.Birthday))"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "74.68535825545172"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "AVG(CAST(strftime('%Y','now') AS INTEGER) - CAST(strftime('%Y', P.Birthday) AS INTEGER))"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "71.95"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "平均年龄应按病人算，标准答案 JOIN 化验表后按化验行平均（化验多的病人权重大）"
+   },
+   {
+    "qid": 1235,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "What are the patient's diagnosis for those who has lower red blood blood cell? State their ID and age.",
+    "evidence": "patient's diagnosis refers to Diagnosis; lower red blood cell refers to RBC < 3.5; age = SUBTRACT(year(current_timestamp), year(Birthday)); ",
+    "gold_sql": "SELECT DISTINCT T1.Diagnosis, T1.ID , STRFTIME('%Y', CURRENT_TIMESTAMP) -STRFTIME('%Y', T1.Birthday) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.RBC < 3.5",
+    "pred_sql": "SELECT DISTINCT P.ID, P.Diagnosis, CAST(strftime('%Y','now') AS INTEGER) - CAST(strftime('%Y', P.Birthday) AS INTEGER) AS age FROM Patient P INNER JOIN Laboratory L ON P.ID = L.ID WHERE L.RBC < 3.5",
+    "gold": {
+     "columns": [
+      "Diagnosis",
+      "ID",
+      "STRFTIME('%Y', CURRENT_TIMESTAMP) -STRFTIME('%Y', T1.Birthday)"
+     ],
+     "n": 73,
+     "rows": [
+      [
+       "RA, SLE susp",
+       "27654",
+       "90"
+      ],
+      [
+       "SLE, MCTD",
+       "30609",
+       "82"
+      ],
+      [
+       "SJS",
+       "58139",
+       "54"
+      ],
+      [
+       "RA",
+       "71417",
+       "97"
+      ],
+      [
+       "RA",
+       "130370",
+       "74"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "ID",
+      "Diagnosis",
+      "age"
+     ],
+     "n": 73,
+     "rows": [
+      [
+       "27654",
+       "RA, SLE susp",
+       "90"
+      ],
+      [
+       "30609",
+       "SLE, MCTD",
+       "82"
+      ],
+      [
+       "58139",
+       "SJS",
+       "54"
+      ],
+      [
+       "71417",
+       "RA",
+       "97"
+      ],
+      [
+       "130370",
+       "RA",
+       "74"
+      ]
+     ]
+    },
+    "category": "A",
+    "reason": "内容完全相同，但题目顺序是“诊断、ID、年龄”，模型输出成 ID、诊断、年龄，列顺序错"
+   },
+   {
+    "qid": 1243,
+    "db": "thrombosis_prediction",
+    "difficulty": "challenging",
+    "question": "For all patients who are older than 55 years old, what is the percentage of female who has abnormal prothrombin time (PT)?",
+    "evidence": "older than 55 years old = SUBTRACT(year(current_timestamp), year(Birthday)) > 55; abnormal prothrombin time (PT) refers to PT > = 14; percentage = DIVIDE(SUM(PT > = 14 AND SEX = 'F'), SUM(PT > = 14)) * 100; female refers to sex = 'F'; ",
+    "gold_sql": "SELECT CAST(SUM(CASE WHEN T2.PT >= 14 AND T1.SEX = 'F' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(CASE WHEN T2.PT >= 14 THEN 1 ELSE 0 END) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', T1.Birthday) > 55",
+    "pred_sql": "SELECT 100.0 * SUM(CASE WHEN P.SEX = 'F' AND L.PT >= 14 THEN 1 ELSE 0 END) / SUM(CASE WHEN L.PT >= 14 THEN 1 ELSE 0 END) FROM Patient P JOIN Laboratory L ON P.ID = L.ID WHERE CAST(strftime('%Y', 'now') AS INTEGER) - CAST(strftime('%Y', P.Birthday) AS INTEGER) > 55",
+    "gold": {
+     "columns": [
+      "CAST(SUM(CASE WHEN T2.PT >= 14 AND T1.SEX = 'F' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(CASE WHEN T2.PT >= 14 THEN 1 ELSE 0 END)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1.2030885257676422"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "100.0 * SUM(CASE WHEN P.SEX = 'F' AND L.PT >= 14 THEN 1 ELSE 0 END) / SUM(CASE WHEN L.PT >= 14 THEN 1 ELSE 0 END)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "78.3625730994152"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案分母 COUNT(CASE … ELSE 0 END) 会把 0 也计数，等于数所有行；结果 1.2% 明显不对，模型按 evidence 得 78.4%"
+   },
+   {
+    "qid": 1255,
+    "db": "thrombosis_prediction",
+    "difficulty": "moderate",
+    "question": "For the patients with an abnormal Ig M level, what is the most common disease they are diagnosed with?",
+    "evidence": "abnormal Ig M level refers to IGM <=40 OR IGM >= 400; most common disease refers to MAX(COUNT(Diagnosis));",
+    "gold_sql": "SELECT T1.Diagnosis FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.IGM NOT BETWEEN 40 AND 400 GROUP BY T1.Diagnosis ORDER BY COUNT(T1.Diagnosis) DESC LIMIT 1",
+    "pred_sql": "SELECT P.Diagnosis FROM Patient P WHERE P.ID IN (SELECT ID FROM Laboratory WHERE IGM <= 40 OR IGM >= 400) GROUP BY P.Diagnosis ORDER BY COUNT(P.ID) DESC LIMIT 1",
+    "gold": {
+     "columns": [
+      "Diagnosis"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "RA"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "Diagnosis"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "SLE"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "标准答案按化验行计数（病人多次化验被重复计），且 NOT BETWEEN 40 AND 400 漏掉了 evidence 规定的 =40、=400 边界"
+   },
+   {
+    "qid": 1427,
+    "db": "student_club",
+    "difficulty": "moderate",
+    "question": "What are the budget category of the events located at MU 215 and a guest speaker type with a 0 budget spent?",
+    "evidence": "budget category refers to category; events located at refers to location; type = 'Guest Speaker'; 0 budget spent refers to spent = 0; ",
+    "gold_sql": "SELECT DISTINCT T2.category, T1.type FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event WHERE T1.location = 'MU 215' AND T2.spent = 0 AND T1.type = 'Guest Speaker'",
+    "pred_sql": "SELECT DISTINCT b.category FROM budget b JOIN event e ON b.link_to_event = e.event_id WHERE e.location = 'MU 215' AND e.type = 'Guest Speaker' AND b.spent = 0",
+    "gold": {
+     "columns": [
+      "category",
+      "type"
+     ],
+     "n": 4,
+     "rows": [
+      [
+       "Speaker Gifts",
+       "Guest Speaker"
+      ],
+      [
+       "Food",
+       "Guest Speaker"
+      ],
+      [
+       "Parking",
+       "Guest Speaker"
+      ],
+      [
+       "Advertisement",
+       "Guest Speaker"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "category"
+     ],
+     "n": 4,
+     "rows": [
+      [
+       "Speaker Gifts"
+      ],
+      [
+       "Food"
+      ],
+      [
+       "Parking"
+      ],
+      [
+       "Advertisement"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问预算类别，标准答案多返回了 type 列（全是 'Guest Speaker'）"
+   },
+   {
+    "qid": 1486,
+    "db": "debit_card_specializing",
+    "difficulty": "simple",
+    "question": "Is it true that more SMEs pay in Czech koruna than in euros? If so, how many more?",
+    "evidence": "Amount of more SMEs = Total of SMEs pay using Currency CZK - Total of SMEs pay using Currency EUR",
+    "gold_sql": "SELECT SUM(Currency = 'CZK') - SUM(Currency = 'EUR') FROM customers WHERE Segment = 'SME'",
+    "pred_sql": "SELECT CASE WHEN SUM(Currency='CZK') > SUM(Currency='EUR') THEN 'True' ELSE 'False' END AS is_more_czk, SUM(Currency='CZK') - SUM(Currency='EUR') AS difference FROM customers WHERE Segment = 'SME'",
+    "gold": {
+     "columns": [
+      "SUM(Currency = 'CZK') - SUM(Currency = 'EUR')"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "23505"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "is_more_czk",
+      "difference"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "True",
+       "23505"
+      ]
+     ]
+    },
+    "category": "C",
+    "reason": "“Is it true…? If so, how many more?” 模型同时返回真假和差值，标准答案只返回差值"
+   },
+   {
+    "qid": 1490,
+    "db": "debit_card_specializing",
+    "difficulty": "moderate",
+    "question": "How many percent of LAM customer consumed more than 46.73?",
+    "evidence": "Percentage of LAM customer consumed more than 46.73 = (Total no. of LAM customers who consumed more than 46.73 / Total no. of LAM customers) * 100.",
+    "gold_sql": "SELECT CAST(SUM(IIF(T2.Consumption > 46.73, 1, 0)) AS FLOAT) * 100 / COUNT(T1.CustomerID) FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Segment = 'LAM'",
+    "pred_sql": "SELECT 100.0 * COUNT(DISTINCT CASE WHEN y.Consumption > 46.73 THEN c.CustomerID END) / COUNT(DISTINCT c.CustomerID) FROM customers c LEFT JOIN yearmonth y ON c.CustomerID = y.CustomerID WHERE c.Segment = 'LAM'",
+    "gold": {
+     "columns": [
+      "CAST(SUM(IIF(T2.Consumption > 46.73, 1, 0)) AS FLOAT) * 100 / COUNT(T1.CustomerID)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "98.5267932135058"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "100.0 * COUNT(DISTINCT CASE WHEN y.Consumption > 46.73 THEN c.CustomerID END) / COUNT(DISTINCT c.CustomerID)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "98.25041006014216"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "evidence 说按客户数算，标准答案按月度消费行计数"
+   },
+   {
+    "qid": 1525,
+    "db": "debit_card_specializing",
+    "difficulty": "simple",
+    "question": "What is the percentage of the customers who used EUR in 2012/8/25?",
+    "evidence": "'2012/8/25' can be represented by '2012-08-25'",
+    "gold_sql": "SELECT CAST(SUM(IIF(T2.Currency = 'EUR', 1, 0)) AS FLOAT) * 100 / COUNT(T1.CustomerID) FROM transactions_1k AS T1 INNER JOIN customers AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Date = '2012-08-25'",
+    "pred_sql": "SELECT 100.0 * SUM(CASE WHEN c.Currency = 'EUR' THEN 1 ELSE 0 END) / COUNT(*) FROM (SELECT DISTINCT CustomerID FROM transactions_1k WHERE Date = '2012-08-25') t JOIN customers c ON c.CustomerID = t.CustomerID",
+    "gold": {
+     "columns": [
+      "CAST(SUM(IIF(T2.Currency = 'EUR', 1, 0)) AS FLOAT) * 100 / COUNT(T1.CustomerID)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "1.6470588235294117"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "100.0 * SUM(CASE WHEN c.Currency = 'EUR' THEN 1 ELSE 0 END) / COUNT(*)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "2.7027027027027026"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "问“客户”的百分比，标准答案按交易笔数算，模型按去重客户算"
+   },
+   {
+    "qid": 1526,
+    "db": "debit_card_specializing",
+    "difficulty": "challenging",
+    "question": "For the customer who paid 634.8 in 2012/8/25, what was the consumption decrease rate from Year 2012 to 2013?",
+    "evidence": "'2012/8/24' can be represented by '2012-08-24'; Consumption decrease rate = (consumption_2012 - consumption_2013) / consumption_2012",
+    "gold_sql": "SELECT CAST(SUM(IIF(SUBSTRING(Date, 1, 4) = '2012', Consumption, 0)) - SUM(IIF(SUBSTRING(Date, 1, 4) = '2013', Consumption, 0)) AS FLOAT) / SUM(IIF(SUBSTRING(Date, 1, 4) = '2012', Consumption, 0)) FROM yearmonth WHERE CustomerID = ( SELECT T1.CustomerID FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T1.Date = '2012-08-25' AND T1.Price  = 1513.12 )",
+    "pred_sql": "SELECT (SUM(CASE WHEN substr(ym.Date,1,4)='2012' THEN ym.Consumption END) - SUM(CASE WHEN substr(ym.Date,1,4)='2013' THEN ym.Consumption END)) / SUM(CASE WHEN substr(ym.Date,1,4)='2012' THEN ym.Consumption END) FROM yearmonth ym WHERE ym.CustomerID = (SELECT t.CustomerID FROM transactions_1k t WHERE t.Date='2012-08-25' AND t.Price=634.8 LIMIT 1)",
+    "gold": {
+     "columns": [
+      "CAST(SUM(IIF(SUBSTRING(Date, 1, 4) = '2012', Consumption, 0)) - SUM(IIF(SUBSTRING(Date, 1, 4) = '2013', Consumption, 0)) AS FLOAT) / SUM(IIF(SUBSTRING(Date, 1, 4) = '2012', Consumption, 0))"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "None"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "(SUM(CASE WHEN substr(ym.Date,1,4)='2012' THEN ym.Consumption END) - SUM(CASE WHEN substr(ym.Date,1,4)='2013' THEN ym.Consumption END)) / SUM(CASE WHEN substr(ym.Date,1,4)='2012' THEN ym.Consumption END)"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "-5.815242674672346"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "题目说支付 634.8，标准答案却用 Price = 1513.12，结果为 NULL"
+   },
+   {
+    "qid": 1531,
+    "db": "debit_card_specializing",
+    "difficulty": "moderate",
+    "question": "Who is the top spending customer and how much is the average price per single item purchased by this customer? What currency was being used?",
+    "evidence": "average price per single item = Total(price) / Total(amount)",
+    "gold_sql": "SELECT T2.CustomerID, SUM(T2.Price / T2.Amount), T1.Currency FROM customers AS T1 INNER JOIN transactions_1k AS T2 ON T1.CustomerID = T2.CustomerID WHERE T2.CustomerID = ( SELECT CustomerID FROM yearmonth ORDER BY Consumption DESC LIMIT 1 ) GROUP BY T2.CustomerID, T1.Currency",
+    "pred_sql": "SELECT t.CustomerID, SUM(t.Price) / SUM(t.Amount) AS avg_price_per_item, c.Currency FROM transactions_1k t JOIN customers c ON c.CustomerID = t.CustomerID WHERE t.CustomerID = (SELECT CustomerID FROM transactions_1k GROUP BY CustomerID ORDER BY SUM(Price) DESC LIMIT 1) GROUP BY t.CustomerID, c.Currency",
+    "gold": {
+     "columns": [
+      "CustomerID",
+      "SUM(T2.Price / T2.Amount)",
+      "Currency"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "12459",
+       "203.8560787354258",
+       "CZK"
+      ]
+     ]
+    },
+    "pred": {
+     "columns": [
+      "CustomerID",
+      "avg_price_per_item",
+      "Currency"
+     ],
+     "n": 1,
+     "rows": [
+      [
+       "19182",
+       "24.277577464788735",
+       "CZK"
+      ]
+     ]
+    },
+    "category": "B",
+    "reason": "evidence 说平均单价 = 总价 / 总数量，标准答案用 SUM(Price/Amount)；“最高消费客户”也用月度消费而非交易额"
+   }
+  ]
+ },
+ "route": {
+  "replay_run": "route-replay-253ae6",
+  "live_run": "route-r1-4bc570",
+  "haiku": {
+   "ex_runs": [
+    0.674,
+    0.678,
+    0.688
+   ],
+   "ex_mean": 0.68,
+   "cost_mean": 0.11060755166666666
+  },
+  "sonnet": {
+   "ex_runs": [
+    0.72,
+    0.726,
+    0.726
+   ],
+   "ex_mean": 0.724,
+   "cost_mean": 1.6001608666666667
+  },
+  "oracle": {
+   "ex_mean": 0.7753333333333333,
+   "escalated_mean": 160,
+   "cost_mean": 0.6717139183333334
+  },
+  "rules": {
+   "r1_any_fix": {
+    "ex_mean": 0.694,
+    "ex_std": 0.003464101615137758,
+    "escalated_mean": 27,
+    "cost_mean": 0.23303908499999998
+   },
+   "r2_unresolved": {
+    "ex_mean": 0.6866666666666666,
+    "ex_std": 0.005033222956847112,
+    "escalated_mean": 4,
+    "cost_mean": 0.15021121833333326
+   },
+   "r3_fix_or_complex": {
+    "ex_mean": 0.6986666666666667,
+    "ex_std": 0.00461880215351701,
+    "escalated_mean": 112,
+    "cost_mean": 0.5423154849999999
+   }
+  },
+  "live": {
+   "ex": 0.696,
+   "escalated": 22,
+   "cost": 0.2303
+  }
+ },
+ "zh100": {
+  "runs": {
+   "zh": "zh100v2-19843f",
+   "zh_first": "zh100-0c81eb",
+   "en": "en100-c36e18"
+  },
+  "models": {
+   "haiku": {
+    "en": 0.64,
+    "zh": 0.69,
+    "en_only": 2,
+    "zh_only": 7,
+    "p": 0.18
+   },
+   "sonnet": {
+    "en": 0.77,
+    "zh": 0.72,
+    "en_only": 9,
+    "zh_only": 4,
+    "p": 0.267
+   }
+  }
+ },
+ "cache": {
+  "run_id": "cache-bench-2f535c",
+  "model": "sonnet",
+  "store": "redis",
+  "requests": 200,
+  "distribution": "构造：140 道不重复 + 60 次重复（一半原样、一半改写）",
+  "hit_rate": 0.295,
+  "repeat_hit_rate": 0.9833333333333333,
+  "repeat_variant_hit_rate": 0.9629629629629629,
+  "hit_latency_p50": 0.0008913750061765313,
+  "hit_latency_p95": 0.0026360419869888574,
+  "miss_latency_p50": 3.711004041004344,
+  "miss_latency_p95": 6.090830500004813,
+  "cost_actual": 0.6522690000000003,
+  "cost_without_cache_est": 0.925204255319149,
+  "errors": 0,
+  "cost_saved_pct": 0.2949999999999997
+ },
+ "selfcheck": {
+  "run_id": "gold-check-d63784",
+  "questions": 500,
+  "gold_status": {
+   "ok": 498,
+   "timeout": 2
+  },
+  "gold_errors": [
+   701,
+   518
+  ],
+  "gold_empty": [],
+  "gold_all_null": [
+   1526,
+   944
+  ],
+  "gold_p50_s": 0.002,
+  "gold_max_s": 0.907,
+  "selfcheck_gold_self_acc": 0.996,
+  "selfcheck_gold_self_fail": [
+   701,
+   518
+  ],
+  "selfcheck_shuffle_acc": 0.99,
+  "selfcheck_shuffle_fail": [
+   1144,
+   751,
+   701,
+   349,
+   518
+  ],
+  "selfcheck_select1_acc": 0.032,
+  "selfcheck_select1_hit": [
+   1322,
+   1352,
+   1394,
+   1164,
+   1171,
+   1189,
+   1275,
+   1134,
+   933,
+   945,
+   967,
+   547,
+   472,
+   245,
+   260,
+   62
+  ],
+  "wall_s": 135.7
+ }
+}

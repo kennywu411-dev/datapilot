@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "datapilot": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "datapilot.mcp_server"]
+    }
+  }
+}

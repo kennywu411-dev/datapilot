@@ -1,0 +1,25 @@
+# 密钥
+.env
+*.env
+!.env.example
+
+# 数据与数据库（用 scripts/download_data.py 下载）
+# 只忽略仓库根目录的 data/（BIRD 数据库与题目）；web/src/data 是看板数据，要进仓库
+/data/
+*.sqlite
+*.db
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# 前端
+node_modules/
+.next/
+
+.DS_Store
+dist/

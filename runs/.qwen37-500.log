@@ -1,0 +1,507 @@
+500 题 × 1 组配置，预估花费约 $0.70（未计缓存，偏保守）
+[1/500] qwen r0 q1471 ✓
+[2/500] qwen r0 q1472 ✗ ok
+[3/500] qwen r0 q1476 ✓
+[4/500] qwen r0 q1473 ✓
+[5/500] qwen r0 q1480 ✓
+[6/500] qwen r0 q1479 ✓
+[7/500] qwen r0 q1483 ✓
+[8/500] qwen r0 q1484 ✗ ok
+[9/500] qwen r0 q1486 ✓
+[10/500] qwen r0 q1490 ✓
+[11/500] qwen r0 q1493 ✓
+[12/500] qwen r0 q1498 ✗ ok
+[13/500] qwen r0 q1505 ✗ ok
+[14/500] qwen r0 q1506 ✓
+[15/500] qwen r0 q1482 ✗ ok
+[16/500] qwen r0 q1481 ✗ ok
+[17/500] qwen r0 q1507 ✓
+[18/500] qwen r0 q1509 ✓
+[19/500] qwen r0 q1515 ✓
+[20/500] qwen r0 q1514 ✓
+[21/500] qwen r0 q1500 ✗ ok
+[22/500] qwen r0 q1521 ✓
+[23/500] qwen r0 q1525 ✓
+[24/500] qwen r0 q1528 ✓
+[25/500] qwen r0 q1529 ✗ ok
+[26/500] qwen r0 q1501 ✗ ok
+[27/500] qwen r0 q1312 ✓
+[28/500] qwen r0 q1533 ✓
+[29/500] qwen r0 q1531 ✗ ok
+[30/500] qwen r0 q1317 ✓
+[31/500] qwen r0 q1524 ✗ ok
+[32/500] qwen r0 q1322 ✗ ok
+[33/500] qwen r0 q1331 ✓
+[34/500] qwen r0 q1323 ✓
+[35/500] qwen r0 q1334 ✓
+[36/500] qwen r0 q1338 ✓
+[37/500] qwen r0 q1339 ✓
+[38/500] qwen r0 q1344 ✓
+[39/500] qwen r0 q1346 ✓
+[40/500] qwen r0 q1340 ✓
+[41/500] qwen r0 q1350 ✓
+[42/500] qwen r0 q1351 ✓
+[43/500] qwen r0 q1352 ✓
+[44/500] qwen r0 q1356 ✓
+[45/500] qwen r0 q1357 ✓
+[46/500] qwen r0 q1361 ✓
+[47/500] qwen r0 q1368 ✓
+[48/500] qwen r0 q1362 ✓
+[49/500] qwen r0 q1359 ✓
+[50/500] qwen r0 q1371 ✓
+[51/500] qwen r0 q1375 ✓
+[52/500] qwen r0 q1378 ✓
+[53/500] qwen r0 q1380 ✓
+[54/500] qwen r0 q1376 ✓
+[55/500] qwen r0 q1381 ✓
+[56/500] qwen r0 q1387 ✓
+[57/500] qwen r0 q1389 ✗ ok
+[58/500] qwen r0 q1394 ✓
+[59/500] qwen r0 q1392 ✓
+[60/500] qwen r0 q1398 ✓
+[61/500] qwen r0 q1390 ✓
+[62/500] qwen r0 q1399 ✗ ok
+[63/500] qwen r0 q1403 ✓
+[64/500] qwen r0 q1404 ✗ ok
+[65/500] qwen r0 q1405 ✓
+[66/500] qwen r0 q1401 ✓
+[67/500] qwen r0 q1409 ✓
+[68/500] qwen r0 q1410 ✓
+[69/500] qwen r0 q1411 ✓
+[70/500] qwen r0 q1422 ✗ ok
+[71/500] qwen r0 q1426 ✓
+[72/500] qwen r0 q1435 ✓
+[73/500] qwen r0 q1427 ✗ ok
+[74/500] qwen r0 q1457 ✓
+[75/500] qwen r0 q1432 ✓
+[76/500] qwen r0 q1464 ✓
+[77/500] qwen r0 q1460 ✓
+[78/500] qwen r0 q1150 ✓
+[79/500] qwen r0 q1149 ✗ ok
+[80/500] qwen r0 q1152 ✗ ok
+[81/500] qwen r0 q1153 ✓
+[82/500] qwen r0 q1155 ✓
+[83/500] qwen r0 q1156 ✓
+[84/500] qwen r0 q1157 ✗ ok
+[85/500] qwen r0 q1162 ✓
+[86/500] qwen r0 q1164 ✓
+[87/500] qwen r0 q1166 ✗ ok
+[88/500] qwen r0 q1168 ✗ ok
+[89/500] qwen r0 q1169 ✓
+[90/500] qwen r0 q1175 ✗ ok
+[91/500] qwen r0 q1171 ✓
+[92/500] qwen r0 q1179 ✗ ok
+[93/500] qwen r0 q1189 ✓
+[94/500] qwen r0 q1192 ✓
+[95/500] qwen r0 q1187 ✗ ok
+[96/500] qwen r0 q1195 ✓
+[97/500] qwen r0 q1198 ✓
+[98/500] qwen r0 q1201 ✓
+[99/500] qwen r0 q1209 ✓
+[100/500] qwen r0 q1205 ✗ ok
+[101/500] qwen r0 q1208 ✓
+[102/500] qwen r0 q1220 ✓
+[103/500] qwen r0 q1185 ✓
+[104/500] qwen r0 q1225 ✗ ok
+[105/500] qwen r0 q1227 ✓
+[106/500] qwen r0 q1229 ✓
+[107/500] qwen r0 q1232 ✓
+[108/500] qwen r0 q1235 ✓
+[109/500] qwen r0 q1239 ✓
+[110/500] qwen r0 q1238 ✓
+[111/500] qwen r0 q1231 ✓
+[112/500] qwen r0 q1241 ✗ ok
+[113/500] qwen r0 q1242 ✗ ok
+[114/500] qwen r0 q1243 ✗ ok
+[115/500] qwen r0 q1247 ✗ ok
+[116/500] qwen r0 q1252 ✓
+[117/500] qwen r0 q1251 ✗ ok
+[118/500] qwen r0 q1256 ✗ ok
+[119/500] qwen r0 q1254 ✗ ok
+[120/500] qwen r0 q1255 ✗ ok
+[121/500] qwen r0 q1257 ✗ ok
+[122/500] qwen r0 q1281 ✓
+[123/500] qwen r0 q1270 ✓
+[124/500] qwen r0 q1267 ✓
+[125/500] qwen r0 q1265 ✗ ok
+[126/500] qwen r0 q1302 ✗ ok
+[127/500] qwen r0 q1275 ✓
+[128/500] qwen r0 q1029 ✗ ok
+[129/500] qwen r0 q1028 ✗ ok
+[130/500] qwen r0 q1025 ✓
+[131/500] qwen r0 q1030 ✓
+[132/500] qwen r0 q1031 ✗ ok
+[133/500] qwen r0 q1035 ✓
+[134/500] qwen r0 q1032 ✓
+[135/500] qwen r0 q1037 ✓
+[136/500] qwen r0 q1036 ✓
+[137/500] qwen r0 q1040 ✓
+[138/500] qwen r0 q1044 ✓
+[139/500] qwen r0 q1039 ✓
+[140/500] qwen r0 q1048 ✓
+[141/500] qwen r0 q1526 ✗ ok
+[142/500] qwen r0 q1058 ✗ ok
+[143/500] qwen r0 q1042 ✓
+[144/500] qwen r0 q1057 ✓
+[145/500] qwen r0 q1068 ✗ ok
+[146/500] qwen r0 q1078 ✓
+[147/500] qwen r0 q1080 ✓
+[148/500] qwen r0 q1076 ✓
+[149/500] qwen r0 q1079 ✓
+[150/500] qwen r0 q1088 ✓
+[151/500] qwen r0 q1084 ✓
+[152/500] qwen r0 q1096 ✓
+[153/500] qwen r0 q1091 ✓
+[154/500] qwen r0 q1098 ✓
+[155/500] qwen r0 q1102 ✓
+[156/500] qwen r0 q1103 ✓
+[157/500] qwen r0 q1092 ✗ ok
+[158/500] qwen r0 q1094 ✗ ok
+[159/500] qwen r0 q1110 ✓
+[160/500] qwen r0 q1105 ✓
+[161/500] qwen r0 q1107 ✗ ok
+[162/500] qwen r0 q1113 ✓
+[163/500] qwen r0 q1116 ✓
+[164/500] qwen r0 q1114 ✓
+[165/500] qwen r0 q1124 ✓
+[166/500] qwen r0 q1122 ✓
+[167/500] qwen r0 q1115 ✓
+[168/500] qwen r0 q1130 ✓
+[169/500] qwen r0 q1133 ✗ ok
+[170/500] qwen r0 q1134 ✗ ok
+[171/500] qwen r0 q1135 ✗ ok
+[172/500] qwen r0 q1136 ✓
+[173/500] qwen r0 q1139 ✓
+[174/500] qwen r0 q1141 ✓
+[175/500] qwen r0 q1144 ✗ ok
+[176/500] qwen r0 q1145 ✓
+[177/500] qwen r0 q1146 ✓
+[178/500] qwen r0 q1147 ✓
+[179/500] qwen r0 q1148 ✓
+[180/500] qwen r0 q846 ✓
+[181/500] qwen r0 q850 ✓
+[182/500] qwen r0 q847 ✗ ok
+[183/500] qwen r0 q859 ✓
+[184/500] qwen r0 q854 ✓
+[185/500] qwen r0 q857 ✓
+[186/500] qwen r0 q861 ✗ ok
+[187/500] qwen r0 q862 ✓
+[188/500] qwen r0 q866 ✗ ok
+[189/500] qwen r0 q868 ✓
+[190/500] qwen r0 q869 ✓
+[191/500] qwen r0 q865 ✓
+[192/500] qwen r0 q872 ✓
+[193/500] qwen r0 q875 ✓
+[194/500] qwen r0 q877 ✓
+[195/500] qwen r0 q879 ✓
+[196/500] qwen r0 q880 ✓
+[197/500] qwen r0 q884 ✗ ok
+[198/500] qwen r0 q881 ✓
+[199/500] qwen r0 q892 ✗ ok
+[200/500] qwen r0 q894 ✗ ok
+[201/500] qwen r0 q896 ✗ ok
+[202/500] qwen r0 q898 ✗ ok
+[203/500] qwen r0 q895 ✓
+[204/500] qwen r0 q901 ✓
+[205/500] qwen r0 q902 ✗ ok
+[206/500] qwen r0 q904 ✗ ok
+[207/500] qwen r0 q912 ✓
+[208/500] qwen r0 q909 ✓
+[209/500] qwen r0 q897 ✓
+[210/500] qwen r0 q906 ✗ ok
+[211/500] qwen r0 q915 ✗ ok
+[212/500] qwen r0 q910 ✓
+[213/500] qwen r0 q928 ✗ ok
+[214/500] qwen r0 q930 ✗ ok
+[215/500] qwen r0 q931 ✓
+[216/500] qwen r0 q940 ✓
+[217/500] qwen r0 q937 ✗ ok
+[218/500] qwen r0 q933 ✓
+[219/500] qwen r0 q945 ✓
+[220/500] qwen r0 q948 ✓
+[221/500] qwen r0 q950 ✗ ok
+[222/500] qwen r0 q951 ✗ ok
+[223/500] qwen r0 q959 ✓
+[224/500] qwen r0 q954 ✓
+[225/500] qwen r0 q960 ✓
+[226/500] qwen r0 q964 ✓
+[227/500] qwen r0 q962 ✓
+[228/500] qwen r0 q963 ✗ ok
+[229/500] qwen r0 q967 ✓
+[230/500] qwen r0 q977 ✓
+[231/500] qwen r0 q971 ✓
+[232/500] qwen r0 q972 ✓
+[233/500] qwen r0 q978 ✗ ok
+[234/500] qwen r0 q981 ✓
+[235/500] qwen r0 q989 ✗ ok
+[236/500] qwen r0 q944 ✗ ok
+[237/500] qwen r0 q717 ✓
+[238/500] qwen r0 q990 ✓
+[239/500] qwen r0 q988 ✓
+[240/500] qwen r0 q994 ✓
+[241/500] qwen r0 q1003 ✓
+[242/500] qwen r0 q955 ✗ ok
+[243/500] qwen r0 q1002 ✗ ok
+[244/500] qwen r0 q1001 ✓
+[245/500] qwen r0 q1011 ✗ ok
+[246/500] qwen r0 q719 ✓
+[247/500] qwen r0 q723 ✓
+[248/500] qwen r0 q724 ✓
+[249/500] qwen r0 q728 ✗ ok
+[250/500] qwen r0 q726 ✗ ok
+[251/500] qwen r0 q730 ✓
+[252/500] qwen r0 q1014 ✗ ok
+[253/500] qwen r0 q732 ✓
+[254/500] qwen r0 q737 ✓
+[255/500] qwen r0 q733 ✓
+[256/500] qwen r0 q736 ✓
+[257/500] qwen r0 q738 ✓
+[258/500] qwen r0 q739 ✓
+[259/500] qwen r0 q740 ✓
+[260/500] qwen r0 q745 ✓
+[261/500] qwen r0 q743 ✗ ok
+[262/500] qwen r0 q744 ✓
+[263/500] qwen r0 q747 ✓
+[264/500] qwen r0 q751 ✓
+[265/500] qwen r0 q753 ✓
+[266/500] qwen r0 q750 ✓
+[267/500] qwen r0 q758 ✓
+[268/500] qwen r0 q765 ✓
+[269/500] qwen r0 q764 ✓
+[270/500] qwen r0 q760 ✓
+[271/500] qwen r0 q769 ✓
+[272/500] qwen r0 q761 ✓
+[273/500] qwen r0 q766 ✓
+[274/500] qwen r0 q773 ✓
+[275/500] qwen r0 q779 ✓
+[276/500] qwen r0 q775 ✓
+[277/500] qwen r0 q781 ✓
+[278/500] qwen r0 q772 ✗ ok
+[279/500] qwen r0 q785 ✓
+[280/500] qwen r0 q782 ✓
+[281/500] qwen r0 q788 ✓
+[282/500] qwen r0 q786 ✓
+[283/500] qwen r0 q792 ✓
+[284/500] qwen r0 q791 ✗ ok
+[285/500] qwen r0 q790 ✓
+[286/500] qwen r0 q796 ✓
+[287/500] qwen r0 q794 ✓
+[288/500] qwen r0 q798 ✓
+[289/500] qwen r0 q797 ✓
+[290/500] qwen r0 q801 ✓
+[291/500] qwen r0 q800 ✓
+[292/500] qwen r0 q819 ✓
+[293/500] qwen r0 q806 ✓
+[294/500] qwen r0 q825 ✓
+[295/500] qwen r0 q824 ✓
+[296/500] qwen r0 q822 ✓
+[297/500] qwen r0 q531 ✗ ok
+[298/500] qwen r0 q829 ✗ ok
+[299/500] qwen r0 q532 ✓
+[300/500] qwen r0 q533 ✗ ok
+[301/500] qwen r0 q537 ✓
+[302/500] qwen r0 q547 ✓
+[303/500] qwen r0 q539 ✓
+[304/500] qwen r0 q544 ✓
+[305/500] qwen r0 q549 ✓
+[306/500] qwen r0 q555 ✓
+[307/500] qwen r0 q563 ✓
+[308/500] qwen r0 q557 ✓
+[309/500] qwen r0 q567 ✓
+[310/500] qwen r0 q571 ✓
+[311/500] qwen r0 q576 ✗ ok
+[312/500] qwen r0 q572 ✓
+[313/500] qwen r0 q565 ✗ ok
+[314/500] qwen r0 q578 ✓
+[315/500] qwen r0 q573 ✓
+[316/500] qwen r0 q586 ✗ ok
+[317/500] qwen r0 q584 ✗ ok
+[318/500] qwen r0 q592 ✓
+[319/500] qwen r0 q587 ✗ ok
+[320/500] qwen r0 q568 ✓
+[321/500] qwen r0 q581 ✓
+[322/500] qwen r0 q604 ✓
+[323/500] qwen r0 q598 ✓
+[324/500] qwen r0 q629 ✓
+[325/500] qwen r0 q595 ✗ ok
+[326/500] qwen r0 q633 ✓
+[327/500] qwen r0 q634 ✗ ok
+[328/500] qwen r0 q637 ✓
+[329/500] qwen r0 q665 ✓
+[330/500] qwen r0 q639 ✗ ok
+[331/500] qwen r0 q669 ✓
+[332/500] qwen r0 q671 ✓
+[333/500] qwen r0 q678 ✓
+[334/500] qwen r0 q672 ✗ ok
+[335/500] qwen r0 q682 ✗ ok
+[336/500] qwen r0 q687 ✓
+[337/500] qwen r0 q694 ✗ ok
+[338/500] qwen r0 q704 ✓
+[339/500] qwen r0 q683 ✗ ok
+[340/500] qwen r0 q685 ✓
+[341/500] qwen r0 q705 ✓
+[342/500] qwen r0 q640 ✗ ok
+[343/500] qwen r0 q707 ✓
+[344/500] qwen r0 q716 ✓
+[345/500] qwen r0 q710 ✗ ok
+[346/500] qwen r0 q341 ✗ ok
+[347/500] qwen r0 q340 ✗ ok
+[348/500] qwen r0 q345 ✓
+[349/500] qwen r0 q344 ✗ ok
+[350/500] qwen r0 q347 ✗ ok
+[351/500] qwen r0 q346 ✓
+[352/500] qwen r0 q352 ✓
+[353/500] qwen r0 q358 ✓
+[354/500] qwen r0 q356 ✓
+[355/500] qwen r0 q349 ✗ ok
+[356/500] qwen r0 q366 ✓
+[357/500] qwen r0 q379 ✓
+[358/500] qwen r0 q368 ✓
+[359/500] qwen r0 q371 ✓
+[360/500] qwen r0 q377 ✓
+[361/500] qwen r0 q383 ✓
+[362/500] qwen r0 q397 ✓
+[363/500] qwen r0 q402 ✗ ok
+[364/500] qwen r0 q391 ✓
+[365/500] qwen r0 q408 ✗ ok
+[366/500] qwen r0 q409 ✓
+[367/500] qwen r0 q412 ✗ ok
+[368/500] qwen r0 q407 ✓
+[369/500] qwen r0 q414 ✓
+[370/500] qwen r0 q422 ✓
+[371/500] qwen r0 q424 ✓
+[372/500] qwen r0 q405 ✓
+[373/500] qwen r0 q415 ✓
+[374/500] qwen r0 q701 ✗ timeout
+[375/500] qwen r0 q459 ✗ ok
+[376/500] qwen r0 q462 ✓
+[377/500] qwen r0 q427 ✓
+[378/500] qwen r0 q416 ✓
+[379/500] qwen r0 q440 ✓
+[380/500] qwen r0 q465 ✗ ok
+[381/500] qwen r0 q466 ✓
+[382/500] qwen r0 q469 ✗ ok
+[383/500] qwen r0 q473 ✗ ok
+[384/500] qwen r0 q468 ✓
+[385/500] qwen r0 q472 ✓
+[386/500] qwen r0 q474 ✓
+[387/500] qwen r0 q477 ✓
+[388/500] qwen r0 q479 ✓
+[389/500] qwen r0 q484 ✗ ok
+[390/500] qwen r0 q480 ✓
+[391/500] qwen r0 q486 ✓
+[392/500] qwen r0 q483 ✓
+[393/500] qwen r0 q487 ✓
+[394/500] qwen r0 q528 ✓
+[395/500] qwen r0 q195 ✓
+[396/500] qwen r0 q197 ✗ ok
+[397/500] qwen r0 q522 ✓
+[398/500] qwen r0 q198 ✗ ok
+[399/500] qwen r0 q200 ✓
+[400/500] qwen r0 q201 ✗ ok
+[401/500] qwen r0 q206 ✓
+[402/500] qwen r0 q212 ✓
+[403/500] qwen r0 q530 ✗ ok
+[404/500] qwen r0 q207 ✗ ok
+[405/500] qwen r0 q208 ✓
+[406/500] qwen r0 q213 ✓
+[407/500] qwen r0 q215 ✗ ok
+[408/500] qwen r0 q218 ✗ ok
+[409/500] qwen r0 q529 ✗ ok
+[410/500] qwen r0 q220 ✓
+[411/500] qwen r0 q227 ✓
+[412/500] qwen r0 q226 ✓
+[413/500] qwen r0 q219 ✗ ok
+[414/500] qwen r0 q230 ✓
+[415/500] qwen r0 q228 ✓
+[416/500] qwen r0 q231 ✗ ok
+[417/500] qwen r0 q232 ✓
+[418/500] qwen r0 q239 ✗ ok
+[419/500] qwen r0 q236 ✓
+[420/500] qwen r0 q240 ✓
+[421/500] qwen r0 q234 ✗ ok
+[422/500] qwen r0 q244 ✓
+[423/500] qwen r0 q242 ✓
+[424/500] qwen r0 q243 ✓
+[425/500] qwen r0 q247 ✗ ok
+[426/500] qwen r0 q245 ✓
+[427/500] qwen r0 q248 ✗ ok
+[428/500] qwen r0 q253 ✓
+[429/500] qwen r0 q249 ✓
+[430/500] qwen r0 q255 ✗ ok
+[431/500] qwen r0 q260 ✓
+[432/500] qwen r0 q263 ✓
+[433/500] qwen r0 q268 ✓
+[434/500] qwen r0 q281 ✗ ok
+[435/500] qwen r0 q327 ✓
+[436/500] qwen r0 q5 ✓
+[437/500] qwen r0 q273 ✓
+[438/500] qwen r0 q282 ✓
+[439/500] qwen r0 q11 ✓
+[440/500] qwen r0 q17 ✗ ok
+[441/500] qwen r0 q12 ✓
+[442/500] qwen r0 q26 ✗ ok
+[443/500] qwen r0 q27 ✗ ok
+[444/500] qwen r0 q23 ✓
+[445/500] qwen r0 q518 ✗ timeout
+[446/500] qwen r0 q25 ✗ ok
+[447/500] qwen r0 q31 ✗ ok
+[448/500] qwen r0 q24 ✓
+[449/500] qwen r0 q37 ✗ ok
+[450/500] qwen r0 q28 ✗ ok
+[451/500] qwen r0 q36 ✗ ok
+[452/500] qwen r0 q32 ✓
+[453/500] qwen r0 q39 ✓
+[454/500] qwen r0 q40 ✗ ok
+[455/500] qwen r0 q45 ✓
+[456/500] qwen r0 q41 ✗ ok
+[457/500] qwen r0 q46 ✓
+[458/500] qwen r0 q47 ✓
+[459/500] qwen r0 q62 ✓
+[460/500] qwen r0 q48 ✓
+[461/500] qwen r0 q82 ✓
+[462/500] qwen r0 q50 ✓
+[463/500] qwen r0 q77 ✗ ok
+[464/500] qwen r0 q79 ✓
+[465/500] qwen r0 q72 ✓
+[466/500] qwen r0 q83 ✓
+[467/500] qwen r0 q85 ✗ ok
+[468/500] qwen r0 q92 ✓
+[469/500] qwen r0 q89 ✓
+[470/500] qwen r0 q87 ✗ ok
+[471/500] qwen r0 q95 ✗ ok
+[472/500] qwen r0 q94 ✗ ok
+[473/500] qwen r0 q93 ✓
+[474/500] qwen r0 q112 ✓
+[475/500] qwen r0 q100 ✓
+[476/500] qwen r0 q98 ✓
+[477/500] qwen r0 q115 ✗ ok
+[478/500] qwen r0 q117 ✓
+[479/500] qwen r0 q118 ✓
+[480/500] qwen r0 q125 ✗ ok
+[481/500] qwen r0 q128 ✗ ok
+[482/500] qwen r0 q99 ✗ ok
+[483/500] qwen r0 q136 ✗ ok
+[484/500] qwen r0 q137 ✓
+[485/500] qwen r0 q138 ✓
+[486/500] qwen r0 q129 ✗ ok
+[487/500] qwen r0 q152 ✗ ok
+[488/500] qwen r0 q159 ✗ ok
+[489/500] qwen r0 q149 ✗ ok
+[490/500] qwen r0 q116 ✗ ok
+[491/500] qwen r0 q173 ✓
+[492/500] qwen r0 q168 ✗ ok
+[493/500] qwen r0 q189 ✓
+[494/500] qwen r0 q169 ✗ ok
+[495/500] qwen r0 q186 ✗ ok
+[496/500] qwen r0 q192 ✓
+[497/500] qwen r0 q194 ✗ ok
+[498/500] qwen r0 q119 ✓
+[499/500] qwen r0 q145 ✗ ok
+[500/500] qwen r0 q120 ✗ ok
+本次实际花费 $0.1818
+
+run_id=qwen37-500-a6bbd0
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| qwen | e4_correct | medium | 500 | 68.0% | 63.8%–71.9% | 112/148 | 169/250 | 59/102 | $0.0004 | $0.182 | 3.1s / 6.7s | {'ok': 498, 'timeout': 2} |

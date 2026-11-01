@@ -1,0 +1,63 @@
+{
+  "_说明": "看板与 README 引用的运行 ID 清单。重跑实验后只改这里，再执行 scripts/build_dashboard.py。",
+  "ladder": [
+    [
+      "E0",
+      "基线（官方提示词）",
+      "baseline-93aca7"
+    ],
+    [
+      "E1",
+      "提示缓存",
+      "e1-aed243"
+    ],
+    [
+      "E2",
+      "+ Schema 增强",
+      "e2-13bd10"
+    ],
+    [
+      "E3",
+      "+ 值核对",
+      "e3-896e4c"
+    ],
+    [
+      "E4",
+      "+ 执行纠错（最终）",
+      "e4-3463b8"
+    ],
+    [
+      "Agent",
+      "自主调用工具",
+      "agent-002a4f"
+    ]
+  ],
+  "opus_e4": "e4opus-452b84",
+  "e4_repeats": "e4rep-7206c1",
+  "local_model_100": "qwen100-7e5bf2",
+  "local_model_500": "qwen500-91ec91",
+  "cache_bench": "cache-bench-2f535c",
+  "load_test": "load-8f1f7f",
+  "gold_check": "gold-check-d63784",
+  "cn_models": {
+    "deepseek-flash": "deepseek500-ae215c",
+    "qwen3.7-plus": "qwen37-500-a6bbd0"
+  },
+  "shop_ops": {
+    "claude": "shop-8740b7",
+    "cn": "shop-cn-b102c6",
+    "claude_noev": "shop-noev-094a10",
+    "cn_noev": "shop-noev-cn-8cf5c9"
+  },
+  "route_live": "route-r1-4bc570",
+  "route_replay": "route-replay-253ae6",
+  "zh100": {
+    "zh": "zh100v2-19843f",
+    "zh_first": "zh100-0c81eb",
+    "en": "en100-c36e18"
+  },
+  "rls": {
+    "with_note": "rls-eval-99d7a2",
+    "no_note": "rls-nonote-606296"
+  }
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "model": "route",
+    "pipeline": "routed_r1",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.696,
+    "ci95": [
+      0.6543125331560312,
+      0.7346986163798547
+    ],
+    "by_difficulty": {
+      "simple": [
+        118,
+        148
+      ],
+      "moderate": [
+        168,
+        250
+      ],
+      "challenging": [
+        62,
+        102
+      ]
+    },
+    "status": {
+      "ok": 498,
+      "timeout": 2
+    },
+    "cost_total": 0.23030703,
+    "cost_per_q": 0.00046061406,
+    "latency_p50": 1.48915754200425,
+    "latency_p95": 4.794400374987163
+  }
+]

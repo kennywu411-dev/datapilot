@@ -1,0 +1,35 @@
+[
+  {
+    "model": "qwen",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 20,
+    "repeats": 1,
+    "ex": 0.85,
+    "ci95": [
+      0.6395767041130426,
+      0.9476322080405041
+    ],
+    "by_difficulty": {
+      "simple": [
+        5,
+        6
+      ],
+      "moderate": [
+        9,
+        10
+      ],
+      "challenging": [
+        3,
+        4
+      ]
+    },
+    "status": {
+      "ok": 20
+    },
+    "cost_total": 0.014152258,
+    "cost_per_q": 0.0007076128999999999,
+    "latency_p50": 3.3973997500143014,
+    "latency_p95": 27.87903079102398
+  }
+]

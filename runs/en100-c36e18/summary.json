@@ -1,0 +1,71 @@
+[
+  {
+    "model": "haiku",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 100,
+    "repeats": 1,
+    "ex": 0.64,
+    "ci95": [
+      0.542352199811621,
+      0.7272892540950986
+    ],
+    "by_difficulty": {
+      "simple": [
+        21,
+        30
+      ],
+      "moderate": [
+        35,
+        50
+      ],
+      "challenging": [
+        8,
+        20
+      ]
+    },
+    "status": {
+      "ok": 99,
+      "timeout": 1
+    },
+    "cost_total": 0.03353796,
+    "cost_per_q": 0.0003353796,
+    "latency_p50": 1.6244278340018354,
+    "latency_p95": 4.872254582995083
+  },
+  {
+    "model": "sonnet",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 100,
+    "repeats": 1,
+    "ex": 0.77,
+    "ci95": [
+      0.6784543514317231,
+      0.841568452531236
+    ],
+    "by_difficulty": {
+      "simple": [
+        24,
+        30
+      ],
+      "moderate": [
+        41,
+        50
+      ],
+      "challenging": [
+        12,
+        20
+      ]
+    },
+    "status": {
+      "ok": 98,
+      "timeout": 1,
+      "no_sql": 1
+    },
+    "cost_total": 0.4956465,
+    "cost_per_q": 0.004956465,
+    "latency_p50": 1.8580227089987602,
+    "latency_p95": 3.1692267920007
+  }
+]

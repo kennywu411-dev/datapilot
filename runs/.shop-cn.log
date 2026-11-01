@@ -1,0 +1,88 @@
+40 题 × 2 组配置，预估花费约 $0.07（未计缓存，偏保守）
+[1/80] deepseek r0 q6 ✓
+[2/80] deepseek r0 q4 ✓
+[3/80] deepseek r0 q5 ✓
+[4/80] deepseek r0 q1 ✓
+[5/80] deepseek r0 q3 ✓
+[6/80] deepseek r0 q7 ✓
+[7/80] deepseek r0 q2 ✓
+[8/80] deepseek r0 q9 ✓
+[9/80] deepseek r0 q10 ✓
+[10/80] deepseek r0 q8 ✓
+[11/80] deepseek r0 q12 ✓
+[12/80] deepseek r0 q14 ✓
+[13/80] deepseek r0 q11 ✓
+[14/80] deepseek r0 q19 ✓
+[15/80] deepseek r0 q15 ✓
+[16/80] deepseek r0 q18 ✓
+[17/80] deepseek r0 q13 ✓
+[18/80] deepseek r0 q17 ✓
+[19/80] deepseek r0 q16 ✓
+[20/80] deepseek r0 q22 ✓
+[21/80] deepseek r0 q20 ✓
+[22/80] deepseek r0 q24 ✓
+[23/80] deepseek r0 q21 ✓
+[24/80] deepseek r0 q23 ✓
+[25/80] deepseek r0 q25 ✓
+[26/80] deepseek r0 q26 ✓
+[27/80] deepseek r0 q27 ✓
+[28/80] deepseek r0 q28 ✓
+[29/80] deepseek r0 q32 ✓
+[30/80] deepseek r0 q29 ✓
+[31/80] deepseek r0 q30 ✓
+[32/80] deepseek r0 q35 ✓
+[33/80] deepseek r0 q33 ✓
+[34/80] deepseek r0 q34 ✓
+[35/80] deepseek r0 q37 ✓
+[36/80] deepseek r0 q36 ✗ ok
+[37/80] deepseek r0 q38 ✓
+[38/80] deepseek r0 q39 ✓
+[39/80] deepseek r0 q31 ✗ ok
+[40/80] qwen r0 q2 ✓
+[41/80] qwen r0 q3 ✓
+[42/80] qwen r0 q4 ✓
+[43/80] qwen r0 q5 ✓
+[44/80] qwen r0 q7 ✓
+[45/80] qwen r0 q1 ✓
+[46/80] qwen r0 q8 ✓
+[47/80] qwen r0 q9 ✓
+[48/80] qwen r0 q6 ✓
+[49/80] qwen r0 q12 ✓
+[50/80] qwen r0 q10 ✓
+[51/80] qwen r0 q11 ✓
+[52/80] qwen r0 q13 ✓
+[53/80] deepseek r0 q40 ✓
+[54/80] qwen r0 q14 ✓
+[55/80] qwen r0 q16 ✓
+[56/80] qwen r0 q18 ✓
+[57/80] qwen r0 q19 ✓
+[58/80] qwen r0 q15 ✓
+[59/80] qwen r0 q20 ✓
+[60/80] qwen r0 q17 ✓
+[61/80] qwen r0 q21 ✓
+[62/80] qwen r0 q24 ✗ ok
+[63/80] qwen r0 q25 ✓
+[64/80] qwen r0 q22 ✓
+[65/80] qwen r0 q23 ✓
+[66/80] qwen r0 q27 ✓
+[67/80] qwen r0 q26 ✓
+[68/80] qwen r0 q28 ✓
+[69/80] qwen r0 q29 ✓
+[70/80] qwen r0 q31 ✓
+[71/80] qwen r0 q32 ✓
+[72/80] qwen r0 q30 ✓
+[73/80] qwen r0 q33 ✓
+[74/80] qwen r0 q34 ✓
+[75/80] qwen r0 q35 ✗ ok
+[76/80] qwen r0 q38 ✓
+[77/80] qwen r0 q37 ✓
+[78/80] qwen r0 q36 ✗ ok
+[79/80] qwen r0 q39 ✓
+[80/80] qwen r0 q40 ✓
+本次实际花费 $0.0400
+
+run_id=shop-cn-b102c6
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| deepseek | e4_correct | medium | 40 | 95.0% | 83.5%–98.6% | 10/10 | 18/18 | 10/12 | $0.0007 | $0.030 | 2.5s / 9.2s | {'ok': 40} |
+| qwen | e4_correct | medium | 40 | 92.5% | 80.1%–97.4% | 10/10 | 17/18 | 10/12 | $0.0003 | $0.010 | 2.9s / 5.6s | {'ok': 40} |

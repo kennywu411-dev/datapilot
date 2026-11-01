@@ -1,0 +1,53 @@
+工具： list_databases, list_tables, describe_table, search_values, run_sql
+
+> list_tables({"db_id": "superhero"})
+{"result": [{"table": "alignment", "columns": 2}, {"table": "attribute", "columns": 2}, {"table": "colour", "columns": 2}, {"table": "gender", "columns": 2}, {"table": "hero_attribute", "columns": 3}, {"table": "hero_power", "columns": 2}, {"table": "publisher", "columns": 2}, {"table": "race", "col
+
+> search_values({"db_id": "superhero", "keyword": "Marvel", "limit": 3})
+{
+  "keyword": "Marvel",
+  "matches": [
+    {
+      "table": "publisher",
+      "column": "publisher_name",
+      "value": "Marvel Comics"
+    },
+    {
+      "table": "superhero",
+      "column": "superhero_name",
+      "value": "Captain Marvel"
+    },
+    {
+      "table": "superhero",
+      "column
+
+> run_sql({"db_id": "superhero", "sql": "SELECT p.publisher_name, COUNT(*) AS n FROM superhero s JOI)
+{
+  "columns": [
+    "publisher_name",
+    "n"
+  ],
+  "rows": [
+    [
+      "Marvel Comics",
+      387
+    ],
+    [
+      "DC Comics",
+      224
+    ],
+    [
+      "NBC - Heroes",
+      19
+    ]
+  ],
+  "row_count": 3,
+  "truncated": false,
+  "elapsed_s": 0.0
+}
+
+> run_sql({"db_id": "superhero", "sql": "DROP TABLE superhero"})
+{
+  "error": "rejected",
+  "message": "只允许 SELECT 查询，收到 Drop"
+}

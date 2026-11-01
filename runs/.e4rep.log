@@ -1,0 +1,2008 @@
+500 题 × 4 组配置，预估花费约 $11.41（未计缓存，偏保守）
+[1/2000] sonnet r0 q1471 ✓
+[2/2000] sonnet r0 q1472 ✓
+[3/2000] sonnet r0 q1473 ✓
+[4/2000] sonnet r0 q1479 ✓
+[5/2000] sonnet r0 q1480 ✓
+[6/2000] sonnet r0 q1476 ✓
+[7/2000] sonnet r0 q1482 ✗ ok
+[8/2000] sonnet r0 q1483 ✓
+[9/2000] sonnet r0 q1484 ✓
+[10/2000] sonnet r0 q1493 ✓
+[11/2000] sonnet r0 q1486 ✗ ok
+[12/2000] sonnet r0 q1481 ✗ ok
+[13/2000] sonnet r0 q1498 ✓
+[14/2000] sonnet r0 q1506 ✓
+[15/2000] sonnet r0 q1509 ✓
+[16/2000] sonnet r0 q1514 ✓
+[17/2000] sonnet r0 q1507 ✓
+[18/2000] sonnet r0 q1490 ✗ ok
+[19/2000] sonnet r0 q1500 ✓
+[20/2000] sonnet r0 q1505 ✗ ok
+[21/2000] sonnet r0 q1515 ✓
+[22/2000] sonnet r0 q1521 ✓
+[23/2000] sonnet r0 q1528 ✓
+[24/2000] sonnet r0 q1526 ✓
+[25/2000] sonnet r0 q1525 ✗ ok
+[26/2000] sonnet r0 q1533 ✗ ok
+[27/2000] sonnet r0 q1524 ✓
+[28/2000] sonnet r0 q1531 ✗ ok
+[29/2000] sonnet r0 q1312 ✓
+[30/2000] sonnet r0 q1529 ✗ ok
+[31/2000] sonnet r0 q1322 ✗ ok
+[32/2000] sonnet r0 q1501 ✓
+[33/2000] sonnet r0 q1317 ✓
+[34/2000] sonnet r0 q1331 ✓
+[35/2000] sonnet r0 q1323 ✓
+[36/2000] sonnet r0 q1334 ✓
+[37/2000] sonnet r0 q1339 ✓
+[38/2000] sonnet r0 q1344 ✓
+[39/2000] sonnet r0 q1340 ✓
+[40/2000] sonnet r0 q1346 ✓
+[41/2000] sonnet r0 q1350 ✓
+[42/2000] sonnet r0 q1338 ✗ ok
+[43/2000] sonnet r0 q1351 ✓
+[44/2000] sonnet r0 q1356 ✓
+[45/2000] sonnet r0 q1357 ✓
+[46/2000] sonnet r0 q1352 ✓
+[47/2000] sonnet r0 q1359 ✓
+[48/2000] sonnet r0 q1368 ✓
+[49/2000] sonnet r0 q1371 ✓
+[50/2000] sonnet r0 q1361 ✓
+[51/2000] sonnet r0 q1375 ✓
+[52/2000] sonnet r0 q1380 ✓
+[53/2000] sonnet r0 q1378 ✓
+[54/2000] sonnet r0 q1381 ✓
+[55/2000] sonnet r0 q1362 ✓
+[56/2000] sonnet r0 q1387 ✓
+[57/2000] sonnet r0 q1376 ✓
+[58/2000] sonnet r0 q1394 ✓
+[59/2000] sonnet r0 q1390 ✓
+[60/2000] sonnet r0 q1389 ✓
+[61/2000] sonnet r0 q1392 ✗ ok
+[62/2000] sonnet r0 q1398 ✓
+[63/2000] sonnet r0 q1399 ✗ ok
+[64/2000] sonnet r0 q1403 ✓
+[65/2000] sonnet r0 q1405 ✗ ok
+[66/2000] sonnet r0 q1404 ✗ ok
+[67/2000] sonnet r0 q1401 ✓
+[68/2000] sonnet r0 q1411 ✓
+[69/2000] sonnet r0 q1422 ✗ ok
+[70/2000] sonnet r0 q1410 ✓
+[71/2000] sonnet r0 q1426 ✓
+[72/2000] sonnet r0 q1435 ✓
+[73/2000] sonnet r0 q1427 ✗ ok
+[74/2000] sonnet r0 q1432 ✓
+[75/2000] sonnet r0 q1457 ✓
+[76/2000] sonnet r0 q1409 ✓
+[77/2000] sonnet r0 q1460 ✓
+[78/2000] sonnet r0 q1464 ✓
+[79/2000] sonnet r0 q1150 ✓
+[80/2000] sonnet r0 q1155 ✓
+[81/2000] sonnet r0 q1152 ✗ ok
+[82/2000] sonnet r0 q1149 ✗ ok
+[83/2000] sonnet r0 q1156 ✓
+[84/2000] sonnet r0 q1162 ✓
+[85/2000] sonnet r0 q1157 ✓
+[86/2000] sonnet r0 q1153 ✓
+[87/2000] sonnet r0 q1164 ✓
+[88/2000] sonnet r0 q1179 ✗ ok
+[89/2000] sonnet r0 q1171 ✓
+[90/2000] sonnet r0 q1168 ✗ ok
+[91/2000] sonnet r0 q1185 ✓
+[92/2000] sonnet r0 q1187 ✓
+[93/2000] sonnet r0 q1169 ✓
+[94/2000] sonnet r0 q1195 ✓
+[95/2000] sonnet r0 q1192 ✓
+[96/2000] sonnet r0 q1189 ✓
+[97/2000] sonnet r0 q1198 ✓
+[98/2000] sonnet r0 q1201 ✓
+[99/2000] sonnet r0 q1205 ✗ ok
+[100/2000] sonnet r0 q1208 ✓
+[101/2000] sonnet r0 q1209 ✗ ok
+[102/2000] sonnet r0 q1220 ✓
+[103/2000] sonnet r0 q1225 ✗ ok
+[104/2000] sonnet r0 q1227 ✗ ok
+[105/2000] sonnet r0 q1175 ✗ ok
+[106/2000] sonnet r0 q1229 ✓
+[107/2000] sonnet r0 q1166 ✗ ok
+[108/2000] sonnet r0 q1231 ✓
+[109/2000] sonnet r0 q1238 ✓
+[110/2000] sonnet r0 q1235 ✗ ok
+[111/2000] sonnet r0 q1232 ✓
+[112/2000] sonnet r0 q1241 ✗ ok
+[113/2000] sonnet r0 q1239 ✓
+[114/2000] sonnet r0 q1243 ✗ ok
+[115/2000] sonnet r0 q1251 ✗ ok
+[116/2000] sonnet r0 q1247 ✗ ok
+[117/2000] sonnet r0 q1242 ✗ ok
+[118/2000] sonnet r0 q1252 ✗ ok
+[119/2000] sonnet r0 q1254 ✗ ok
+[120/2000] sonnet r0 q1255 ✗ ok
+[121/2000] sonnet r0 q1256 ✗ ok
+[122/2000] sonnet r0 q1257 ✓
+[123/2000] sonnet r0 q1270 ✓
+[124/2000] sonnet r0 q1267 ✗ ok
+[125/2000] sonnet r0 q1281 ✓
+[126/2000] sonnet r0 q1302 ✗ ok
+[127/2000] sonnet r0 q1025 ✓
+[128/2000] sonnet r0 q1028 ✗ ok
+[129/2000] sonnet r0 q1029 ✗ ok
+[130/2000] sonnet r0 q1275 ✓
+[131/2000] sonnet r0 q1265 ✗ ok
+[132/2000] sonnet r0 q1030 ✓
+[133/2000] sonnet r0 q1032 ✗ ok
+[134/2000] sonnet r0 q1035 ✓
+[135/2000] sonnet r0 q1042 ✓
+[136/2000] sonnet r0 q1037 ✓
+[137/2000] sonnet r0 q1036 ✓
+[138/2000] sonnet r0 q1039 ✓
+[139/2000] sonnet r0 q1044 ✓
+[140/2000] sonnet r0 q1031 ✗ ok
+[141/2000] sonnet r0 q1057 ✓
+[142/2000] sonnet r0 q1040 ✓
+[143/2000] sonnet r0 q1048 ✓
+[144/2000] sonnet r0 q1068 ✗ ok
+[145/2000] sonnet r0 q1079 ✓
+[146/2000] sonnet r0 q1058 ✗ ok
+[147/2000] sonnet r0 q1076 ✓
+[148/2000] sonnet r0 q1078 ✓
+[149/2000] sonnet r0 q1080 ✗ ok
+[150/2000] sonnet r0 q1088 ✓
+[151/2000] sonnet r0 q1091 ✓
+[152/2000] sonnet r0 q1098 ✓
+[153/2000] sonnet r0 q1084 ✓
+[154/2000] sonnet r0 q1092 ✗ ok
+[155/2000] sonnet r0 q1096 ✓
+[156/2000] sonnet r0 q1102 ✓
+[157/2000] sonnet r0 q1094 ✗ ok
+[158/2000] sonnet r0 q1103 ✓
+[159/2000] sonnet r0 q1105 ✓
+[160/2000] sonnet r0 q1110 ✓
+[161/2000] sonnet r0 q1113 ✓
+[162/2000] sonnet r0 q1107 ✗ ok
+[163/2000] sonnet r0 q1114 ✓
+[164/2000] sonnet r0 q1115 ✓
+[165/2000] sonnet r0 q1116 ✓
+[166/2000] sonnet r0 q1124 ✓
+[167/2000] sonnet r0 q1133 ✓
+[168/2000] sonnet r0 q1130 ✓
+[169/2000] sonnet r0 q1135 ✗ ok
+[170/2000] sonnet r0 q1122 ✓
+[171/2000] sonnet r0 q1136 ✗ ok
+[172/2000] sonnet r0 q1134 ✓
+[173/2000] sonnet r0 q1141 ✓
+[174/2000] sonnet r0 q1139 ✓
+[175/2000] sonnet r0 q1144 ✗ ok
+[176/2000] sonnet r0 q1146 ✓
+[177/2000] sonnet r0 q1148 ✓
+[178/2000] sonnet r0 q850 ✓
+[179/2000] sonnet r0 q1147 ✓
+[180/2000] sonnet r0 q846 ✓
+[181/2000] sonnet r0 q1145 ✓
+[182/2000] sonnet r0 q847 ✗ ok
+[183/2000] sonnet r0 q857 ✓
+[184/2000] sonnet r0 q854 ✓
+[185/2000] sonnet r0 q861 ✓
+[186/2000] sonnet r0 q859 ✓
+[187/2000] sonnet r0 q862 ✓
+[188/2000] sonnet r0 q865 ✓
+[189/2000] sonnet r0 q868 ✓
+[190/2000] sonnet r0 q866 ✓
+[191/2000] sonnet r0 q872 ✓
+[192/2000] sonnet r0 q869 ✓
+[193/2000] sonnet r0 q875 ✓
+[194/2000] sonnet r0 q877 ✓
+[195/2000] sonnet r0 q879 ✓
+[196/2000] sonnet r0 q880 ✓
+[197/2000] sonnet r0 q881 ✓
+[198/2000] sonnet r0 q884 ✓
+[199/2000] sonnet r0 q895 ✓
+[200/2000] sonnet r0 q892 ✗ ok
+[201/2000] sonnet r0 q896 ✗ ok
+[202/2000] sonnet r0 q898 ✓
+[203/2000] sonnet r0 q897 ✓
+[204/2000] sonnet r0 q902 ✗ ok
+[205/2000] sonnet r0 q894 ✗ ok
+[206/2000] sonnet r0 q901 ✓
+[207/2000] sonnet r0 q904 ✓
+[208/2000] sonnet r0 q910 ✓
+[209/2000] sonnet r0 q912 ✓
+[210/2000] sonnet r0 q928 ✗ ok
+[211/2000] sonnet r0 q909 ✓
+[212/2000] sonnet r0 q915 ✓
+[213/2000] sonnet r0 q930 ✗ ok
+[214/2000] sonnet r0 q931 ✗ ok
+[215/2000] sonnet r0 q933 ✓
+[216/2000] sonnet r0 q937 ✓
+[217/2000] sonnet r0 q945 ✓
+[218/2000] sonnet r0 q950 ✗ ok
+[219/2000] sonnet r0 q940 ✓
+[220/2000] sonnet r0 q948 ✓
+[221/2000] sonnet r0 q906 ✗ ok
+[222/2000] sonnet r0 q951 ✗ ok
+[223/2000] sonnet r0 q954 ✓
+[224/2000] sonnet r0 q955 ✓
+[225/2000] sonnet r0 q944 ✓
+[226/2000] sonnet r0 q962 ✓
+[227/2000] sonnet r0 q960 ✓
+[228/2000] sonnet r0 q959 ✓
+[229/2000] sonnet r0 q964 ✓
+[230/2000] sonnet r0 q963 ✗ ok
+[231/2000] sonnet r0 q971 ✓
+[232/2000] sonnet r0 q977 ✓
+[233/2000] sonnet r0 q972 ✓
+[234/2000] sonnet r0 q981 ✓
+[235/2000] sonnet r0 q989 ✗ ok
+[236/2000] sonnet r0 q978 ✗ ok
+[237/2000] sonnet r0 q967 ✗ ok
+[238/2000] sonnet r0 q988 ✓
+[239/2000] sonnet r0 q990 ✓
+[240/2000] sonnet r0 q717 ✓
+[241/2000] sonnet r0 q994 ✓
+[242/2000] sonnet r0 q1001 ✓
+[243/2000] sonnet r0 q1002 ✗ ok
+[244/2000] sonnet r0 q1003 ✓
+[245/2000] sonnet r0 q1011 ✗ ok
+[246/2000] sonnet r0 q724 ✓
+[247/2000] sonnet r0 q723 ✓
+[248/2000] sonnet r0 q719 ✓
+[249/2000] sonnet r0 q726 ✓
+[250/2000] sonnet r0 q728 ✗ ok
+[251/2000] sonnet r0 q730 ✓
+[252/2000] sonnet r0 q733 ✓
+[253/2000] sonnet r0 q737 ✓
+[254/2000] sonnet r0 q738 ✓
+[255/2000] sonnet r0 q732 ✓
+[256/2000] sonnet r0 q739 ✓
+[257/2000] sonnet r0 q736 ✗ ok
+[258/2000] sonnet r0 q747 ✓
+[259/2000] sonnet r0 q745 ✓
+[260/2000] sonnet r0 q750 ✓
+[261/2000] sonnet r0 q751 ✓
+[262/2000] sonnet r0 q743 ✓
+[263/2000] sonnet r0 q744 ✗ ok
+[264/2000] sonnet r0 q753 ✓
+[265/2000] sonnet r0 q758 ✓
+[266/2000] sonnet r0 q764 ✓
+[267/2000] sonnet r0 q761 ✓
+[268/2000] sonnet r0 q765 ✓
+[269/2000] sonnet r0 q740 ✓
+[270/2000] sonnet r0 q766 ✗ ok
+[271/2000] sonnet r0 q772 ✗ ok
+[272/2000] sonnet r0 q779 ✓
+[273/2000] sonnet r0 q769 ✓
+[274/2000] sonnet r0 q760 ✓
+[275/2000] sonnet r0 q773 ✗ ok
+[276/2000] sonnet r0 q775 ✓
+[277/2000] sonnet r0 q781 ✓
+[278/2000] sonnet r0 q782 ✓
+[279/2000] sonnet r0 q785 ✓
+[280/2000] sonnet r0 q786 ✓
+[281/2000] sonnet r0 q791 ✓
+[282/2000] sonnet r0 q790 ✓
+[283/2000] sonnet r0 q792 ✓
+[284/2000] sonnet r0 q796 ✓
+[285/2000] sonnet r0 q794 ✓
+[286/2000] sonnet r0 q797 ✓
+[287/2000] sonnet r0 q798 ✗ ok
+[288/2000] sonnet r0 q800 ✓
+[289/2000] sonnet r0 q788 ✓
+[290/2000] sonnet r0 q801 ✓
+[291/2000] sonnet r0 q806 ✓
+[292/2000] sonnet r0 q822 ✓
+[293/2000] sonnet r0 q829 ✗ ok
+[294/2000] sonnet r0 q819 ✓
+[295/2000] sonnet r0 q533 ✓
+[296/2000] sonnet r0 q531 ✓
+[297/2000] sonnet r0 q824 ✓
+[298/2000] sonnet r0 q825 ✓
+[299/2000] sonnet r0 q532 ✓
+[300/2000] sonnet r0 q549 ✓
+[301/2000] sonnet r0 q547 ✓
+[302/2000] sonnet r0 q544 ✓
+[303/2000] sonnet r0 q539 ✓
+[304/2000] sonnet r0 q537 ✓
+[305/2000] sonnet r0 q557 ✓
+[306/2000] sonnet r0 q563 ✓
+[307/2000] sonnet r0 q555 ✓
+[308/2000] sonnet r0 q567 ✓
+[309/2000] sonnet r0 q565 ✓
+[310/2000] sonnet r0 q572 ✓
+[311/2000] sonnet r0 q568 ✓
+[312/2000] sonnet r0 q571 ✓
+[313/2000] sonnet r0 q573 ✓
+[314/2000] sonnet r0 q578 ✓
+[315/2000] sonnet r0 q581 ✓
+[316/2000] sonnet r0 q576 ✓
+[317/2000] sonnet r0 q586 ✗ ok
+[318/2000] sonnet r0 q592 ✓
+[319/2000] sonnet r0 q584 ✓
+[320/2000] sonnet r0 q598 ✓
+[321/2000] sonnet r0 q587 ✗ ok
+[322/2000] sonnet r0 q629 ✓
+[323/2000] sonnet r0 q604 ✓
+[324/2000] sonnet r0 q634 ✓
+[325/2000] sonnet r0 q633 ✓
+[326/2000] sonnet r0 q639 ✗ ok
+[327/2000] sonnet r0 q637 ✗ ok
+[328/2000] sonnet r0 q665 ✓
+[329/2000] sonnet r0 q669 ✓
+[330/2000] sonnet r0 q671 ✓
+[331/2000] sonnet r0 q595 ✗ ok
+[332/2000] sonnet r0 q672 ✗ ok
+[333/2000] sonnet r0 q682 ✗ ok
+[334/2000] sonnet r0 q678 ✓
+[335/2000] sonnet r0 q640 ✗ ok
+[336/2000] sonnet r0 q687 ✓
+[337/2000] sonnet r0 q704 ✓
+[338/2000] sonnet r0 q685 ✗ ok
+[339/2000] sonnet r0 q705 ✓
+[340/2000] sonnet r0 q694 ✗ ok
+[341/2000] sonnet r0 q710 ✗ ok
+[342/2000] sonnet r0 q340 ✓
+[343/2000] sonnet r0 q716 ✓
+[344/2000] sonnet r0 q707 ✓
+[345/2000] sonnet r0 q341 ✗ ok
+[346/2000] sonnet r0 q344 ✓
+[347/2000] sonnet r0 q345 ✓
+[348/2000] sonnet r0 q346 ✓
+[349/2000] sonnet r0 q349 ✗ ok
+[350/2000] sonnet r0 q347 ✗ ok
+[351/2000] sonnet r0 q356 ✓
+[352/2000] sonnet r0 q352 ✗ ok
+[353/2000] sonnet r0 q366 ✓
+[354/2000] sonnet r0 q377 ✓
+[355/2000] sonnet r0 q368 ✓
+[356/2000] sonnet r0 q379 ✓
+[357/2000] sonnet r0 q371 ✗ ok
+[358/2000] sonnet r0 q358 ✓
+[359/2000] sonnet r0 q383 ✗ ok
+[360/2000] sonnet r0 q397 ✓
+[361/2000] sonnet r0 q405 ✓
+[362/2000] sonnet r0 q407 ✓
+[363/2000] sonnet r0 q402 ✗ ok
+[364/2000] sonnet r0 q408 ✗ ok
+[365/2000] sonnet r0 q391 ✗ ok
+[366/2000] sonnet r0 q409 ✓
+[367/2000] sonnet r0 q412 ✓
+[368/2000] sonnet r0 q416 ✓
+[369/2000] sonnet r0 q415 ✓
+[370/2000] sonnet r0 q414 ✓
+[371/2000] sonnet r0 q422 ✓
+[372/2000] sonnet r0 q1014 ✗ ok
+[373/2000] sonnet r0 q440 ✓
+[374/2000] sonnet r0 q424 ✓
+[375/2000] sonnet r0 q427 ✓
+[376/2000] sonnet r0 q459 ✓
+[377/2000] sonnet r0 q462 ✓
+[378/2000] sonnet r0 q466 ✓
+[379/2000] sonnet r0 q469 ✓
+[380/2000] sonnet r0 q472 ✓
+[381/2000] sonnet r0 q465 ✗ ok
+[382/2000] sonnet r0 q468 ✓
+[383/2000] sonnet r0 q473 ✗ ok
+[384/2000] sonnet r0 q474 ✓
+[385/2000] sonnet r0 q479 ✓
+[386/2000] sonnet r0 q480 ✓
+[387/2000] sonnet r0 q477 ✓
+[388/2000] sonnet r0 q484 ✗ ok
+[389/2000] sonnet r0 q483 ✓
+[390/2000] sonnet r0 q486 ✓
+[391/2000] sonnet r0 q487 ✓
+[392/2000] sonnet r0 q522 ✓
+[393/2000] sonnet r0 q528 ✓
+[394/2000] sonnet r0 q683 ✗ ok
+[395/2000] sonnet r0 q195 ✓
+[396/2000] sonnet r0 q197 ✗ ok
+[397/2000] sonnet r0 q200 ✓
+[398/2000] sonnet r0 q198 ✗ ok
+[399/2000] sonnet r0 q201 ✓
+[400/2000] sonnet r0 q530 ✗ ok
+[401/2000] sonnet r0 q206 ✓
+[402/2000] sonnet r0 q207 ✗ ok
+[403/2000] sonnet r0 q208 ✓
+[404/2000] sonnet r0 q212 ✓
+[405/2000] sonnet r0 q529 ✓
+[406/2000] sonnet r0 q213 ✓
+[407/2000] sonnet r0 q215 ✗ ok
+[408/2000] sonnet r0 q218 ✗ ok
+[409/2000] sonnet r0 q219 ✗ ok
+[410/2000] sonnet r0 q220 ✓
+[411/2000] sonnet r0 q226 ✗ ok
+[412/2000] sonnet r0 q228 ✓
+[413/2000] sonnet r0 q227 ✓
+[414/2000] sonnet r0 q230 ✓
+[415/2000] sonnet r0 q231 ✗ ok
+[416/2000] sonnet r0 q234 ✗ ok
+[417/2000] sonnet r0 q232 ✓
+[418/2000] sonnet r0 q240 ✓
+[419/2000] sonnet r0 q239 ✓
+[420/2000] sonnet r0 q236 ✓
+[421/2000] sonnet r0 q244 ✓
+[422/2000] sonnet r0 q243 ✓
+[423/2000] sonnet r0 q701 ✗ timeout
+[424/2000] sonnet r0 q242 ✓
+[425/2000] sonnet r0 q247 ✗ ok
+[426/2000] sonnet r0 q245 ✓
+[427/2000] sonnet r0 q248 ✗ ok
+[428/2000] sonnet r0 q249 ✓
+[429/2000] sonnet r0 q255 ✗ ok
+[430/2000] sonnet r0 q253 ✓
+[431/2000] sonnet r0 q260 ✓
+[432/2000] sonnet r0 q268 ✓
+[433/2000] sonnet r0 q273 ✓
+[434/2000] sonnet r0 q281 ✗ ok
+[435/2000] sonnet r0 q327 ✓
+[436/2000] sonnet r0 q5 ✓
+[437/2000] sonnet r0 q282 ✓
+[438/2000] sonnet r0 q11 ✓
+[439/2000] sonnet r0 q17 ✓
+[440/2000] sonnet r0 q12 ✓
+[441/2000] sonnet r0 q25 ✗ ok
+[442/2000] sonnet r0 q23 ✗ ok
+[443/2000] sonnet r0 q26 ✗ ok
+[444/2000] sonnet r0 q27 ✗ ok
+[445/2000] sonnet r0 q24 ✓
+[446/2000] sonnet r0 q31 ✓
+[447/2000] sonnet r0 q28 ✗ ok
+[448/2000] sonnet r0 q32 ✓
+[449/2000] sonnet r0 q37 ✗ ok
+[450/2000] sonnet r0 q36 ✓
+[451/2000] sonnet r0 q39 ✓
+[452/2000] sonnet r0 q41 ✓
+[453/2000] sonnet r0 q40 ✓
+[454/2000] sonnet r0 q47 ✓
+[455/2000] sonnet r0 q46 ✗ ok
+[456/2000] sonnet r0 q48 ✓
+[457/2000] sonnet r0 q62 ✓
+[458/2000] sonnet r0 q72 ✓
+[459/2000] sonnet r0 q50 ✓
+[460/2000] sonnet r0 q77 ✓
+[461/2000] sonnet r0 q45 ✓
+[462/2000] sonnet r0 q79 ✓
+[463/2000] sonnet r0 q82 ✓
+[464/2000] sonnet r0 q89 ✓
+[465/2000] sonnet r0 q83 ✗ ok
+[466/2000] sonnet r0 q85 ✓
+[467/2000] sonnet r0 q92 ✓
+[468/2000] sonnet r0 q93 ✓
+[469/2000] sonnet r0 q87 ✗ ok
+[470/2000] sonnet r0 q94 ✗ ok
+[471/2000] sonnet r0 q112 ✓
+[472/2000] sonnet r0 q99 ✓
+[473/2000] sonnet r0 q100 ✓
+[474/2000] sonnet r0 q98 ✓
+[475/2000] sonnet r0 q95 ✓
+[476/2000] sonnet r0 q115 ✗ ok
+[477/2000] sonnet r0 q518 ✗ timeout
+[478/2000] sonnet r0 q118 ✓
+[479/2000] sonnet r0 q117 ✓
+[480/2000] sonnet r0 q116 ✓
+[481/2000] sonnet r0 q125 ✗ ok
+[482/2000] sonnet r0 q136 ✓
+[483/2000] sonnet r0 q137 ✓
+[484/2000] sonnet r0 q138 ✓
+[485/2000] sonnet r0 q128 ✗ ok
+[486/2000] sonnet r0 q129 ✗ ok
+[487/2000] sonnet r0 q149 ✓
+[488/2000] sonnet r0 q152 ✓
+[489/2000] sonnet r0 q159 ✗ ok
+[490/2000] sonnet r0 q145 ✗ ok
+[491/2000] sonnet r0 q168 ✓
+[492/2000] sonnet r0 q192 ✓
+[493/2000] sonnet r0 q169 ✓
+[494/2000] sonnet r0 q119 ✓
+[495/2000] sonnet r0 q194 ✓
+[496/2000] sonnet r0 q173 ✓
+[497/2000] sonnet r0 q186 ✗ ok
+[498/2000] sonnet r1 q1471 ✓
+[499/2000] sonnet r0 q120 ✓
+[500/2000] sonnet r1 q1472 ✓
+[501/2000] sonnet r1 q1476 ✓
+[502/2000] sonnet r1 q1479 ✓
+[503/2000] sonnet r1 q1473 ✓
+[504/2000] sonnet r1 q1484 ✓
+[505/2000] sonnet r1 q1480 ✓
+[506/2000] sonnet r1 q1483 ✓
+[507/2000] sonnet r1 q1486 ✗ ok
+[508/2000] sonnet r1 q1482 ✗ ok
+[509/2000] sonnet r1 q1493 ✓
+[510/2000] sonnet r1 q1481 ✗ ok
+[511/2000] sonnet r1 q1498 ✓
+[512/2000] sonnet r1 q1490 ✓
+[513/2000] sonnet r1 q1505 ✗ ok
+[514/2000] sonnet r1 q1506 ✓
+[515/2000] sonnet r1 q1500 ✓
+[516/2000] sonnet r1 q1507 ✓
+[517/2000] sonnet r1 q1509 ✓
+[518/2000] sonnet r1 q1514 ✓
+[519/2000] sonnet r1 q1515 ✓
+[520/2000] sonnet r1 q1521 ✓
+[521/2000] sonnet r1 q1501 ✓
+[522/2000] sonnet r1 q1528 ✓
+[523/2000] sonnet r1 q1526 ✓
+[524/2000] sonnet r1 q1525 ✗ ok
+[525/2000] sonnet r1 q1524 ✓
+[526/2000] sonnet r1 q1531 ✗ ok
+[527/2000] sonnet r1 q1312 ✓
+[528/2000] sonnet r1 q1317 ✓
+[529/2000] sonnet r1 q1533 ✗ ok
+[530/2000] sonnet r1 q1322 ✗ ok
+[531/2000] sonnet r1 q1529 ✗ ok
+[532/2000] sonnet r1 q1323 ✓
+[533/2000] sonnet r1 q1331 ✓
+[534/2000] sonnet r1 q1338 ✗ ok
+[535/2000] sonnet r1 q1334 ✓
+[536/2000] sonnet r1 q1339 ✓
+[537/2000] sonnet r1 q1340 ✓
+[538/2000] sonnet r1 q1346 ✓
+[539/2000] sonnet r1 q1344 ✓
+[540/2000] sonnet r1 q1350 ✓
+[541/2000] sonnet r1 q1351 ✓
+[542/2000] sonnet r1 q1357 ✓
+[543/2000] sonnet r1 q1352 ✓
+[544/2000] sonnet r1 q1361 ✓
+[545/2000] sonnet r1 q1356 ✓
+[546/2000] sonnet r1 q1371 ✓
+[547/2000] sonnet r1 q1359 ✓
+[548/2000] sonnet r1 q1368 ✓
+[549/2000] sonnet r1 q1375 ✓
+[550/2000] sonnet r1 q1362 ✓
+[551/2000] sonnet r1 q1378 ✓
+[552/2000] sonnet r1 q1376 ✓
+[553/2000] sonnet r1 q1380 ✓
+[554/2000] sonnet r1 q1381 ✓
+[555/2000] sonnet r1 q1387 ✓
+[556/2000] sonnet r1 q1392 ✓
+[557/2000] sonnet r1 q1389 ✓
+[558/2000] sonnet r1 q1390 ✓
+[559/2000] sonnet r1 q1394 ✓
+[560/2000] sonnet r1 q1398 ✓
+[561/2000] sonnet r0 q263 ✗ no_sql
+[562/2000] sonnet r1 q1409 ✓
+[563/2000] sonnet r1 q1401 ✓
+[564/2000] sonnet r1 q1404 ✗ ok
+[565/2000] sonnet r1 q1405 ✗ ok
+[566/2000] sonnet r1 q1403 ✓
+[567/2000] sonnet r1 q1399 ✗ ok
+[568/2000] sonnet r1 q1410 ✓
+[569/2000] sonnet r1 q1411 ✓
+[570/2000] sonnet r1 q1422 ✗ ok
+[571/2000] sonnet r1 q1426 ✓
+[572/2000] sonnet r1 q1435 ✓
+[573/2000] sonnet r1 q1432 ✓
+[574/2000] sonnet r1 q1427 ✗ ok
+[575/2000] sonnet r1 q1457 ✓
+[576/2000] sonnet r1 q1460 ✓
+[577/2000] sonnet r1 q1464 ✓
+[578/2000] sonnet r1 q1153 ✓
+[579/2000] sonnet r1 q1149 ✗ ok
+[580/2000] sonnet r1 q1155 ✓
+[581/2000] sonnet r1 q1150 ✓
+[582/2000] sonnet r1 q1152 ✗ ok
+[583/2000] sonnet r1 q1156 ✓
+[584/2000] sonnet r1 q1162 ✓
+[585/2000] sonnet r1 q1157 ✓
+[586/2000] sonnet r1 q1164 ✓
+[587/2000] sonnet r1 q1169 ✓
+[588/2000] sonnet r1 q1168 ✗ ok
+[589/2000] sonnet r0 q189 ✓
+[590/2000] sonnet r1 q1179 ✗ ok
+[591/2000] sonnet r1 q1187 ✓
+[592/2000] sonnet r1 q1166 ✗ ok
+[593/2000] sonnet r1 q1171 ✓
+[594/2000] sonnet r1 q1195 ✓
+[595/2000] sonnet r1 q1185 ✓
+[596/2000] sonnet r1 q1192 ✓
+[597/2000] sonnet r1 q1198 ✓
+[598/2000] sonnet r1 q1201 ✓
+[599/2000] sonnet r1 q1189 ✓
+[600/2000] sonnet r1 q1205 ✗ ok
+[601/2000] sonnet r1 q1209 ✗ ok
+[602/2000] sonnet r1 q1220 ✓
+[603/2000] sonnet r1 q1225 ✗ ok
+[604/2000] sonnet r1 q1208 ✓
+[605/2000] sonnet r1 q1231 ✓
+[606/2000] sonnet r1 q1227 ✗ ok
+[607/2000] sonnet r1 q1229 ✓
+[608/2000] sonnet r1 q1235 ✗ ok
+[609/2000] sonnet r1 q1232 ✓
+[610/2000] sonnet r1 q1175 ✗ ok
+[611/2000] sonnet r1 q1238 ✓
+[612/2000] sonnet r1 q1247 ✗ ok
+[613/2000] sonnet r1 q1242 ✗ ok
+[614/2000] sonnet r1 q1251 ✗ ok
+[615/2000] sonnet r1 q1243 ✗ ok
+[616/2000] sonnet r1 q1239 ✓
+[617/2000] sonnet r1 q1254 ✗ ok
+[618/2000] sonnet r1 q1241 ✗ ok
+[619/2000] sonnet r1 q1252 ✗ ok
+[620/2000] sonnet r1 q1255 ✗ ok
+[621/2000] sonnet r1 q1257 ✓
+[622/2000] sonnet r1 q1270 ✓
+[623/2000] sonnet r1 q1256 ✗ ok
+[624/2000] sonnet r1 q1281 ✓
+[625/2000] sonnet r1 q1302 ✗ ok
+[626/2000] sonnet r1 q1275 ✓
+[627/2000] sonnet r1 q1025 ✓
+[628/2000] sonnet r1 q1267 ✗ ok
+[629/2000] sonnet r1 q1028 ✗ ok
+[630/2000] sonnet r1 q1029 ✗ ok
+[631/2000] sonnet r1 q1030 ✓
+[632/2000] sonnet r1 q1265 ✗ ok
+[633/2000] sonnet r1 q1032 ✗ ok
+[634/2000] sonnet r1 q1031 ✗ ok
+[635/2000] sonnet r1 q1035 ✓
+[636/2000] sonnet r1 q1036 ✓
+[637/2000] sonnet r1 q1037 ✓
+[638/2000] sonnet r1 q1039 ✓
+[639/2000] sonnet r1 q1042 ✓
+[640/2000] sonnet r1 q1040 ✓
+[641/2000] sonnet r1 q1057 ✓
+[642/2000] sonnet r1 q1044 ✓
+[643/2000] sonnet r1 q1058 ✗ ok
+[644/2000] sonnet r1 q1068 ✗ ok
+[645/2000] sonnet r1 q1048 ✓
+[646/2000] sonnet r1 q1076 ✓
+[647/2000] sonnet r1 q1078 ✓
+[648/2000] sonnet r1 q1079 ✓
+[649/2000] sonnet r1 q1080 ✗ ok
+[650/2000] sonnet r1 q1084 ✓
+[651/2000] sonnet r1 q1088 ✓
+[652/2000] sonnet r1 q1091 ✓
+[653/2000] sonnet r1 q1092 ✗ ok
+[654/2000] sonnet r1 q1098 ✓
+[655/2000] sonnet r1 q1096 ✓
+[656/2000] sonnet r1 q1102 ✓
+[657/2000] sonnet r1 q1094 ✗ ok
+[658/2000] sonnet r1 q1105 ✓
+[659/2000] sonnet r1 q1103 ✓
+[660/2000] sonnet r1 q1110 ✓
+[661/2000] sonnet r1 q1113 ✓
+[662/2000] sonnet r1 q1107 ✗ ok
+[663/2000] sonnet r1 q1116 ✓
+[664/2000] sonnet r1 q1124 ✓
+[665/2000] sonnet r1 q1114 ✓
+[666/2000] sonnet r1 q1122 ✓
+[667/2000] sonnet r1 q1115 ✓
+[668/2000] sonnet r1 q1134 ✓
+[669/2000] sonnet r1 q1133 ✓
+[670/2000] sonnet r1 q1135 ✗ ok
+[671/2000] sonnet r1 q1130 ✓
+[672/2000] sonnet r1 q1141 ✓
+[673/2000] sonnet r1 q1136 ✗ ok
+[674/2000] sonnet r1 q1144 ✗ ok
+[675/2000] sonnet r1 q1139 ✓
+[676/2000] sonnet r1 q1145 ✓
+[677/2000] sonnet r1 q1146 ✓
+[678/2000] sonnet r1 q1147 ✓
+[679/2000] sonnet r1 q1148 ✓
+[680/2000] sonnet r1 q850 ✓
+[681/2000] sonnet r1 q846 ✓
+[682/2000] sonnet r1 q847 ✗ ok
+[683/2000] sonnet r1 q854 ✓
+[684/2000] sonnet r1 q857 ✓
+[685/2000] sonnet r1 q861 ✓
+[686/2000] sonnet r1 q859 ✓
+[687/2000] sonnet r1 q865 ✓
+[688/2000] sonnet r1 q868 ✓
+[689/2000] sonnet r1 q866 ✓
+[690/2000] sonnet r1 q869 ✓
+[691/2000] sonnet r1 q862 ✓
+[692/2000] sonnet r1 q875 ✓
+[693/2000] sonnet r1 q872 ✓
+[694/2000] sonnet r1 q877 ✓
+[695/2000] sonnet r1 q879 ✓
+[696/2000] sonnet r1 q881 ✓
+[697/2000] sonnet r1 q884 ✓
+[698/2000] sonnet r1 q880 ✓
+[699/2000] sonnet r1 q894 ✗ ok
+[700/2000] sonnet r1 q895 ✓
+[701/2000] sonnet r1 q898 ✓
+[702/2000] sonnet r1 q896 ✗ ok
+[703/2000] sonnet r1 q892 ✗ ok
+[704/2000] sonnet r1 q897 ✓
+[705/2000] sonnet r1 q901 ✓
+[706/2000] sonnet r1 q902 ✗ ok
+[707/2000] sonnet r1 q910 ✓
+[708/2000] sonnet r1 q904 ✓
+[709/2000] sonnet r1 q912 ✓
+[710/2000] sonnet r1 q915 ✓
+[711/2000] sonnet r1 q909 ✓
+[712/2000] sonnet r1 q906 ✗ ok
+[713/2000] sonnet r1 q928 ✗ ok
+[714/2000] sonnet r1 q930 ✗ ok
+[715/2000] sonnet r1 q931 ✗ ok
+[716/2000] sonnet r1 q933 ✓
+[717/2000] sonnet r1 q945 ✓
+[718/2000] sonnet r1 q950 ✓
+[719/2000] sonnet r1 q937 ✗ ok
+[720/2000] sonnet r1 q948 ✓
+[721/2000] sonnet r1 q940 ✓
+[722/2000] sonnet r1 q951 ✗ ok
+[723/2000] sonnet r1 q955 ✓
+[724/2000] sonnet r1 q960 ✓
+[725/2000] sonnet r1 q954 ✓
+[726/2000] sonnet r1 q959 ✓
+[727/2000] sonnet r1 q962 ✓
+[728/2000] sonnet r1 q963 ✗ ok
+[729/2000] sonnet r1 q964 ✓
+[730/2000] sonnet r1 q971 ✓
+[731/2000] sonnet r1 q977 ✓
+[732/2000] sonnet r1 q972 ✓
+[733/2000] sonnet r1 q981 ✓
+[734/2000] sonnet r1 q989 ✗ ok
+[735/2000] sonnet r1 q717 ✓
+[736/2000] sonnet r1 q990 ✓
+[737/2000] sonnet r1 q988 ✓
+[738/2000] sonnet r1 q978 ✗ ok
+[739/2000] sonnet r1 q994 ✓
+[740/2000] sonnet r1 q967 ✗ ok
+[741/2000] sonnet r1 q1011 ✗ ok
+[742/2000] sonnet r1 q1002 ✓
+[743/2000] sonnet r1 q1001 ✓
+[744/2000] sonnet r1 q723 ✓
+[745/2000] sonnet r1 q719 ✓
+[746/2000] sonnet r1 q1003 ✓
+[747/2000] sonnet r1 q724 ✓
+[748/2000] sonnet r1 q726 ✓
+[749/2000] sonnet r1 q728 ✗ ok
+[750/2000] sonnet r1 q733 ✓
+[751/2000] sonnet r1 q732 ✓
+[752/2000] sonnet r1 q730 ✓
+[753/2000] sonnet r1 q737 ✓
+[754/2000] sonnet r1 q736 ✗ ok
+[755/2000] sonnet r1 q739 ✓
+[756/2000] sonnet r1 q740 ✓
+[757/2000] sonnet r1 q1014 ✗ ok
+[758/2000] sonnet r1 q745 ✓
+[759/2000] sonnet r1 q747 ✓
+[760/2000] sonnet r1 q744 ✗ ok
+[761/2000] sonnet r1 q750 ✓
+[762/2000] sonnet r1 q751 ✓
+[763/2000] sonnet r1 q753 ✓
+[764/2000] sonnet r1 q758 ✓
+[765/2000] sonnet r1 q738 ✓
+[766/2000] sonnet r1 q761 ✓
+[767/2000] sonnet r1 q760 ✓
+[768/2000] sonnet r1 q764 ✓
+[769/2000] sonnet r1 q765 ✓
+[770/2000] sonnet r1 q772 ✗ ok
+[771/2000] sonnet r1 q766 ✗ ok
+[772/2000] sonnet r1 q773 ✗ ok
+[773/2000] sonnet r1 q769 ✓
+[774/2000] sonnet r1 q775 ✓
+[775/2000] sonnet r1 q782 ✓
+[776/2000] sonnet r1 q781 ✓
+[777/2000] sonnet r1 q785 ✓
+[778/2000] sonnet r1 q786 ✓
+[779/2000] sonnet r1 q779 ✓
+[780/2000] sonnet r1 q791 ✓
+[781/2000] sonnet r1 q788 ✓
+[782/2000] sonnet r1 q790 ✓
+[783/2000] sonnet r1 q796 ✓
+[784/2000] sonnet r1 q792 ✓
+[785/2000] sonnet r1 q797 ✓
+[786/2000] sonnet r1 q798 ✗ ok
+[787/2000] sonnet r1 q944 ✗ ok
+[788/2000] sonnet r1 q800 ✓
+[789/2000] sonnet r1 q794 ✓
+[790/2000] sonnet r1 q801 ✓
+[791/2000] sonnet r1 q806 ✓
+[792/2000] sonnet r1 q819 ✓
+[793/2000] sonnet r1 q822 ✓
+[794/2000] sonnet r1 q824 ✓
+[795/2000] sonnet r1 q532 ✓
+[796/2000] sonnet r1 q531 ✓
+[797/2000] sonnet r1 q825 ✓
+[798/2000] sonnet r1 q533 ✓
+[799/2000] sonnet r1 q829 ✗ ok
+[800/2000] sonnet r1 q544 ✓
+[801/2000] sonnet r1 q537 ✓
+[802/2000] sonnet r1 q549 ✓
+[803/2000] sonnet r1 q547 ✓
+[804/2000] sonnet r1 q539 ✓
+[805/2000] sonnet r1 q555 ✓
+[806/2000] sonnet r1 q557 ✓
+[807/2000] sonnet r1 q563 ✓
+[808/2000] sonnet r1 q568 ✓
+[809/2000] sonnet r1 q567 ✓
+[810/2000] sonnet r1 q565 ✓
+[811/2000] sonnet r1 q571 ✓
+[812/2000] sonnet r1 q573 ✓
+[813/2000] sonnet r1 q572 ✓
+[814/2000] sonnet r1 q578 ✓
+[815/2000] sonnet r1 q581 ✓
+[816/2000] sonnet r1 q576 ✓
+[817/2000] sonnet r1 q586 ✗ ok
+[818/2000] sonnet r1 q592 ✓
+[819/2000] sonnet r1 q584 ✓
+[820/2000] sonnet r1 q629 ✓
+[821/2000] sonnet r1 q598 ✓
+[822/2000] sonnet r1 q587 ✗ ok
+[823/2000] sonnet r1 q604 ✓
+[824/2000] sonnet r1 q633 ✓
+[825/2000] sonnet r1 q634 ✓
+[826/2000] sonnet r1 q637 ✗ ok
+[827/2000] sonnet r1 q639 ✗ ok
+[828/2000] sonnet r1 q665 ✓
+[829/2000] sonnet r1 q669 ✓
+[830/2000] sonnet r1 q743 ✓
+[831/2000] sonnet r1 q671 ✓
+[832/2000] sonnet r1 q672 ✗ ok
+[833/2000] sonnet r1 q687 ✓
+[834/2000] sonnet r1 q640 ✗ ok
+[835/2000] sonnet r1 q682 ✗ ok
+[836/2000] sonnet r1 q595 ✗ ok
+[837/2000] sonnet r1 q678 ✓
+[838/2000] sonnet r1 q685 ✗ ok
+[839/2000] sonnet r1 q683 ✗ ok
+[840/2000] sonnet r1 q704 ✓
+[841/2000] sonnet r1 q705 ✓
+[842/2000] sonnet r1 q710 ✗ ok
+[843/2000] sonnet r1 q707 ✓
+[844/2000] sonnet r1 q340 ✓
+[845/2000] sonnet r1 q716 ✓
+[846/2000] sonnet r1 q694 ✗ ok
+[847/2000] sonnet r1 q341 ✗ ok
+[848/2000] sonnet r1 q344 ✓
+[849/2000] sonnet r1 q347 ✗ ok
+[850/2000] sonnet r1 q356 ✓
+[851/2000] sonnet r1 q345 ✓
+[852/2000] sonnet r1 q349 ✗ ok
+[853/2000] sonnet r1 q346 ✓
+[854/2000] sonnet r1 q352 ✗ ok
+[855/2000] sonnet r1 q358 ✓
+[856/2000] sonnet r1 q377 ✓
+[857/2000] sonnet r1 q366 ✓
+[858/2000] sonnet r1 q368 ✓
+[859/2000] sonnet r1 q383 ✗ ok
+[860/2000] sonnet r1 q379 ✓
+[861/2000] sonnet r1 q371 ✗ ok
+[862/2000] sonnet r1 q397 ✓
+[863/2000] sonnet r1 q391 ✗ ok
+[864/2000] sonnet r1 q408 ✗ ok
+[865/2000] sonnet r1 q402 ✗ ok
+[866/2000] sonnet r1 q407 ✓
+[867/2000] sonnet r1 q409 ✓
+[868/2000] sonnet r1 q414 ✓
+[869/2000] sonnet r1 q405 ✓
+[870/2000] sonnet r1 q422 ✓
+[871/2000] sonnet r1 q415 ✓
+[872/2000] sonnet r1 q416 ✓
+[873/2000] sonnet r1 q412 ✓
+[874/2000] sonnet r1 q440 ✓
+[875/2000] sonnet r1 q424 ✓
+[876/2000] sonnet r1 q427 ✓
+[877/2000] sonnet r1 q459 ✓
+[878/2000] sonnet r1 q465 ✗ ok
+[879/2000] sonnet r1 q466 ✓
+[880/2000] sonnet r1 q469 ✓
+[881/2000] sonnet r1 q462 ✓
+[882/2000] sonnet r1 q468 ✓
+[883/2000] sonnet r1 q472 ✓
+[884/2000] sonnet r1 q473 ✗ ok
+[885/2000] sonnet r1 q474 ✓
+[886/2000] sonnet r1 q477 ✓
+[887/2000] sonnet r1 q479 ✓
+[888/2000] sonnet r1 q483 ✓
+[889/2000] sonnet r1 q480 ✓
+[890/2000] sonnet r1 q486 ✓
+[891/2000] sonnet r1 q484 ✗ ok
+[892/2000] sonnet r1 q487 ✓
+[893/2000] sonnet r1 q522 ✓
+[894/2000] sonnet r1 q198 ✗ ok
+[895/2000] sonnet r1 q197 ✗ ok
+[896/2000] sonnet r1 q528 ✓
+[897/2000] sonnet r1 q195 ✓
+[898/2000] sonnet r1 q206 ✓
+[899/2000] sonnet r1 q200 ✓
+[900/2000] sonnet r1 q201 ✓
+[901/2000] sonnet r1 q207 ✗ ok
+[902/2000] sonnet r1 q529 ✓
+[903/2000] sonnet r1 q208 ✓
+[904/2000] sonnet r1 q213 ✓
+[905/2000] sonnet r1 q212 ✓
+[906/2000] sonnet r1 q215 ✗ ok
+[907/2000] sonnet r1 q218 ✗ ok
+[908/2000] sonnet r1 q220 ✓
+[909/2000] sonnet r1 q219 ✗ ok
+[910/2000] sonnet r1 q227 ✓
+[911/2000] sonnet r1 q226 ✗ ok
+[912/2000] sonnet r1 q530 ✗ ok
+[913/2000] sonnet r1 q230 ✓
+[914/2000] sonnet r1 q228 ✓
+[915/2000] sonnet r1 q231 ✗ ok
+[916/2000] sonnet r1 q232 ✓
+[917/2000] sonnet r1 q234 ✗ ok
+[918/2000] sonnet r1 q240 ✓
+[919/2000] sonnet r1 q239 ✓
+[920/2000] sonnet r1 q236 ✓
+[921/2000] sonnet r1 q242 ✓
+[922/2000] sonnet r1 q247 ✗ ok
+[923/2000] sonnet r1 q243 ✓
+[924/2000] sonnet r1 q244 ✓
+[925/2000] sonnet r1 q248 ✗ ok
+[926/2000] sonnet r1 q249 ✓
+[927/2000] sonnet r1 q260 ✓
+[928/2000] sonnet r1 q255 ✓
+[929/2000] sonnet r1 q701 ✗ timeout
+[930/2000] sonnet r1 q253 ✓
+[931/2000] sonnet r1 q268 ✓
+[932/2000] sonnet r1 q273 ✓
+[933/2000] sonnet r1 q281 ✗ ok
+[934/2000] sonnet r1 q263 ✓
+[935/2000] sonnet r1 q282 ✓
+[936/2000] sonnet r1 q5 ✓
+[937/2000] sonnet r1 q11 ✓
+[938/2000] sonnet r1 q327 ✓
+[939/2000] sonnet r1 q17 ✗ ok
+[940/2000] sonnet r1 q23 ✗ ok
+[941/2000] sonnet r1 q12 ✓
+[942/2000] sonnet r1 q25 ✗ ok
+[943/2000] sonnet r1 q26 ✗ ok
+[944/2000] sonnet r1 q27 ✗ ok
+[945/2000] sonnet r1 q31 ✓
+[946/2000] sonnet r1 q24 ✗ ok
+[947/2000] sonnet r1 q32 ✓
+[948/2000] sonnet r1 q28 ✗ ok
+[949/2000] sonnet r1 q37 ✗ ok
+[950/2000] sonnet r1 q36 ✓
+[951/2000] sonnet r1 q39 ✓
+[952/2000] sonnet r1 q40 ✓
+[953/2000] sonnet r1 q41 ✗ ok
+[954/2000] sonnet r1 q45 ✓
+[955/2000] sonnet r1 q47 ✓
+[956/2000] sonnet r1 q48 ✓
+[957/2000] sonnet r1 q46 ✗ ok
+[958/2000] sonnet r1 q50 ✓
+[959/2000] sonnet r1 q62 ✓
+[960/2000] sonnet r1 q72 ✓
+[961/2000] sonnet r1 q77 ✓
+[962/2000] sonnet r1 q82 ✓
+[963/2000] sonnet r1 q79 ✓
+[964/2000] sonnet r1 q83 ✗ ok
+[965/2000] sonnet r1 q87 ✗ ok
+[966/2000] sonnet r1 q85 ✓
+[967/2000] sonnet r1 q93 ✓
+[968/2000] sonnet r1 q89 ✓
+[969/2000] sonnet r1 q92 ✓
+[970/2000] sonnet r1 q518 ✗ timeout
+[971/2000] sonnet r1 q100 ✓
+[972/2000] sonnet r1 q94 ✗ ok
+[973/2000] sonnet r1 q99 ✓
+[974/2000] sonnet r1 q112 ✓
+[975/2000] sonnet r1 q98 ✓
+[976/2000] sonnet r1 q95 ✓
+[977/2000] sonnet r1 q118 ✓
+[978/2000] sonnet r1 q117 ✓
+[979/2000] sonnet r1 q115 ✗ ok
+[980/2000] sonnet r1 q125 ✗ ok
+[981/2000] sonnet r1 q116 ✓
+[982/2000] sonnet r1 q136 ✓
+[983/2000] sonnet r1 q128 ✓
+[984/2000] sonnet r1 q137 ✓
+[985/2000] sonnet r1 q138 ✓
+[986/2000] sonnet r1 q129 ✗ ok
+[987/2000] sonnet r1 q149 ✓
+[988/2000] sonnet r1 q159 ✗ ok
+[989/2000] sonnet r1 q152 ✓
+[990/2000] sonnet r1 q145 ✗ ok
+[991/2000] sonnet r1 q168 ✓
+[992/2000] sonnet r1 q169 ✗ ok
+[993/2000] sonnet r1 q192 ✓
+[994/2000] sonnet r1 q245 ✓
+[995/2000] sonnet r1 q173 ✓
+[996/2000] sonnet r1 q119 ✓
+[997/2000] sonnet r1 q194 ✓
+[998/2000] haiku r0 q1471 ✓
+[999/2000] sonnet r1 q120 ✓
+[1000/2000] sonnet r1 q186 ✗ ok
+[1001/2000] sonnet r1 q189 ✗ ok
+[1002/2000] haiku r0 q1473 ✗ ok
+[1003/2000] haiku r0 q1479 ✓
+[1004/2000] haiku r0 q1476 ✓
+[1005/2000] haiku r0 q1472 ✓
+[1006/2000] haiku r0 q1483 ✓
+[1007/2000] haiku r0 q1484 ✓
+[1008/2000] haiku r0 q1493 ✓
+[1009/2000] haiku r0 q1480 ✗ ok
+[1010/2000] haiku r0 q1486 ✓
+[1011/2000] haiku r0 q1498 ✗ ok
+[1012/2000] haiku r0 q1490 ✓
+[1013/2000] haiku r0 q1506 ✓
+[1014/2000] haiku r0 q1505 ✗ ok
+[1015/2000] haiku r0 q1507 ✓
+[1016/2000] haiku r0 q1509 ✓
+[1017/2000] haiku r0 q1481 ✗ ok
+[1018/2000] haiku r0 q1514 ✓
+[1019/2000] haiku r0 q1482 ✗ ok
+[1020/2000] haiku r0 q1515 ✓
+[1021/2000] haiku r0 q1521 ✓
+[1022/2000] haiku r0 q1528 ✓
+[1023/2000] haiku r0 q1531 ✗ ok
+[1024/2000] haiku r0 q1529 ✗ ok
+[1025/2000] haiku r0 q1525 ✗ ok
+[1026/2000] haiku r0 q1533 ✓
+[1027/2000] haiku r0 q1524 ✓
+[1028/2000] haiku r0 q1312 ✓
+[1029/2000] haiku r0 q1323 ✓
+[1030/2000] haiku r0 q1526 ✗ ok
+[1031/2000] haiku r0 q1317 ✓
+[1032/2000] haiku r0 q1331 ✓
+[1033/2000] haiku r0 q1501 ✗ ok
+[1034/2000] haiku r0 q1334 ✓
+[1035/2000] haiku r0 q1322 ✗ ok
+[1036/2000] haiku r0 q1346 ✓
+[1037/2000] haiku r0 q1344 ✓
+[1038/2000] haiku r0 q1500 ✗ ok
+[1039/2000] haiku r0 q1340 ✓
+[1040/2000] haiku r0 q1351 ✓
+[1041/2000] haiku r0 q1339 ✓
+[1042/2000] haiku r0 q1352 ✓
+[1043/2000] haiku r0 q1357 ✓
+[1044/2000] haiku r0 q1356 ✓
+[1045/2000] haiku r0 q1338 ✗ ok
+[1046/2000] haiku r0 q1361 ✓
+[1047/2000] haiku r0 q1359 ✓
+[1048/2000] haiku r0 q1368 ✓
+[1049/2000] haiku r0 q1371 ✓
+[1050/2000] haiku r0 q1375 ✓
+[1051/2000] haiku r0 q1362 ✓
+[1052/2000] haiku r0 q1376 ✓
+[1053/2000] haiku r0 q1380 ✓
+[1054/2000] haiku r0 q1381 ✓
+[1055/2000] haiku r0 q1378 ✓
+[1056/2000] haiku r0 q1350 ✓
+[1057/2000] haiku r0 q1394 ✓
+[1058/2000] haiku r0 q1389 ✓
+[1059/2000] haiku r0 q1399 ✗ ok
+[1060/2000] haiku r0 q1390 ✓
+[1061/2000] haiku r0 q1387 ✓
+[1062/2000] haiku r0 q1398 ✓
+[1063/2000] haiku r0 q1392 ✓
+[1064/2000] haiku r0 q1401 ✓
+[1065/2000] haiku r0 q1403 ✓
+[1066/2000] haiku r0 q1409 ✓
+[1067/2000] haiku r0 q1422 ✓
+[1068/2000] haiku r0 q1411 ✓
+[1069/2000] haiku r0 q1404 ✗ ok
+[1070/2000] haiku r0 q1410 ✓
+[1071/2000] haiku r0 q1427 ✗ ok
+[1072/2000] haiku r0 q1426 ✓
+[1073/2000] haiku r0 q1405 ✓
+[1074/2000] haiku r0 q1435 ✓
+[1075/2000] haiku r0 q1464 ✓
+[1076/2000] haiku r0 q1460 ✓
+[1077/2000] haiku r0 q1457 ✓
+[1078/2000] haiku r0 q1149 ✗ ok
+[1079/2000] haiku r0 q1152 ✗ ok
+[1080/2000] haiku r0 q1155 ✓
+[1081/2000] haiku r0 q1153 ✓
+[1082/2000] haiku r0 q1156 ✓
+[1083/2000] haiku r0 q1157 ✓
+[1084/2000] haiku r0 q1162 ✓
+[1085/2000] haiku r0 q1432 ✓
+[1086/2000] haiku r0 q1164 ✓
+[1087/2000] haiku r0 q1171 ✗ ok
+[1088/2000] haiku r0 q1179 ✗ ok
+[1089/2000] haiku r0 q1168 ✗ ok
+[1090/2000] haiku r0 q1169 ✓
+[1091/2000] haiku r0 q1187 ✓
+[1092/2000] haiku r0 q1166 ✗ ok
+[1093/2000] haiku r0 q1150 ✓
+[1094/2000] haiku r0 q1198 ✓
+[1095/2000] haiku r0 q1185 ✓
+[1096/2000] haiku r0 q1195 ✓
+[1097/2000] haiku r0 q1201 ✓
+[1098/2000] haiku r0 q1189 ✓
+[1099/2000] haiku r0 q1205 ✗ ok
+[1100/2000] haiku r0 q1192 ✓
+[1101/2000] haiku r0 q1208 ✓
+[1102/2000] haiku r0 q1220 ✓
+[1103/2000] haiku r0 q1209 ✓
+[1104/2000] haiku r0 q1231 ✓
+[1105/2000] haiku r0 q1225 ✗ ok
+[1106/2000] haiku r0 q1227 ✗ ok
+[1107/2000] haiku r0 q1235 ✓
+[1108/2000] haiku r0 q1232 ✓
+[1109/2000] haiku r0 q1229 ✓
+[1110/2000] haiku r0 q1241 ✗ ok
+[1111/2000] haiku r0 q1175 ✗ ok
+[1112/2000] haiku r0 q1251 ✗ ok
+[1113/2000] haiku r0 q1238 ✓
+[1114/2000] haiku r0 q1252 ✗ ok
+[1115/2000] haiku r0 q1256 ✗ ok
+[1116/2000] haiku r0 q1239 ✗ ok
+[1117/2000] haiku r0 q1247 ✗ ok
+[1118/2000] haiku r0 q1243 ✗ ok
+[1119/2000] haiku r0 q1254 ✗ ok
+[1120/2000] haiku r0 q1255 ✗ ok
+[1121/2000] haiku r0 q1257 ✓
+[1122/2000] haiku r0 q1281 ✓
+[1123/2000] haiku r0 q1242 ✗ ok
+[1124/2000] haiku r0 q1270 ✓
+[1125/2000] haiku r0 q1302 ✗ ok
+[1126/2000] haiku r0 q1275 ✓
+[1127/2000] haiku r0 q1029 ✗ ok
+[1128/2000] haiku r0 q1025 ✓
+[1129/2000] haiku r0 q1030 ✓
+[1130/2000] haiku r0 q1265 ✗ ok
+[1131/2000] haiku r0 q1267 ✗ ok
+[1132/2000] haiku r0 q1028 ✗ ok
+[1133/2000] haiku r0 q1035 ✓
+[1134/2000] haiku r0 q1032 ✓
+[1135/2000] haiku r0 q1036 ✗ ok
+[1136/2000] haiku r0 q1040 ✓
+[1137/2000] haiku r0 q1048 ✓
+[1138/2000] haiku r0 q1037 ✓
+[1139/2000] haiku r0 q1042 ✓
+[1140/2000] haiku r0 q1044 ✓
+[1141/2000] haiku r0 q1039 ✓
+[1142/2000] haiku r0 q1057 ✓
+[1143/2000] haiku r0 q1031 ✗ ok
+[1144/2000] haiku r0 q1080 ✗ ok
+[1145/2000] haiku r0 q1079 ✓
+[1146/2000] haiku r0 q1084 ✓
+[1147/2000] haiku r0 q1088 ✓
+[1148/2000] haiku r0 q1068 ✓
+[1149/2000] haiku r0 q1076 ✓
+[1150/2000] haiku r0 q1078 ✓
+[1151/2000] haiku r0 q1058 ✗ ok
+[1152/2000] haiku r0 q1091 ✓
+[1153/2000] haiku r0 q1092 ✗ ok
+[1154/2000] haiku r0 q1098 ✓
+[1155/2000] haiku r0 q1102 ✓
+[1156/2000] haiku r0 q1096 ✓
+[1157/2000] haiku r0 q1103 ✓
+[1158/2000] haiku r0 q1105 ✓
+[1159/2000] haiku r0 q1094 ✗ ok
+[1160/2000] haiku r0 q1107 ✗ ok
+[1161/2000] haiku r0 q1110 ✓
+[1162/2000] haiku r0 q1116 ✓
+[1163/2000] haiku r0 q1113 ✓
+[1164/2000] haiku r0 q1133 ✓
+[1165/2000] haiku r0 q1130 ✓
+[1166/2000] haiku r0 q1124 ✓
+[1167/2000] haiku r0 q1114 ✓
+[1168/2000] haiku r0 q1122 ✓
+[1169/2000] haiku r0 q1134 ✓
+[1170/2000] haiku r0 q1141 ✓
+[1171/2000] haiku r0 q1139 ✗ ok
+[1172/2000] haiku r0 q1145 ✓
+[1173/2000] haiku r0 q1115 ✓
+[1174/2000] haiku r0 q1135 ✗ ok
+[1175/2000] haiku r0 q1144 ✗ ok
+[1176/2000] haiku r0 q1146 ✓
+[1177/2000] haiku r0 q1136 ✗ ok
+[1178/2000] haiku r0 q1147 ✓
+[1179/2000] haiku r0 q859 ✓
+[1180/2000] haiku r0 q854 ✓
+[1181/2000] haiku r0 q850 ✓
+[1182/2000] haiku r0 q857 ✓
+[1183/2000] haiku r0 q1148 ✓
+[1184/2000] haiku r0 q865 ✗ ok
+[1185/2000] haiku r0 q862 ✓
+[1186/2000] haiku r0 q861 ✗ ok
+[1187/2000] haiku r0 q847 ✗ ok
+[1188/2000] haiku r0 q866 ✗ ok
+[1189/2000] haiku r0 q872 ✓
+[1190/2000] haiku r0 q875 ✓
+[1191/2000] haiku r0 q869 ✓
+[1192/2000] haiku r0 q846 ✓
+[1193/2000] haiku r0 q877 ✓
+[1194/2000] haiku r0 q868 ✓
+[1195/2000] haiku r0 q881 ✓
+[1196/2000] haiku r0 q879 ✓
+[1197/2000] haiku r0 q895 ✓
+[1198/2000] haiku r0 q892 ✗ ok
+[1199/2000] haiku r0 q898 ✗ ok
+[1200/2000] haiku r0 q896 ✗ ok
+[1201/2000] haiku r0 q880 ✓
+[1202/2000] haiku r0 q884 ✓
+[1203/2000] haiku r0 q901 ✓
+[1204/2000] haiku r0 q902 ✗ ok
+[1205/2000] haiku r0 q912 ✓
+[1206/2000] haiku r0 q910 ✓
+[1207/2000] haiku r0 q915 ✓
+[1208/2000] haiku r0 q904 ✓
+[1209/2000] haiku r0 q909 ✓
+[1210/2000] haiku r0 q928 ✗ ok
+[1211/2000] haiku r0 q894 ✗ ok
+[1212/2000] haiku r0 q906 ✗ ok
+[1213/2000] haiku r0 q930 ✗ ok
+[1214/2000] haiku r0 q931 ✗ ok
+[1215/2000] haiku r0 q897 ✗ ok
+[1216/2000] haiku r0 q933 ✓
+[1217/2000] haiku r0 q948 ✗ ok
+[1218/2000] haiku r0 q950 ✗ ok
+[1219/2000] haiku r0 q945 ✓
+[1220/2000] haiku r0 q937 ✗ ok
+[1221/2000] haiku r0 q940 ✓
+[1222/2000] haiku r0 q951 ✗ ok
+[1223/2000] haiku r0 q954 ✓
+[1224/2000] haiku r0 q964 ✓
+[1225/2000] haiku r0 q963 ✗ ok
+[1226/2000] haiku r0 q967 ✗ ok
+[1227/2000] haiku r0 q955 ✗ ok
+[1228/2000] haiku r0 q977 ✓
+[1229/2000] haiku r0 q971 ✓
+[1230/2000] haiku r0 q962 ✓
+[1231/2000] haiku r0 q972 ✓
+[1232/2000] haiku r0 q959 ✓
+[1233/2000] haiku r0 q978 ✗ ok
+[1234/2000] haiku r0 q989 ✗ ok
+[1235/2000] haiku r0 q981 ✓
+[1236/2000] haiku r0 q990 ✓
+[1237/2000] haiku r0 q960 ✓
+[1238/2000] haiku r0 q994 ✓
+[1239/2000] haiku r0 q988 ✗ ok
+[1240/2000] haiku r0 q1003 ✓
+[1241/2000] haiku r0 q1001 ✗ ok
+[1242/2000] haiku r0 q719 ✓
+[1243/2000] haiku r0 q723 ✓
+[1244/2000] haiku r0 q1002 ✗ ok
+[1245/2000] haiku r0 q1011 ✗ ok
+[1246/2000] haiku r0 q717 ✓
+[1247/2000] haiku r0 q724 ✓
+[1248/2000] haiku r0 q732 ✓
+[1249/2000] haiku r0 q733 ✓
+[1250/2000] haiku r0 q730 ✓
+[1251/2000] haiku r0 q728 ✗ ok
+[1252/2000] haiku r0 q726 ✗ ok
+[1253/2000] haiku r0 q737 ✓
+[1254/2000] haiku r0 q736 ✗ ok
+[1255/2000] haiku r0 q738 ✓
+[1256/2000] haiku r0 q739 ✓
+[1257/2000] haiku r0 q740 ✓
+[1258/2000] haiku r0 q745 ✓
+[1259/2000] haiku r0 q750 ✓
+[1260/2000] haiku r0 q747 ✓
+[1261/2000] haiku r0 q744 ✓
+[1262/2000] haiku r0 q751 ✓
+[1263/2000] haiku r0 q743 ✓
+[1264/2000] haiku r0 q944 ✗ ok
+[1265/2000] haiku r0 q753 ✓
+[1266/2000] haiku r0 q764 ✓
+[1267/2000] haiku r0 q761 ✓
+[1268/2000] haiku r0 q760 ✓
+[1269/2000] haiku r0 q765 ✓
+[1270/2000] haiku r0 q758 ✓
+[1271/2000] haiku r0 q766 ✓
+[1272/2000] haiku r0 q772 ✓
+[1273/2000] haiku r0 q779 ✓
+[1274/2000] haiku r0 q773 ✓
+[1275/2000] haiku r0 q781 ✓
+[1276/2000] haiku r0 q775 ✓
+[1277/2000] haiku r0 q782 ✓
+[1278/2000] haiku r0 q785 ✓
+[1279/2000] haiku r0 q786 ✓
+[1280/2000] haiku r0 q788 ✓
+[1281/2000] haiku r0 q769 ✓
+[1282/2000] haiku r0 q790 ✓
+[1283/2000] haiku r0 q792 ✓
+[1284/2000] haiku r0 q794 ✓
+[1285/2000] haiku r0 q796 ✓
+[1286/2000] haiku r0 q800 ✓
+[1287/2000] haiku r0 q791 ✓
+[1288/2000] haiku r0 q798 ✓
+[1289/2000] haiku r0 q806 ✓
+[1290/2000] haiku r0 q824 ✓
+[1291/2000] haiku r0 q797 ✓
+[1292/2000] haiku r0 q822 ✓
+[1293/2000] haiku r0 q819 ✓
+[1294/2000] haiku r0 q825 ✓
+[1295/2000] haiku r0 q531 ✓
+[1296/2000] haiku r0 q829 ✓
+[1297/2000] haiku r0 q532 ✓
+[1298/2000] haiku r0 q801 ✓
+[1299/2000] haiku r0 q539 ✓
+[1300/2000] haiku r0 q537 ✓
+[1301/2000] haiku r0 q549 ✓
+[1302/2000] haiku r0 q547 ✓
+[1303/2000] haiku r0 q555 ✓
+[1304/2000] haiku r0 q544 ✓
+[1305/2000] haiku r0 q557 ✗ ok
+[1306/2000] haiku r0 q565 ✓
+[1307/2000] haiku r0 q568 ✓
+[1308/2000] haiku r0 q567 ✓
+[1309/2000] haiku r0 q563 ✓
+[1310/2000] haiku r0 q533 ✗ ok
+[1311/2000] haiku r0 q571 ✓
+[1312/2000] haiku r0 q572 ✓
+[1313/2000] haiku r0 q576 ✓
+[1314/2000] haiku r0 q573 ✓
+[1315/2000] haiku r0 q581 ✓
+[1316/2000] haiku r0 q586 ✗ ok
+[1317/2000] haiku r0 q592 ✓
+[1318/2000] haiku r0 q578 ✓
+[1319/2000] haiku r0 q629 ✓
+[1320/2000] haiku r0 q584 ✗ ok
+[1321/2000] haiku r0 q587 ✗ ok
+[1322/2000] haiku r0 q633 ✓
+[1323/2000] haiku r0 q598 ✗ ok
+[1324/2000] haiku r0 q604 ✗ ok
+[1325/2000] haiku r0 q634 ✓
+[1326/2000] haiku r0 q669 ✓
+[1327/2000] haiku r0 q671 ✓
+[1328/2000] haiku r0 q665 ✓
+[1329/2000] haiku r0 q637 ✓
+[1330/2000] haiku r0 q639 ✗ ok
+[1331/2000] haiku r0 q682 ✗ ok
+[1332/2000] haiku r0 q678 ✓
+[1333/2000] haiku r0 q640 ✗ ok
+[1334/2000] haiku r0 q672 ✗ ok
+[1335/2000] haiku r0 q595 ✗ ok
+[1336/2000] haiku r0 q704 ✓
+[1337/2000] haiku r0 q694 ✗ ok
+[1338/2000] haiku r0 q687 ✓
+[1339/2000] haiku r0 q683 ✓
+[1340/2000] haiku r0 q705 ✓
+[1341/2000] haiku r0 q710 ✗ ok
+[1342/2000] haiku r0 q707 ✓
+[1343/2000] haiku r0 q340 ✗ ok
+[1344/2000] haiku r0 q716 ✓
+[1345/2000] haiku r0 q685 ✓
+[1346/2000] haiku r0 q341 ✗ ok
+[1347/2000] haiku r0 q344 ✗ ok
+[1348/2000] haiku r0 q345 ✓
+[1349/2000] haiku r0 q346 ✓
+[1350/2000] haiku r0 q356 ✓
+[1351/2000] haiku r0 q349 ✗ ok
+[1352/2000] haiku r0 q358 ✓
+[1353/2000] haiku r0 q347 ✗ ok
+[1354/2000] haiku r0 q368 ✓
+[1355/2000] haiku r0 q352 ✗ ok
+[1356/2000] haiku r0 q366 ✗ ok
+[1357/2000] haiku r0 q379 ✓
+[1358/2000] haiku r0 q377 ✓
+[1359/2000] haiku r0 q383 ✗ ok
+[1360/2000] haiku r0 q371 ✗ ok
+[1361/2000] haiku r0 q391 ✓
+[1362/2000] haiku r0 q397 ✓
+[1363/2000] haiku r0 q408 ✗ ok
+[1364/2000] haiku r0 q405 ✓
+[1365/2000] haiku r0 q409 ✓
+[1366/2000] haiku r0 q414 ✓
+[1367/2000] haiku r0 q407 ✓
+[1368/2000] haiku r0 q402 ✗ ok
+[1369/2000] haiku r0 q415 ✓
+[1370/2000] haiku r0 q422 ✓
+[1371/2000] haiku r0 q427 ✓
+[1372/2000] haiku r0 q424 ✓
+[1373/2000] haiku r0 q440 ✓
+[1374/2000] haiku r0 q416 ✓
+[1375/2000] haiku r0 q412 ✗ ok
+[1376/2000] haiku r0 q459 ✓
+[1377/2000] haiku r0 q468 ✓
+[1378/2000] haiku r0 q466 ✓
+[1379/2000] haiku r0 q462 ✓
+[1380/2000] haiku r0 q469 ✗ ok
+[1381/2000] haiku r0 q472 ✓
+[1382/2000] haiku r0 q474 ✗ ok
+[1383/2000] haiku r0 q473 ✗ ok
+[1384/2000] haiku r0 q465 ✗ ok
+[1385/2000] haiku r0 q477 ✓
+[1386/2000] haiku r0 q479 ✓
+[1387/2000] haiku r0 q480 ✓
+[1388/2000] haiku r0 q486 ✓
+[1389/2000] haiku r0 q522 ✓
+[1390/2000] haiku r0 q484 ✗ ok
+[1391/2000] haiku r0 q483 ✓
+[1392/2000] haiku r0 q487 ✓
+[1393/2000] haiku r0 q195 ✓
+[1394/2000] haiku r0 q528 ✓
+[1395/2000] haiku r0 q530 ✗ ok
+[1396/2000] haiku r0 q200 ✓
+[1397/2000] haiku r0 q201 ✓
+[1398/2000] haiku r0 q198 ✗ ok
+[1399/2000] haiku r0 q197 ✗ ok
+[1400/2000] haiku r0 q206 ✓
+[1401/2000] haiku r0 q207 ✗ ok
+[1402/2000] haiku r0 q208 ✓
+[1403/2000] haiku r0 q213 ✓
+[1404/2000] haiku r0 q218 ✗ ok
+[1405/2000] haiku r0 q215 ✗ ok
+[1406/2000] haiku r0 q212 ✓
+[1407/2000] haiku r0 q219 ✗ ok
+[1408/2000] haiku r0 q226 ✓
+[1409/2000] haiku r0 q220 ✓
+[1410/2000] haiku r0 q227 ✓
+[1411/2000] haiku r0 q701 ✗ timeout
+[1412/2000] haiku r0 q228 ✓
+[1413/2000] haiku r0 q230 ✓
+[1414/2000] haiku r0 q529 ✗ ok
+[1415/2000] haiku r0 q231 ✗ ok
+[1416/2000] haiku r0 q232 ✓
+[1417/2000] haiku r0 q240 ✓
+[1418/2000] haiku r0 q242 ✓
+[1419/2000] haiku r0 q236 ✓
+[1420/2000] haiku r0 q247 ✗ ok
+[1421/2000] haiku r0 q244 ✓
+[1422/2000] haiku r0 q234 ✗ ok
+[1423/2000] haiku r0 q239 ✓
+[1424/2000] haiku r0 q243 ✓
+[1425/2000] haiku r0 q245 ✓
+[1426/2000] haiku r0 q248 ✓
+[1427/2000] haiku r0 q260 ✓
+[1428/2000] haiku r0 q255 ✗ ok
+[1429/2000] haiku r0 q249 ✓
+[1430/2000] haiku r0 q253 ✓
+[1431/2000] haiku r0 q268 ✓
+[1432/2000] haiku r0 q281 ✗ ok
+[1433/2000] haiku r0 q273 ✓
+[1434/2000] haiku r0 q327 ✓
+[1435/2000] haiku r0 q282 ✓
+[1436/2000] haiku r0 q1014 ✗ ok
+[1437/2000] haiku r0 q263 ✓
+[1438/2000] haiku r0 q5 ✓
+[1439/2000] haiku r0 q12 ✓
+[1440/2000] haiku r0 q11 ✓
+[1441/2000] haiku r0 q17 ✗ ok
+[1442/2000] haiku r0 q23 ✗ ok
+[1443/2000] haiku r0 q25 ✗ ok
+[1444/2000] haiku r0 q32 ✓
+[1445/2000] haiku r0 q28 ✗ ok
+[1446/2000] haiku r0 q27 ✗ ok
+[1447/2000] haiku r0 q31 ✓
+[1448/2000] haiku r0 q36 ✗ ok
+[1449/2000] haiku r0 q37 ✗ ok
+[1450/2000] haiku r0 q39 ✓
+[1451/2000] haiku r0 q47 ✓
+[1452/2000] haiku r0 q40 ✓
+[1453/2000] haiku r0 q41 ✗ ok
+[1454/2000] haiku r0 q24 ✗ ok
+[1455/2000] haiku r0 q45 ✓
+[1456/2000] haiku r0 q46 ✗ ok
+[1457/2000] haiku r0 q50 ✗ ok
+[1458/2000] haiku r0 q72 ✗ ok
+[1459/2000] haiku r0 q48 ✓
+[1460/2000] haiku r0 q79 ✓
+[1461/2000] haiku r0 q83 ✓
+[1462/2000] haiku r0 q62 ✓
+[1463/2000] haiku r0 q82 ✓
+[1464/2000] haiku r0 q518 ✗ timeout
+[1465/2000] haiku r0 q87 ✓
+[1466/2000] haiku r0 q85 ✗ ok
+[1467/2000] haiku r0 q26 ✗ ok
+[1468/2000] haiku r0 q89 ✓
+[1469/2000] haiku r0 q92 ✓
+[1470/2000] haiku r0 q93 ✓
+[1471/2000] haiku r0 q112 ✓
+[1472/2000] haiku r0 q95 ✓
+[1473/2000] haiku r0 q115 ✗ ok
+[1474/2000] haiku r0 q100 ✓
+[1475/2000] haiku r0 q117 ✓
+[1476/2000] haiku r0 q94 ✗ ok
+[1477/2000] haiku r0 q125 ✗ ok
+[1478/2000] haiku r0 q77 ✓
+[1479/2000] haiku r0 q118 ✗ ok
+[1480/2000] haiku r0 q98 ✓
+[1481/2000] haiku r0 q99 ✗ ok
+[1482/2000] haiku r0 q137 ✓
+[1483/2000] haiku r0 q128 ✗ ok
+[1484/2000] haiku r0 q129 ✗ ok
+[1485/2000] haiku r0 q138 ✓
+[1486/2000] haiku r0 q136 ✗ ok
+[1487/2000] haiku r0 q149 ✓
+[1488/2000] haiku r0 q152 ✗ ok
+[1489/2000] haiku r0 q159 ✗ ok
+[1490/2000] haiku r0 q173 ✓
+[1491/2000] haiku r0 q169 ✗ ok
+[1492/2000] haiku r0 q192 ✓
+[1493/2000] haiku r0 q186 ✗ ok
+[1494/2000] haiku r0 q168 ✗ ok
+[1495/2000] haiku r1 q1471 ✓
+[1496/2000] haiku r0 q194 ✗ ok
+[1497/2000] haiku r0 q189 ✓
+[1498/2000] haiku r1 q1473 ✗ ok
+[1499/2000] haiku r1 q1476 ✓
+[1500/2000] haiku r1 q1472 ✓
+[1501/2000] haiku r0 q116 ✗ ok
+[1502/2000] haiku r1 q1480 ✗ ok
+[1503/2000] haiku r1 q1479 ✓
+[1504/2000] haiku r1 q1483 ✓
+[1505/2000] haiku r0 q119 ✓
+[1506/2000] haiku r1 q1484 ✓
+[1507/2000] haiku r1 q1486 ✓
+[1508/2000] haiku r1 q1482 ✗ ok
+[1509/2000] haiku r1 q1498 ✗ ok
+[1510/2000] haiku r0 q145 ✗ ok
+[1511/2000] haiku r1 q1493 ✓
+[1512/2000] haiku r1 q1481 ✗ ok
+[1513/2000] haiku r1 q1490 ✓
+[1514/2000] haiku r1 q1506 ✓
+[1515/2000] haiku r1 q1507 ✓
+[1516/2000] haiku r1 q1514 ✓
+[1517/2000] haiku r1 q1509 ✓
+[1518/2000] haiku r1 q1505 ✓
+[1519/2000] haiku r1 q1521 ✓
+[1520/2000] haiku r1 q1515 ✓
+[1521/2000] haiku r1 q1528 ✓
+[1522/2000] haiku r1 q1529 ✗ ok
+[1523/2000] haiku r1 q1533 ✓
+[1524/2000] haiku r1 q1525 ✗ ok
+[1525/2000] haiku r1 q1526 ✗ ok
+[1526/2000] haiku r1 q1312 ✓
+[1527/2000] haiku r1 q1531 ✗ ok
+[1528/2000] haiku r1 q1317 ✓
+[1529/2000] haiku r1 q1323 ✓
+[1530/2000] haiku r1 q1500 ✗ ok
+[1531/2000] haiku r1 q1322 ✗ ok
+[1532/2000] haiku r1 q1331 ✓
+[1533/2000] haiku r1 q1334 ✓
+[1534/2000] haiku r0 q120 ✓
+[1535/2000] haiku r1 q1346 ✓
+[1536/2000] haiku r1 q1501 ✓
+[1537/2000] haiku r1 q1338 ✗ ok
+[1538/2000] haiku r1 q1344 ✓
+[1539/2000] haiku r1 q1340 ✓
+[1540/2000] haiku r1 q1339 ✓
+[1541/2000] haiku r1 q1351 ✓
+[1542/2000] haiku r1 q1357 ✓
+[1543/2000] haiku r1 q1352 ✓
+[1544/2000] haiku r1 q1356 ✓
+[1545/2000] haiku r1 q1362 ✓
+[1546/2000] haiku r1 q1359 ✓
+[1547/2000] haiku r1 q1361 ✓
+[1548/2000] haiku r1 q1371 ✓
+[1549/2000] haiku r1 q1375 ✓
+[1550/2000] haiku r1 q1350 ✓
+[1551/2000] haiku r1 q1376 ✓
+[1552/2000] haiku r1 q1380 ✓
+[1553/2000] haiku r1 q1378 ✓
+[1554/2000] haiku r1 q1381 ✓
+[1555/2000] haiku r1 q1368 ✓
+[1556/2000] haiku r1 q1394 ✓
+[1557/2000] haiku r1 q1398 ✓
+[1558/2000] haiku r1 q1387 ✓
+[1559/2000] haiku r1 q1389 ✓
+[1560/2000] haiku r1 q1399 ✗ ok
+[1561/2000] haiku r1 q1390 ✓
+[1562/2000] haiku r1 q1401 ✓
+[1563/2000] haiku r1 q1392 ✓
+[1564/2000] haiku r1 q1403 ✓
+[1565/2000] haiku r1 q1409 ✓
+[1566/2000] haiku r1 q1404 ✗ ok
+[1567/2000] haiku r1 q1524 ✗ ok
+[1568/2000] haiku r1 q1422 ✓
+[1569/2000] haiku r1 q1411 ✓
+[1570/2000] haiku r1 q1410 ✓
+[1571/2000] haiku r1 q1405 ✓
+[1572/2000] haiku r1 q1427 ✗ ok
+[1573/2000] haiku r1 q1426 ✓
+[1574/2000] haiku r1 q1460 ✓
+[1575/2000] haiku r1 q1435 ✓
+[1576/2000] haiku r1 q1464 ✗ ok
+[1577/2000] haiku r1 q1457 ✓
+[1578/2000] haiku r1 q1150 ✓
+[1579/2000] haiku r1 q1152 ✗ ok
+[1580/2000] haiku r1 q1155 ✓
+[1581/2000] haiku r1 q1432 ✓
+[1582/2000] haiku r1 q1156 ✓
+[1583/2000] haiku r1 q1157 ✓
+[1584/2000] haiku r1 q1153 ✓
+[1585/2000] haiku r1 q1162 ✓
+[1586/2000] haiku r1 q1171 ✗ ok
+[1587/2000] haiku r1 q1149 ✗ ok
+[1588/2000] haiku r1 q1164 ✓
+[1589/2000] haiku r1 q1179 ✗ ok
+[1590/2000] haiku r1 q1166 ✗ ok
+[1591/2000] haiku r1 q1187 ✓
+[1592/2000] haiku r1 q1169 ✓
+[1593/2000] haiku r1 q1175 ✗ ok
+[1594/2000] haiku r1 q1185 ✓
+[1595/2000] haiku r1 q1195 ✓
+[1596/2000] haiku r1 q1198 ✓
+[1597/2000] haiku r1 q1168 ✗ ok
+[1598/2000] haiku r1 q1192 ✓
+[1599/2000] haiku r1 q1189 ✓
+[1600/2000] haiku r1 q1208 ✓
+[1601/2000] haiku r1 q1205 ✗ ok
+[1602/2000] haiku r1 q1209 ✓
+[1603/2000] haiku r1 q1201 ✓
+[1604/2000] haiku r1 q1220 ✓
+[1605/2000] haiku r1 q1225 ✗ ok
+[1606/2000] haiku r1 q1227 ✗ ok
+[1607/2000] haiku r1 q1231 ✓
+[1608/2000] haiku r1 q1232 ✓
+[1609/2000] haiku r1 q1235 ✓
+[1610/2000] haiku r1 q1238 ✓
+[1611/2000] haiku r1 q1241 ✗ ok
+[1612/2000] haiku r1 q1229 ✓
+[1613/2000] haiku r1 q1251 ✗ ok
+[1614/2000] haiku r1 q1254 ✗ ok
+[1615/2000] haiku r1 q1239 ✗ ok
+[1616/2000] haiku r1 q1252 ✗ ok
+[1617/2000] haiku r1 q1243 ✗ ok
+[1618/2000] haiku r1 q1255 ✗ ok
+[1619/2000] haiku r1 q1247 ✗ ok
+[1620/2000] haiku r1 q1256 ✗ ok
+[1621/2000] haiku r1 q1281 ✓
+[1622/2000] haiku r1 q1242 ✗ ok
+[1623/2000] haiku r1 q1265 ✗ ok
+[1624/2000] haiku r1 q1270 ✓
+[1625/2000] haiku r1 q1257 ✓
+[1626/2000] haiku r1 q1302 ✗ ok
+[1627/2000] haiku r1 q1025 ✓
+[1628/2000] haiku r1 q1275 ✓
+[1629/2000] haiku r1 q1029 ✗ ok
+[1630/2000] haiku r1 q1035 ✓
+[1631/2000] haiku r1 q1030 ✓
+[1632/2000] haiku r1 q1032 ✓
+[1633/2000] haiku r1 q1267 ✗ ok
+[1634/2000] haiku r1 q1028 ✗ ok
+[1635/2000] haiku r1 q1031 ✓
+[1636/2000] haiku r1 q1039 ✓
+[1637/2000] haiku r1 q1042 ✓
+[1638/2000] haiku r1 q1040 ✓
+[1639/2000] haiku r1 q1036 ✓
+[1640/2000] haiku r1 q1044 ✓
+[1641/2000] haiku r1 q1048 ✓
+[1642/2000] haiku r1 q1037 ✓
+[1643/2000] haiku r1 q1078 ✓
+[1644/2000] haiku r1 q1057 ✓
+[1645/2000] haiku r1 q1080 ✗ ok
+[1646/2000] haiku r1 q1068 ✓
+[1647/2000] haiku r1 q1084 ✓
+[1648/2000] haiku r1 q1076 ✓
+[1649/2000] haiku r1 q1058 ✗ ok
+[1650/2000] haiku r1 q1088 ✓
+[1651/2000] haiku r1 q1091 ✓
+[1652/2000] haiku r1 q1079 ✓
+[1653/2000] haiku r1 q1092 ✗ ok
+[1654/2000] haiku r1 q1098 ✓
+[1655/2000] haiku r1 q1096 ✓
+[1656/2000] haiku r1 q1102 ✓
+[1657/2000] haiku r1 q1105 ✓
+[1658/2000] haiku r1 q1110 ✓
+[1659/2000] haiku r1 q1103 ✓
+[1660/2000] haiku r1 q1107 ✗ ok
+[1661/2000] haiku r1 q1116 ✓
+[1662/2000] haiku r1 q1113 ✓
+[1663/2000] haiku r1 q1114 ✓
+[1664/2000] haiku r1 q1130 ✓
+[1665/2000] haiku r1 q1124 ✓
+[1666/2000] haiku r1 q1094 ✗ ok
+[1667/2000] haiku r1 q1122 ✓
+[1668/2000] haiku r1 q1134 ✓
+[1669/2000] haiku r1 q1115 ✓
+[1670/2000] haiku r1 q1136 ✗ ok
+[1671/2000] haiku r1 q1144 ✗ ok
+[1672/2000] haiku r1 q1141 ✓
+[1673/2000] haiku r1 q1139 ✗ ok
+[1674/2000] haiku r1 q1135 ✗ ok
+[1675/2000] haiku r1 q1147 ✓
+[1676/2000] haiku r1 q1146 ✓
+[1677/2000] haiku r1 q1145 ✓
+[1678/2000] haiku r1 q1133 ✓
+[1679/2000] haiku r1 q850 ✓
+[1680/2000] haiku r1 q854 ✓
+[1681/2000] haiku r1 q1148 ✓
+[1682/2000] haiku r1 q857 ✓
+[1683/2000] haiku r1 q861 ✓
+[1684/2000] haiku r1 q859 ✓
+[1685/2000] haiku r1 q865 ✓
+[1686/2000] haiku r1 q862 ✓
+[1687/2000] haiku r1 q868 ✓
+[1688/2000] haiku r1 q872 ✓
+[1689/2000] haiku r1 q847 ✗ ok
+[1690/2000] haiku r1 q869 ✓
+[1691/2000] haiku r1 q866 ✗ ok
+[1692/2000] haiku r1 q875 ✓
+[1693/2000] haiku r1 q877 ✓
+[1694/2000] haiku r1 q846 ✓
+[1695/2000] haiku r1 q881 ✓
+[1696/2000] haiku r1 q879 ✓
+[1697/2000] haiku r1 q884 ✓
+[1698/2000] haiku r1 q892 ✗ ok
+[1699/2000] haiku r1 q895 ✓
+[1700/2000] haiku r1 q894 ✗ ok
+[1701/2000] haiku r1 q896 ✗ ok
+[1702/2000] haiku r1 q898 ✗ ok
+[1703/2000] haiku r1 q901 ✓
+[1704/2000] haiku r1 q880 ✓
+[1705/2000] haiku r1 q902 ✗ ok
+[1706/2000] haiku r1 q909 ✓
+[1707/2000] haiku r1 q906 ✗ ok
+[1708/2000] haiku r1 q910 ✓
+[1709/2000] haiku r1 q912 ✓
+[1710/2000] haiku r1 q915 ✓
+[1711/2000] haiku r1 q904 ✓
+[1712/2000] haiku r1 q930 ✗ ok
+[1713/2000] haiku r1 q928 ✗ ok
+[1714/2000] haiku r1 q931 ✗ ok
+[1715/2000] haiku r1 q897 ✓
+[1716/2000] haiku r1 q933 ✓
+[1717/2000] haiku r1 q948 ✗ ok
+[1718/2000] haiku r1 q950 ✗ ok
+[1719/2000] haiku r1 q945 ✓
+[1720/2000] haiku r1 q954 ✓
+[1721/2000] haiku r1 q940 ✓
+[1722/2000] haiku r1 q960 ✓
+[1723/2000] haiku r1 q937 ✗ ok
+[1724/2000] haiku r1 q951 ✗ ok
+[1725/2000] haiku r1 q964 ✓
+[1726/2000] haiku r1 q971 ✓
+[1727/2000] haiku r1 q963 ✗ ok
+[1728/2000] haiku r1 q967 ✗ ok
+[1729/2000] haiku r1 q962 ✓
+[1730/2000] haiku r1 q959 ✗ ok
+[1731/2000] haiku r1 q977 ✓
+[1732/2000] haiku r1 q972 ✓
+[1733/2000] haiku r1 q978 ✗ ok
+[1734/2000] haiku r1 q989 ✗ ok
+[1735/2000] haiku r1 q990 ✓
+[1736/2000] haiku r1 q717 ✓
+[1737/2000] haiku r1 q955 ✗ ok
+[1738/2000] haiku r1 q1001 ✓
+[1739/2000] haiku r1 q981 ✓
+[1740/2000] haiku r1 q988 ✗ ok
+[1741/2000] haiku r1 q994 ✓
+[1742/2000] haiku r1 q719 ✓
+[1743/2000] haiku r1 q723 ✓
+[1744/2000] haiku r1 q1003 ✓
+[1745/2000] haiku r1 q724 ✓
+[1746/2000] haiku r1 q1002 ✗ ok
+[1747/2000] haiku r1 q1011 ✗ ok
+[1748/2000] haiku r1 q1014 ✗ ok
+[1749/2000] haiku r1 q726 ✗ ok
+[1750/2000] haiku r1 q728 ✗ ok
+[1751/2000] haiku r1 q733 ✓
+[1752/2000] haiku r1 q732 ✓
+[1753/2000] haiku r1 q730 ✓
+[1754/2000] haiku r1 q737 ✓
+[1755/2000] haiku r1 q736 ✗ ok
+[1756/2000] haiku r1 q739 ✓
+[1757/2000] haiku r1 q738 ✓
+[1758/2000] haiku r1 q745 ✓
+[1759/2000] haiku r1 q740 ✓
+[1760/2000] haiku r1 q747 ✓
+[1761/2000] haiku r1 q750 ✓
+[1762/2000] haiku r1 q744 ✓
+[1763/2000] haiku r1 q758 ✓
+[1764/2000] haiku r1 q743 ✓
+[1765/2000] haiku r1 q753 ✓
+[1766/2000] haiku r1 q751 ✓
+[1767/2000] haiku r1 q764 ✓
+[1768/2000] haiku r1 q761 ✓
+[1769/2000] haiku r1 q765 ✓
+[1770/2000] haiku r1 q760 ✓
+[1771/2000] haiku r1 q766 ✓
+[1772/2000] haiku r1 q772 ✓
+[1773/2000] haiku r1 q773 ✓
+[1774/2000] haiku r1 q779 ✓
+[1775/2000] haiku r1 q781 ✓
+[1776/2000] haiku r1 q782 ✓
+[1777/2000] haiku r1 q775 ✓
+[1778/2000] haiku r1 q785 ✓
+[1779/2000] haiku r1 q769 ✓
+[1780/2000] haiku r1 q786 ✓
+[1781/2000] haiku r1 q791 ✗ ok
+[1782/2000] haiku r1 q788 ✓
+[1783/2000] haiku r1 q790 ✓
+[1784/2000] haiku r1 q796 ✓
+[1785/2000] haiku r1 q794 ✓
+[1786/2000] haiku r1 q797 ✓
+[1787/2000] haiku r1 q792 ✓
+[1788/2000] haiku r1 q798 ✓
+[1789/2000] haiku r1 q800 ✓
+[1790/2000] haiku r1 q806 ✓
+[1791/2000] haiku r1 q822 ✓
+[1792/2000] haiku r1 q824 ✓
+[1793/2000] haiku r1 q819 ✓
+[1794/2000] haiku r1 q531 ✓
+[1795/2000] haiku r1 q825 ✓
+[1796/2000] haiku r1 q829 ✓
+[1797/2000] haiku r1 q801 ✓
+[1798/2000] haiku r1 q533 ✗ ok
+[1799/2000] haiku r1 q532 ✓
+[1800/2000] haiku r1 q539 ✓
+[1801/2000] haiku r1 q544 ✓
+[1802/2000] haiku r1 q944 ✗ ok
+[1803/2000] haiku r1 q537 ✓
+[1804/2000] haiku r1 q549 ✓
+[1805/2000] haiku r1 q547 ✓
+[1806/2000] haiku r1 q555 ✓
+[1807/2000] haiku r1 q557 ✗ ok
+[1808/2000] haiku r1 q567 ✓
+[1809/2000] haiku r1 q571 ✓
+[1810/2000] haiku r1 q568 ✓
+[1811/2000] haiku r1 q573 ✓
+[1812/2000] haiku r1 q572 ✓
+[1813/2000] haiku r1 q563 ✓
+[1814/2000] haiku r1 q576 ✓
+[1815/2000] haiku r1 q565 ✓
+[1816/2000] haiku r1 q578 ✓
+[1817/2000] haiku r1 q586 ✗ ok
+[1818/2000] haiku r1 q581 ✓
+[1819/2000] haiku r1 q592 ✓
+[1820/2000] haiku r1 q587 ✗ ok
+[1821/2000] haiku r1 q598 ✓
+[1822/2000] haiku r1 q584 ✗ ok
+[1823/2000] haiku r1 q633 ✓
+[1824/2000] haiku r1 q604 ✗ ok
+[1825/2000] haiku r1 q629 ✓
+[1826/2000] haiku r1 q669 ✓
+[1827/2000] haiku r1 q634 ✓
+[1828/2000] haiku r1 q671 ✓
+[1829/2000] haiku r1 q637 ✓
+[1830/2000] haiku r1 q672 ✗ ok
+[1831/2000] haiku r1 q665 ✓
+[1832/2000] haiku r1 q682 ✗ ok
+[1833/2000] haiku r1 q640 ✗ ok
+[1834/2000] haiku r1 q678 ✓
+[1835/2000] haiku r1 q704 ✓
+[1836/2000] haiku r1 q683 ✗ ok
+[1837/2000] haiku r1 q694 ✗ ok
+[1838/2000] haiku r1 q687 ✓
+[1839/2000] haiku r1 q639 ✗ ok
+[1840/2000] haiku r1 q705 ✓
+[1841/2000] haiku r1 q716 ✓
+[1842/2000] haiku r1 q710 ✗ ok
+[1843/2000] haiku r1 q707 ✓
+[1844/2000] haiku r1 q340 ✗ ok
+[1845/2000] haiku r1 q344 ✗ ok
+[1846/2000] haiku r1 q685 ✗ ok
+[1847/2000] haiku r1 q341 ✗ ok
+[1848/2000] haiku r1 q346 ✓
+[1849/2000] haiku r1 q345 ✓
+[1850/2000] haiku r1 q358 ✓
+[1851/2000] haiku r1 q356 ✓
+[1852/2000] haiku r1 q347 ✓
+[1853/2000] haiku r1 q349 ✗ ok
+[1854/2000] haiku r1 q595 ✗ ok
+[1855/2000] haiku r1 q352 ✗ ok
+[1856/2000] haiku r1 q377 ✓
+[1857/2000] haiku r1 q368 ✓
+[1858/2000] haiku r1 q366 ✗ ok
+[1859/2000] haiku r1 q379 ✓
+[1860/2000] haiku r1 q371 ✗ ok
+[1861/2000] haiku r1 q383 ✗ ok
+[1862/2000] haiku r1 q397 ✓
+[1863/2000] haiku r1 q391 ✓
+[1864/2000] haiku r1 q405 ✓
+[1865/2000] haiku r1 q407 ✓
+[1866/2000] haiku r1 q402 ✗ ok
+[1867/2000] haiku r1 q409 ✓
+[1868/2000] haiku r1 q414 ✓
+[1869/2000] haiku r1 q408 ✗ ok
+[1870/2000] haiku r1 q415 ✓
+[1871/2000] haiku r1 q427 ✓
+[1872/2000] haiku r1 q422 ✓
+[1873/2000] haiku r1 q440 ✓
+[1874/2000] haiku r1 q459 ✓
+[1875/2000] haiku r1 q424 ✓
+[1876/2000] haiku r1 q412 ✓
+[1877/2000] haiku r1 q466 ✓
+[1878/2000] haiku r1 q462 ✓
+[1879/2000] haiku r1 q468 ✓
+[1880/2000] haiku r1 q473 ✗ ok
+[1881/2000] haiku r1 q416 ✗ ok
+[1882/2000] haiku r1 q472 ✓
+[1883/2000] haiku r1 q474 ✗ ok
+[1884/2000] haiku r1 q465 ✗ ok
+[1885/2000] haiku r1 q469 ✗ ok
+[1886/2000] haiku r1 q477 ✓
+[1887/2000] haiku r1 q480 ✓
+[1888/2000] haiku r1 q479 ✓
+[1889/2000] haiku r1 q486 ✓
+[1890/2000] haiku r1 q522 ✓
+[1891/2000] haiku r1 q483 ✓
+[1892/2000] haiku r1 q484 ✗ ok
+[1893/2000] haiku r1 q195 ✓
+[1894/2000] haiku r1 q528 ✓
+[1895/2000] haiku r1 q487 ✓
+[1896/2000] haiku r1 q530 ✗ ok
+[1897/2000] haiku r1 q200 ✓
+[1898/2000] haiku r1 q207 ✗ ok
+[1899/2000] haiku r1 q201 ✓
+[1900/2000] haiku r1 q198 ✗ ok
+[1901/2000] haiku r1 q197 ✗ ok
+[1902/2000] haiku r1 q206 ✓
+[1903/2000] haiku r1 q213 ✓
+[1904/2000] haiku r1 q208 ✓
+[1905/2000] haiku r1 q212 ✓
+[1906/2000] haiku r1 q215 ✗ ok
+[1907/2000] haiku r1 q220 ✓
+[1908/2000] haiku r1 q219 ✗ ok
+[1909/2000] haiku r1 q227 ✓
+[1910/2000] haiku r1 q228 ✓
+[1911/2000] haiku r1 q226 ✓
+[1912/2000] haiku r1 q231 ✗ ok
+[1913/2000] haiku r1 q230 ✓
+[1914/2000] haiku r1 q232 ✓
+[1915/2000] haiku r1 q218 ✗ ok
+[1916/2000] haiku r1 q234 ✗ ok
+[1917/2000] haiku r1 q529 ✗ ok
+[1918/2000] haiku r1 q240 ✓
+[1919/2000] haiku r1 q242 ✓
+[1920/2000] haiku r1 q236 ✓
+[1921/2000] haiku r1 q244 ✓
+[1922/2000] haiku r1 q247 ✗ ok
+[1923/2000] haiku r1 q701 ✗ timeout
+[1924/2000] haiku r1 q248 ✓
+[1925/2000] haiku r1 q243 ✓
+[1926/2000] haiku r1 q245 ✓
+[1927/2000] haiku r1 q253 ✓
+[1928/2000] haiku r1 q239 ✓
+[1929/2000] haiku r1 q255 ✗ ok
+[1930/2000] haiku r1 q249 ✓
+[1931/2000] haiku r1 q268 ✓
+[1932/2000] haiku r1 q281 ✗ ok
+[1933/2000] haiku r1 q327 ✓
+[1934/2000] haiku r1 q263 ✓
+[1935/2000] haiku r1 q282 ✓
+[1936/2000] haiku r1 q5 ✓
+[1937/2000] haiku r1 q11 ✓
+[1938/2000] haiku r1 q273 ✓
+[1939/2000] haiku r1 q260 ✗ ok
+[1940/2000] haiku r1 q12 ✓
+[1941/2000] haiku r1 q17 ✗ ok
+[1942/2000] haiku r1 q23 ✓
+[1943/2000] haiku r1 q26 ✗ ok
+[1944/2000] haiku r1 q28 ✗ ok
+[1945/2000] haiku r1 q25 ✗ ok
+[1946/2000] haiku r1 q31 ✓
+[1947/2000] haiku r1 q36 ✗ ok
+[1948/2000] haiku r1 q32 ✓
+[1949/2000] haiku r1 q27 ✗ ok
+[1950/2000] haiku r1 q39 ✓
+[1951/2000] haiku r1 q37 ✗ ok
+[1952/2000] haiku r1 q40 ✓
+[1953/2000] haiku r1 q24 ✓
+[1954/2000] haiku r1 q47 ✓
+[1955/2000] haiku r1 q46 ✗ ok
+[1956/2000] haiku r1 q41 ✗ ok
+[1957/2000] haiku r1 q45 ✓
+[1958/2000] haiku r1 q48 ✓
+[1959/2000] haiku r1 q50 ✗ ok
+[1960/2000] haiku r1 q79 ✓
+[1961/2000] haiku r1 q82 ✓
+[1962/2000] haiku r1 q85 ✗ ok
+[1963/2000] haiku r1 q72 ✗ ok
+[1964/2000] haiku r1 q62 ✓
+[1965/2000] haiku r1 q87 ✓
+[1966/2000] haiku r1 q83 ✓
+[1967/2000] haiku r1 q89 ✓
+[1968/2000] haiku r1 q92 ✓
+[1969/2000] haiku r1 q93 ✓
+[1970/2000] haiku r1 q518 ✗ timeout
+[1971/2000] haiku r1 q100 ✓
+[1972/2000] haiku r1 q94 ✗ ok
+[1973/2000] haiku r1 q115 ✗ ok
+[1974/2000] haiku r1 q77 ✓
+[1975/2000] haiku r1 q98 ✓
+[1976/2000] haiku r1 q99 ✗ ok
+[1977/2000] haiku r1 q112 ✓
+[1978/2000] haiku r1 q117 ✓
+[1979/2000] haiku r1 q95 ✓
+[1980/2000] haiku r1 q125 ✗ ok
+[1981/2000] haiku r1 q137 ✓
+[1982/2000] haiku r1 q118 ✗ ok
+[1983/2000] haiku r1 q138 ✓
+[1984/2000] haiku r1 q128 ✗ ok
+[1985/2000] haiku r1 q129 ✗ ok
+[1986/2000] haiku r1 q136 ✓
+[1987/2000] haiku r1 q159 ✗ ok
+[1988/2000] haiku r1 q168 ✓
+[1989/2000] haiku r1 q116 ✗ ok
+[1990/2000] haiku r1 q173 ✓
+[1991/2000] haiku r1 q149 ✗ ok
+[1992/2000] haiku r1 q152 ✗ ok
+[1993/2000] haiku r1 q169 ✗ ok
+[1994/2000] haiku r1 q119 ✓
+[1995/2000] haiku r1 q194 ✗ ok
+[1996/2000] haiku r1 q192 ✓
+[1997/2000] haiku r1 q186 ✗ ok
+[1998/2000] haiku r1 q145 ✗ ok
+[1999/2000] haiku r1 q189 ✓
+[2000/2000] haiku r1 q120 ✗ ok
+本次实际花费 $3.2782
+
+run_id=e4rep-7206c1
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| haiku | e4_correct | medium | 1000 | 68.3% | 65.4%–71.1% | 235/296 | 331/500 | 117/204 | $0.0002 | $0.218 | 1.6s / 4.5s | {'ok': 996, 'timeout': 4} |
+| sonnet | e4_correct | medium | 1000 | 72.6% | 69.8%–75.3% | 251/296 | 348/500 | 127/204 | $0.0031 | $3.060 | 1.8s / 3.5s | {'ok': 995, 'timeout': 4, 'no_sql': 1} |

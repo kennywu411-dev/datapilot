@@ -1,0 +1,208 @@
+100 题 × 2 组配置，预估花费约 $1.17（未计缓存，偏保守）
+[1/200] haiku r0 q79 ✓
+[2/200] haiku r0 q92 ✓
+[3/200] haiku r0 q31 ✓
+[4/200] haiku r0 q41 ✗ ok
+[5/200] haiku r0 q17 ✗ ok
+[6/200] haiku r0 q137 ✓
+[7/200] haiku r0 q129 ✗ ok
+[8/200] haiku r0 q99 ✓
+[9/200] haiku r0 q95 ✗ ok
+[10/200] haiku r0 q152 ✗ ok
+[11/200] haiku r0 q115 ✗ ok
+[12/200] haiku r0 q169 ✗ ok
+[13/200] haiku r0 q207 ✗ ok
+[14/200] haiku r0 q189 ✓
+[15/200] haiku r0 q220 ✓
+[16/200] haiku r0 q232 ✓
+[17/200] haiku r0 q116 ✓
+[18/200] haiku r0 q243 ✓
+[19/200] haiku r0 q255 ✓
+[20/200] haiku r0 q346 ✓
+[21/200] haiku r0 q377 ✓
+[22/200] haiku r0 q424 ✓
+[23/200] haiku r0 q245 ✓
+[24/200] haiku r0 q414 ✓
+[25/200] haiku r0 q427 ✓
+[26/200] haiku r0 q407 ✓
+[27/200] haiku r0 q468 ✓
+[28/200] haiku r0 q480 ✓
+[29/200] haiku r0 q474 ✗ ok
+[30/200] haiku r0 q537 ✓
+[31/200] haiku r0 q469 ✗ ok
+[32/200] haiku r0 q572 ✓
+[33/200] haiku r0 q565 ✗ ok
+[34/200] haiku r0 q586 ✗ ok
+[35/200] haiku r0 q671 ✓
+[36/200] haiku r0 q563 ✓
+[37/200] haiku r0 q598 ✓
+[38/200] haiku r0 q672 ✗ ok
+[39/200] haiku r0 q678 ✓
+[40/200] haiku r0 q639 ✗ ok
+[41/200] haiku r0 q723 ✓
+[42/200] haiku r0 q737 ✓
+[43/200] haiku r0 q724 ✓
+[44/200] haiku r0 q683 ✗ ok
+[45/200] haiku r0 q716 ✓
+[46/200] haiku r0 q740 ✓
+[47/200] haiku r0 q782 ✓
+[48/200] haiku r0 q800 ✓
+[49/200] haiku r0 q753 ✓
+[50/200] haiku r0 q743 ✓
+[51/200] haiku r0 q760 ✓
+[52/200] haiku r0 q824 ✓
+[53/200] haiku r0 q877 ✓
+[54/200] haiku r0 q861 ✗ ok
+[55/200] haiku r0 q896 ✗ ok
+[56/200] haiku r0 q931 ✗ ok
+[57/200] haiku r0 q847 ✗ ok
+[58/200] haiku r0 q950 ✗ ok
+[59/200] haiku r0 q937 ✗ ok
+[60/200] haiku r0 q971 ✓
+[61/200] haiku r0 q994 ✓
+[62/200] haiku r0 q951 ✗ ok
+[63/200] haiku r0 q1029 ✗ ok
+[64/200] haiku r0 q1032 ✓
+[65/200] haiku r0 q1057 ✓
+[66/200] haiku r0 q945 ✓
+[67/200] haiku r0 q1003 ✓
+[68/200] haiku r0 q1036 ✓
+[69/200] haiku r0 q1092 ✗ ok
+[70/200] haiku r0 q1116 ✓
+[71/200] haiku r0 q1130 ✓
+[72/200] haiku r0 q1124 ✓
+[73/200] haiku r0 q1139 ✓
+[74/200] haiku r0 q1134 ✓
+[75/200] haiku r0 q1146 ✓
+[76/200] haiku r0 q1141 ✓
+[77/200] haiku r0 q1155 ✓
+[78/200] haiku r0 q1156 ✓
+[79/200] haiku r0 q1148 ✗ ok
+[80/200] haiku r0 q1157 ✗ ok
+[81/200] haiku r0 q1094 ✗ ok
+[82/200] haiku r0 q1220 ✓
+[83/200] haiku r0 q1185 ✓
+[84/200] haiku r0 q1334 ✓
+[85/200] haiku r0 q1238 ✓
+[86/200] haiku r0 q1239 ✗ ok
+[87/200] haiku r0 q1338 ✗ ok
+[88/200] haiku r0 q1352 ✓
+[89/200] haiku r0 q1359 ✓
+[90/200] haiku r0 q1362 ✓
+[91/200] haiku r0 q1356 ✓
+[92/200] haiku r0 q1380 ✓
+[93/200] haiku r0 q1409 ✓
+[94/200] haiku r0 q1394 ✓
+[95/200] haiku r0 q1399 ✗ ok
+[96/200] haiku r0 q1390 ✓
+[97/200] sonnet r0 q17 ✗ ok
+[98/200] haiku r0 q1472 ✓
+[99/200] sonnet r0 q31 ✓
+[100/200] haiku r0 q1480 ✓
+[101/200] sonnet r0 q92 ✓
+[102/200] sonnet r0 q79 ✓
+[103/200] sonnet r0 q41 ✗ ok
+[104/200] sonnet r0 q95 ✓
+[105/200] sonnet r0 q99 ✓
+[106/200] sonnet r0 q115 ✗ ok
+[107/200] sonnet r0 q137 ✓
+[108/200] haiku r0 q1524 ✓
+[109/200] sonnet r0 q116 ✓
+[110/200] sonnet r0 q152 ✗ ok
+[111/200] sonnet r0 q129 ✗ ok
+[112/200] sonnet r0 q207 ✗ ok
+[113/200] sonnet r0 q169 ✗ ok
+[114/200] sonnet r0 q232 ✓
+[115/200] haiku r0 q701 ✗ timeout
+[116/200] sonnet r0 q220 ✓
+[117/200] sonnet r0 q243 ✓
+[118/200] sonnet r0 q245 ✓
+[119/200] sonnet r0 q189 ✗ ok
+[120/200] sonnet r0 q255 ✓
+[121/200] sonnet r0 q377 ✓
+[122/200] sonnet r0 q407 ✓
+[123/200] sonnet r0 q427 ✓
+[124/200] sonnet r0 q414 ✓
+[125/200] sonnet r0 q424 ✓
+[126/200] sonnet r0 q346 ✓
+[127/200] sonnet r0 q468 ✓
+[128/200] sonnet r0 q474 ✗ ok
+[129/200] sonnet r0 q469 ✗ ok
+[130/200] sonnet r0 q537 ✓
+[131/200] sonnet r0 q563 ✓
+[132/200] sonnet r0 q565 ✓
+[133/200] sonnet r0 q480 ✓
+[134/200] sonnet r0 q671 ✓
+[135/200] sonnet r0 q572 ✓
+[136/200] sonnet r0 q586 ✗ ok
+[137/200] sonnet r0 q639 ✗ ok
+[138/200] sonnet r0 q598 ✓
+[139/200] sonnet r0 q678 ✓
+[140/200] sonnet r0 q716 ✓
+[141/200] sonnet r0 q683 ✓
+[142/200] sonnet r0 q723 ✓
+[143/200] sonnet r0 q672 ✗ ok
+[144/200] sonnet r0 q737 ✓
+[145/200] sonnet r0 q724 ✓
+[146/200] sonnet r0 q740 ✓
+[147/200] sonnet r0 q760 ✓
+[148/200] sonnet r0 q753 ✓
+[149/200] sonnet r0 q743 ✓
+[150/200] sonnet r0 q800 ✓
+[151/200] sonnet r0 q782 ✓
+[152/200] sonnet r0 q824 ✓
+[153/200] sonnet r0 q861 ✗ ok
+[154/200] sonnet r0 q847 ✗ ok
+[155/200] sonnet r0 q877 ✓
+[156/200] sonnet r0 q937 ✗ ok
+[157/200] sonnet r0 q931 ✓
+[158/200] sonnet r0 q896 ✗ ok
+[159/200] sonnet r0 q945 ✓
+[160/200] sonnet r0 q950 ✗ ok
+[161/200] sonnet r0 q971 ✓
+[162/200] sonnet r0 q951 ✗ ok
+[163/200] sonnet r0 q994 ✓
+[164/200] sonnet r0 q1029 ✗ ok
+[165/200] sonnet r0 q1003 ✓
+[166/200] sonnet r0 q1036 ✗ ok
+[167/200] sonnet r0 q1032 ✓
+[168/200] sonnet r0 q1057 ✓
+[169/200] sonnet r0 q1092 ✗ ok
+[170/200] sonnet r0 q1116 ✓
+[171/200] sonnet r0 q1094 ✗ ok
+[172/200] sonnet r0 q1130 ✓
+[173/200] sonnet r0 q1124 ✓
+[174/200] sonnet r0 q1134 ✓
+[175/200] sonnet r0 q1139 ✓
+[176/200] sonnet r0 q1141 ✓
+[177/200] sonnet r0 q1146 ✓
+[178/200] sonnet r0 q1155 ✓
+[179/200] sonnet r0 q1156 ✓
+[180/200] sonnet r0 q1220 ✓
+[181/200] sonnet r0 q1157 ✗ ok
+[182/200] sonnet r0 q1185 ✓
+[183/200] sonnet r0 q1148 ✗ ok
+[184/200] sonnet r0 q1334 ✓
+[185/200] sonnet r0 q1238 ✓
+[186/200] sonnet r0 q1239 ✓
+[187/200] sonnet r0 q1338 ✗ ok
+[188/200] sonnet r0 q1356 ✓
+[189/200] sonnet r0 q1352 ✓
+[190/200] sonnet r0 q1362 ✓
+[191/200] sonnet r0 q1380 ✓
+[192/200] sonnet r0 q1359 ✓
+[193/200] sonnet r0 q1390 ✓
+[194/200] sonnet r0 q1409 ✓
+[195/200] sonnet r0 q1399 ✗ ok
+[196/200] sonnet r0 q1394 ✓
+[197/200] sonnet r0 q1472 ✓
+[198/200] sonnet r0 q1524 ✓
+[199/200] sonnet r0 q1480 ✓
+[200/200] sonnet r0 q701 ✗ timeout
+本次实际花费 $0.2566
+
+run_id=zh100v2-19843f
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| haiku | e4_correct | medium | 100 | 69.0% | 59.4%–77.2% | 21/30 | 37/50 | 11/20 | $0.0002 | $0.023 | 2.0s / 6.1s | {'ok': 99, 'timeout': 1} |
+| sonnet | e4_correct | medium | 100 | 72.0% | 62.5%–79.9% | 21/30 | 40/50 | 11/20 | $0.0023 | $0.234 | 1.7s / 3.0s | {'ok': 99, 'timeout': 1} |

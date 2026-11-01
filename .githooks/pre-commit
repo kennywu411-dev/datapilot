@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# 提交前检查（启用：git config core.hooksPath .githooks）
+# 1. ruff lint + 格式检查
+# 2. 单元测试（不调用 API）
+# 3. 改动了 web/ 时：前端 eslint + tsc
+# 4. 离线门禁：标准答案跑冒烟 20 题必须 100%（不花钱）
+# 5. 改动了 src/datapilot/ 时：Haiku 冒烟门禁（约 $0.006），跌破基线 10 个百分点拒绝提交
+# 临时跳过付费门禁：SKIP_GATE=1 git commit ...
+set -e
+
+echo "[pre-commit] ruff"
+uv run ruff check .
+uv run ruff format --check .
+
+echo "[pre-commit] pytest"
+uv run pytest -q
+
+if git diff --cached --name-only | grep -q '^web/'; then
+  echo "[pre-commit] 前端 lint + 类型检查"
+  npm --prefix web run lint --silent
+  (cd web && npx --no-install tsc --noEmit)
+fi
+
+echo "[pre-commit] 离线门禁"
+uv run python evals/gate.py --offline
+
+if git diff --cached --name-only | grep -q '^src/datapilot/'; then
+  if [ -n "$SKIP_GATE" ]; then
+    echo "[pre-commit] SKIP_GATE 已设置，跳过付费门禁"
+  elif [ ! -f .env ] && [ -z "$ANTHROPIC_API_KEY" ]; then
+    echo "[pre-commit] 没有 API key，跳过付费门禁"
+  elif [ ! -f runs/gate_baseline.json ]; then
+    echo "[pre-commit] 还没有门禁基线，跳过。先运行：uv run python evals/gate.py --set-baseline"
+  else
+    echo "[pre-commit] 付费门禁（Haiku 冒烟 20 题）"
+    uv run python evals/gate.py
+  fi
+fi

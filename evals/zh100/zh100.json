@@ -1,0 +1,1002 @@
+[
+ {
+  "question_id": 17,
+  "db_id": "california_schools",
+  "question": "把写作平均分高于 499 分的学校按分数排名，并列出它们的特许学校编号。",
+  "evidence": "Valid charter number means the number is not null",
+  "SQL": "SELECT CharterNum, AvgScrWrite, RANK() OVER (ORDER BY AvgScrWrite DESC) AS WritingScoreRank FROM schools AS T1  INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T2.AvgScrWrite > 499 AND CharterNum is not null",
+  "difficulty": "simple",
+  "question_en": "Rank schools by their average score in Writing where the score is greater than 499, showing their charter numbers.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 31,
+  "db_id": "california_schools",
+  "question": "1 到 12 年级在校生人数排第 10 和第 11 的学校，免费餐资格率分别是多少？",
+  "evidence": "K-12 refers to students in grades 1 through 12; Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`",
+  "SQL": "SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2",
+  "difficulty": "moderate",
+  "question_en": "What is the eligible free rate of the 10th and 11th schools with the highest enrolment for students in grades 1 through 12?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 41,
+  "db_id": "california_schools",
+  "question": "列出在各自县里阅读平均分排前 5 的虚拟学校名称。",
+  "evidence": "Exclusively virtual refers to Virtual = 'F'; respective counties means PARTITION BY County",
+  "SQL": "SELECT School FROM (SELECT T2.School,T1.AvgScrRead, RANK() OVER (PARTITION BY T2.County ORDER BY T1.AvgScrRead DESC) AS rnk FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' ) ranked_schools WHERE rnk <= 5",
+  "difficulty": "simple",
+  "question_en": "List the names of virtual schools that are among the top 5 in their respective counties based on average reading scores.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 79,
+  "db_id": "california_schools",
+  "question": "San Diego 和 Santa Barbara 这两个县，哪个县没有实体校舍的学校更多？有多少所？",
+  "evidence": "'Does not offer physical building' means Virtual = F in the database.",
+  "SQL": "SELECT County, COUNT(Virtual) FROM schools WHERE (County = 'San Diego' OR County = 'Santa Barbara') AND Virtual = 'F' GROUP BY County ORDER BY COUNT(Virtual) DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "Between San Diego and Santa Barbara, which county offers the most number of schools that does not offer physical building? Indicate the amount.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 92,
+  "db_id": "financial",
+  "question": "有多少个地区的女性平均工资在 6000 到 10000 之间？",
+  "evidence": "A11 refers to average salary; Female mapps to gender = 'F'",
+  "SQL": "SELECT COUNT(DISTINCT T2.district_id)  FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A11 BETWEEN 6000 AND 10000",
+  "difficulty": "simple",
+  "question_en": "List out the no. of districts that have female average salary is more than 6000 but less than 10000?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 95,
+  "db_id": "financial",
+  "question": "列出年龄最小、且所在地区平均工资最高的客户的账户号。",
+  "evidence": "If the person A's birthdate < B's birthdate, it means that person B is younger than person A; A11 refers to average salary",
+  "SQL": "SELECT T1.account_id  FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id INNER JOIN client AS T3 ON T2.client_id = T3.client_id INNER JOIN district AS T4 on T4.district_id = T1.district_id WHERE T2.client_id = ( SELECT client_id FROM client ORDER BY birth_date DESC LIMIT 1) GROUP BY T4.A11, T1.account_id",
+  "difficulty": "moderate",
+  "question_en": "List out the account numbers of clients who are youngest and have highest average salary?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 99,
+  "db_id": "financial",
+  "question": "在贷款期限超过 12 个月的账户里，找出 1993 年开户、贷款批准金额最高的账户。",
+  "evidence": "Loan validity more than 12 months refers to duration > 12",
+  "SQL": "SELECT T1.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T2.date) = '1993' AND T1.duration > 12 ORDER BY T1.amount DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "Among the accounts who have loan validity more than 12 months, list out the accounts that have the highest approved amount and have account opening date in 1993.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 115,
+  "db_id": "financial",
+  "question": "在 south Bohemia 地区里，居民人数最多的那个分行，男性客户占比是多少？",
+  "evidence": "Percentage of the male clients = DIVIDE(COUNT(male clients), COUNT(clients)) * 100; Male refers to gender = 'M', A3 is the region name. A4 contains the information about inhabitants.",
+  "SQL": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'south Bohemia' GROUP BY T2.A4 ORDER BY T2.A4 DESC LIMIT 1",
+  "difficulty": "challenging",
+  "question_en": "For the branch which located in the south Bohemia with biggest number of inhabitants, what is the percentage of the male clients?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 116,
+  "db_id": "financial",
+  "question": "1993 年 7 月 5 日最早获批贷款的那位客户，账户余额从 1993 年 3 月 22 日到 1998 年 12 月 27 日增长了百分之多少？",
+  "evidence": "Increase rate of his/her account balance = [(balance of date A - balance of date B) / balance of Date B] * 100%",
+  "SQL": "SELECT CAST((SUM(IIF(T3.date = '1998-12-27', T3.balance, 0)) - SUM(IIF(T3.date = '1993-03-22', T3.balance, 0))) AS REAL) * 100 / SUM(IIF(T3.date = '1993-03-22', T3.balance, 0)) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T3.account_id = T2.account_id WHERE T1.date = '1993-07-05'",
+  "difficulty": "challenging",
+  "question_en": "For the client whose loan was approved first in 1993/7/5, what is the increase rate of his/her account balance from 1993/3/22 to 1998/12/27?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 129,
+  "db_id": "financial",
+  "question": "1996 年 1 月，按地区统计的非信用卡取款金额前十是哪些？",
+  "evidence": "Non-credit card withdraws refers to type = 'VYDAJ'; January 1996 can be found by date LIKE '1996-01%' in the database; A2 means district names",
+  "SQL": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ' AND T3.date LIKE '1996-01%' ORDER BY A2 ASC LIMIT 10",
+  "difficulty": "moderate",
+  "question_en": "Which are the top ten withdrawals (non-credit card) by district names for the month of January 1996?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 137,
+  "db_id": "financial",
+  "question": "1 号分行有多少个账户的合同还在执行中？",
+  "evidence": "Status = 'C' stands for running contract, OK so far; Status = 'D' stands for running contract, client in debt",
+  "SQL": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T1.district_id = 1 AND (T3.status = 'C' OR T3.status = 'D')",
+  "difficulty": "moderate",
+  "question_en": "How many accounts have running contracts in Branch location 1?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 152,
+  "db_id": "financial",
+  "question": "1995 年犯罪数超过 4000、且有 1997 年及以后开户账户的地区，1995 年平均犯罪数是多少？",
+  "evidence": "A3 refers to region names; A15 stands for the average number of crimes commited in 1995.",
+  "SQL": "SELECT AVG(T1.A15) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) >= '1997' AND T1.A15 > 4000",
+  "difficulty": "moderate",
+  "question_en": "What is the average number of crimes committed in 1995 in regions where the number exceeds 4000 and the region has accounts that are opened starting from the year 1997?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 169,
+  "db_id": "financial",
+  "question": "男性客户名下所有账户的贷款总额，从 1996 年到 1997 年增长了多少？",
+  "evidence": "Growth rate = (sum of amount_1997 - sum of amount_1996) / (sum of amount_1996) * 100%; Male refers to gender = 'M'",
+  "SQL": "SELECT CAST((SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1997' THEN T1.amount ELSE 0 END) - SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END)) AS REAL) * 100 / SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T3.account_id = T2.account_id INNER JOIN client AS T4 ON T4.client_id = T3.client_id WHERE T4.gender = 'M' AND T3.type = 'OWNER'",
+  "difficulty": "challenging",
+  "question_en": "What was the growth rate of the total amount of loans across all accounts for a male client between 1996 and 1997?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 189,
+  "db_id": "financial",
+  "question": "列出年龄最大、且所在地区平均工资最低的女性客户的账户号。",
+  "evidence": "Female refers to 'F' in the gender; A11 contains information about average salary",
+  "SQL": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id INNER JOIN disp AS T4 ON T1.client_id = T4.client_id AND T4.account_id = T3.account_id  WHERE T1.gender = 'F' ORDER BY T1.birth_date ASC, T2.A11 ASC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "Name the account numbers of female clients who are oldest and have lowest average salary?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 207,
+  "db_id": "toxicology",
+  "question": "双键里都有哪些元素？",
+  "evidence": "double type bond refers to bond_type = '=';",
+  "SQL": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN bond AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN connected AS T3 ON T1.atom_id = T3.atom_id WHERE T2.bond_type = '='",
+  "difficulty": "challenging",
+  "question_en": "What elements are in a double type bond?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 220,
+  "db_id": "toxicology",
+  "question": "按字母顺序列出分子 TR000 的前三种元素。",
+  "evidence": "TR000 is the molecule id;",
+  "SQL": "SELECT DISTINCT T.element FROM atom AS T WHERE T.molecule_id = 'TR000' ORDER BY T.element LIMIT 3",
+  "difficulty": "challenging",
+  "question_en": "Please list top three elements of the toxicology of the molecule TR000 in alphabetical order.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 232,
+  "db_id": "toxicology",
+  "question": "按字母顺序列出前三个含有单键且不致癌的分子。",
+  "evidence": "label = '-' means molecules are not carcinogenic; single type bond refers to bond_type = '-'; list top three molecules refers to return molecule_id and order by molecule_id;",
+  "SQL": "SELECT DISTINCT T2.molecule_id FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.bond_type = '-' AND T2.label = '-' ORDER BY T2.molecule_id LIMIT 3",
+  "difficulty": "moderate",
+  "question_en": "Please list top three molecules that have single bonds between two atoms and are not carcinogenic in alphabetical order.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 243,
+  "db_id": "toxicology",
+  "question": "哪些化学键连接的两个原子分别是磷和氮？",
+  "evidence": "have phosphorus as atom elements refers to element = 'p'; have nitrogen as atom elements refers to element = 'n'",
+  "SQL": "SELECT T2.bond_id FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id IN ( SELECT T3.bond_id FROM connected AS T3 INNER JOIN atom AS T4 ON T3.atom_id = T4.atom_id WHERE T4.element = 'p' ) AND T1.element = 'n'",
+  "difficulty": "moderate",
+  "question_en": "What are the bonds that have phosphorus and nitrogen as their atom elements?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 245,
+  "db_id": "toxicology",
+  "question": "碘原子平均有几个化学键？",
+  "evidence": "atoms with the element iodine refers to element = 'i'; average = DIVIDE(COUND(bond_id), COUNT(atom_id)) where element = 'i'",
+  "SQL": "SELECT CAST(COUNT(T2.bond_id) AS REAL) / COUNT(T1.atom_id) FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T1.element = 'i'",
+  "difficulty": "moderate",
+  "question_en": "What is the average number of bonds the atoms with the element iodine have?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 255,
+  "db_id": "toxicology",
+  "question": "单键里有多大比例是致癌的？用百分比表示，保留五位小数。",
+  "evidence": "single bond refers to bond_type = '-'; label = '+' mean molecules are carcinogenic; proportion = DIVIDE(SUM(label = '+') * 100, COUNT(bond_id)) where bond_type = '-'",
+  "SQL": "SELECT ROUND(CAST(COUNT(CASE WHEN T2.label = '+' THEN T1.bond_id ELSE NULL END) AS REAL) * 100 / COUNT(T1.bond_id),5) FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.bond_type = '-'",
+  "difficulty": "moderate",
+  "question_en": "What proportion of single bonds are carcinogenic? Please provide your answer as a percentage with five decimal places.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 346,
+  "db_id": "card_games",
+  "question": "列出可以在 commander 赛制中使用、且力量值未知的卡牌 ID 和画师。",
+  "evidence": "unknown power refers to power = '*' or POWER IS NULL; commander play format refers to format = 'commander'; legal for commander play format refers to format = 'commander' where status = 'Legal'",
+  "SQL": "SELECT T1.id, T1.artist FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T2.status = 'Legal' AND T2.format = 'commander' AND (T1.power IS NULL OR T1.power = '*')",
+  "difficulty": "moderate",
+  "question_en": "List all the card id and artist with unknown power which are legal for commander play format.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 377,
+  "db_id": "card_games",
+  "question": "原始类型为 \"Summon - Angel\" 的卡牌中，子类型不是 \"Angel\" 的有多少张？",
+  "evidence": "subtype other than Angel refers to subtypes is not 'Angel';",
+  "SQL": "SELECT COUNT(id) FROM cards WHERE originalType = 'Summon - Angel' AND subtypes != 'Angel'",
+  "difficulty": "simple",
+  "question_en": "How many cards with original type of \"Summon - Angel\" have subtype other than \"Angel\"?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 407,
+  "db_id": "card_games",
+  "question": "列出所有德语卡牌的类型。",
+  "evidence": "German refer to language; all types refer to the subtypes, supertypes; subtypes is not null AND supertypes is not null",
+  "SQL": "SELECT T1.subtypes, T1.supertypes FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T1.uuid = T2.uuid WHERE T2.language = 'German' AND T1.subtypes IS NOT NULL AND T1.supertypes IS NOT NULL",
+  "difficulty": "moderate",
+  "question_en": "Lists all types of cards in German.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 414,
+  "db_id": "card_games",
+  "question": "Ravnica 系列里那套 180 张卡的卡组，被翻译成了哪种语言？",
+  "evidence": "set of 180 cards refers to baseSetSize = 180",
+  "SQL": "SELECT T2.language FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T1.block = 'Ravnica' AND T1.baseSetSize = 180",
+  "difficulty": "simple",
+  "question_en": "What language is the set of 180 cards that belongs to the Ravnica block translated into?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 424,
+  "db_id": "card_games",
+  "question": "所有卡牌中，版式为普通且没有文本框的卡牌占多少比例？",
+  "evidence": "do not have a text box refers to isTextless = 1; proportion refers to DIVIDE(COUNT(Textless = 1 and layout = 'normal'),COUNT(Textless))*100",
+  "SQL": "SELECT CAST(SUM(CASE WHEN isTextless = 1 AND layout = 'normal' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) FROM cards",
+  "difficulty": "simple",
+  "question_en": "What proportion of cards do not have a text box with a normal layout?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 427,
+  "db_id": "card_games",
+  "question": "在卡牌市场上叫 Archenemy、代码为 ARC 的卡组，有哪些语言版本？",
+  "evidence": "known as Archenemy refers to mcmName = 'Archenemy'; having the code ARC refers to setCode = 'ARC'",
+  "SQL": "SELECT T2.language FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T1.mcmName = 'Archenemy' AND T2.setCode = 'ARC'",
+  "difficulty": "moderate",
+  "question_en": "What languages are available in the set known as Archenemy on the magic card market and having the code ARC?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 468,
+  "db_id": "card_games",
+  "question": "\"Eighth Edition\" 这套卡的简体中文名称是什么？",
+  "evidence": "Eighth Edition is the name of card set which refers to name = 'Eighth Edition'; Simplified Chinese refers to language = 'Chinese Simplified'; translation of the name refers to translation",
+  "SQL": "SELECT T2.translation FROM sets AS T1 INNER JOIN set_translations AS T2 ON T2.setCode = T1.code WHERE T1.name = 'Eighth Edition' AND T2.language = 'Chinese Simplified'",
+  "difficulty": "moderate",
+  "question_en": "What is the Simplified Chinese translation of the name of the set \"Eighth Edition\"?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 469,
+  "db_id": "card_games",
+  "question": "包含 \"Angel of Mercy\" 这张卡的卡组，在 Magic: The Gathering Online 上出现过吗？",
+  "evidence": "card set \"Angel of Mercy\" refers to name = 'Angel of Mercy'; appear on Magic: The Gathering Online refers to mtgoCode is NOT NULL and vice versa",
+  "SQL": "SELECT IIF(T2.mtgoCode IS NOT NULL, 'YES', 'NO') FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T1.name = 'Angel of Mercy'",
+  "difficulty": "moderate",
+  "question_en": "Did the set of cards with \"Angel of Mercy\" appear on Magic: The Gathering Online?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 474,
+  "db_id": "card_games",
+  "question": "有意大利语译本的卡组中，基础卡数少于 100 的有几个？",
+  "evidence": "Italian translation refers to language = 'Italian'; have a translation means translation is not null; base set number of under 100 refers to baseSetSize < 10",
+  "SQL": "SELECT COUNT(T1.id) FROM sets AS T1 INNER JOIN set_translations AS T2 ON T2.setCode = T1.code WHERE T2.translation IS NOT NULL AND T1.baseSetSize < 100 AND T2.language = 'Italian'",
+  "difficulty": "moderate",
+  "question_en": "Among the sets of cards that have an Italian translation, how many of them have a base set number of under 100?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 480,
+  "db_id": "card_games",
+  "question": "卡牌 \"Ancestor's Chosen\" 的意大利语风味文字是什么？",
+  "evidence": "Italian refers to language = 'Italian'; flavor text refers to flavorText; \"Ancestor''s Chosen\" refers to name = 'Ancestor''s Chosen'",
+  "SQL": "SELECT T2.flavorText FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T2.uuid = T1.uuid WHERE T1.name = 'Ancestor''s Chosen' AND T2.language = 'Italian'",
+  "difficulty": "moderate",
+  "question_en": "What is the Italian flavor text of the card \"Ancestor's Chosen\"?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 537,
+  "db_id": "codebase_community",
+  "question": "用户 csgillespie 发了多少个帖子？",
+  "evidence": "\"csgillespie\" is the DisplayName of user",
+  "SQL": "SELECT COUNT(T1.id) FROM posts AS T1 INNER JOIN users AS T2 ON T1.OwnerUserId = T2.Id WHERE T2.DisplayName = 'csgillespie'",
+  "difficulty": "simple",
+  "question_en": "How many posts does the user csgillespie own?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 563,
+  "db_id": "codebase_community",
+  "question": "3025 号用户在 2014 年 4 月 23 日 20:29:39 评论了一个帖子，这个帖子被收藏了多少次？",
+  "evidence": "user no. 3025 refers to UserId = '3025'; comment at 20:29:39 on 2014/4/23 refers to CreationDate = '2014/4/23 20:29:39.0'",
+  "SQL": "SELECT T1.FavoriteCount FROM posts AS T1 INNER JOIN comments AS T2 ON T1.Id = T2.PostId WHERE T2.CreationDate = '2014-04-23 20:29:39.0' AND T2.UserId = 3025",
+  "difficulty": "moderate",
+  "question_en": "User No.3025 gave a comment at 20:29:39 on 2014/4/23 to a post, how many favorite counts did that post get?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 565,
+  "db_id": "codebase_community",
+  "question": "23853 号用户在 2013 年 7 月 12 日 9:08:18 评论了一个帖子，那个帖子算完成得好吗？",
+  "evidence": "user no. 23853 refers to UserId = '23853'; at 9:08:18 on 2013/7/12 refers to CreationDate = '2013-07-12 09:08:18.0'; not well-finished refers to ClosedDate IS NULL and vice versa",
+  "SQL": "SELECT IIF(T2.ClosedDate IS NULL, 'NOT well-finished', 'well-finished') AS resylt FROM comments AS T1 INNER JOIN posts AS T2 ON T1.PostId = T2.Id WHERE T1.UserId = 23853 AND T1.CreationDate = '2013-07-12 09:08:18.0'",
+  "difficulty": "moderate",
+  "question_en": "User No.23853 gave a comment to a post at 9:08:18 on 2013/7/12, was that post well-finished?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 572,
+  "db_id": "codebase_community",
+  "question": "标题为 'Integration of Weka and/or RapidMiner into Informatica PowerCenter/Developer' 的帖子有多少浏览量？",
+  "evidence": "\"Integration of Weka and/or RapidMiner into Informatica PowerCenter/Developer\" is the Title of post; views refers to ViewCount",
+  "SQL": "SELECT ViewCount FROM posts WHERE Title = 'Integration of Weka and/or RapidMiner into Informatica PowerCenter/Developer'",
+  "difficulty": "moderate",
+  "question_en": "How many views did the post titled 'Integration of Weka and/or RapidMiner into Informatica PowerCenter/Developer' get?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 586,
+  "db_id": "codebase_community",
+  "question": "哪位用户给标题里提到 variance 的帖子加了 50 的悬赏？",
+  "evidence": "bounty amount of 50 refers to BountyAmount = 50; user refers to DisplayName; title mentioning variance refers to Title include 'variance'",
+  "SQL": "SELECT T3.DisplayName, T1.Title FROM posts AS T1 INNER JOIN votes AS T2 ON T1.Id = T2.PostId INNER JOIN users AS T3 ON T3.Id = T2.UserId WHERE T2.BountyAmount = 50 AND T1.Title LIKE '%variance%'",
+  "difficulty": "challenging",
+  "question_en": "Which user added a bounty amount of 50 to the post title mentioning variance?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 598,
+  "db_id": "codebase_community",
+  "question": "2010 年和 2011 年发出的 Student 徽章数，占比相差多少个百分点？",
+  "evidence": "student badges refers to badge's name = 'Student'; during 2010 refers to Year(Date) = 2010; during 2011 refers to Year(Date) = 2011; percentage difference = Subtract (Divide(Count(Name where Year(Date) = 2010), Count (Name)) *100, Divide(Count(Name where Year(Date) = 2011), Count(Name)) * 100)",
+  "SQL": "SELECT CAST(SUM(IIF(STRFTIME('%Y', Date) = '2010', 1, 0)) AS REAL) * 100 / COUNT(Id) - CAST(SUM(IIF(STRFTIME('%Y', Date) = '2011', 1, 0)) AS REAL) * 100 / COUNT(Id) FROM badges WHERE Name = 'Student'",
+  "difficulty": "challenging",
+  "question_en": "What is the percentage difference of student badges given during 2010 and 2011?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 639,
+  "db_id": "codebase_community",
+  "question": "在 Community 发的帖子里，使用 R 语言的帖子占多少比例？",
+  "evidence": "DIVIDE(COUNT(PostId WHERE TagName = 'r')), (COUNT(PostId WHERE DisplayName = 'Community')) as percentage; R language refers to tagname = 'r'",
+  "SQL": "SELECT CAST(SUM(IIF(T3.TagName = 'r', 1, 0)) AS REAL) * 100 / COUNT(T1.Id) FROM users AS T1 INNER JOIN postHistory AS T2 ON T1.Id = T2.UserId INNER JOIN tags AS T3 ON T3.ExcerptPostId = T2.PostId WHERE T1.DisplayName = 'Community'",
+  "difficulty": "challenging",
+  "question_en": "Based on posts posted by Community, calculate the percentage of posts that use the R language.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 671,
+  "db_id": "codebase_community",
+  "question": "第一个获得 Autobiographer 徽章的用户，显示名是什么？",
+  "evidence": "Autobiographer is the name of the badge; acquired the first refers to MIN(Date);",
+  "SQL": "SELECT T1.DisplayName FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T2.`Name` = 'Autobiographer' ORDER BY T2.Date LIMIT 1",
+  "difficulty": "simple",
+  "question_en": "What is the display name of the user who acquired the first Autobiographer badge?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 672,
+  "db_id": "codebase_community",
+  "question": "所在地为英国的用户中，帖子总收藏数达到 4 次及以上的有多少人？",
+  "evidence": "favorite amount of 4 or more refers to FavoriteCount > = 4; Location = 'United Kingdom';",
+  "SQL": "SELECT COUNT(T1.Id) FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId WHERE T1.Location = 'United Kingdom' AND T2.FavoriteCount >= 4",
+  "difficulty": "moderate",
+  "question_en": "Among the users located in United Kingdom, how many users whose post have a total favorite amount of 4 or more?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 678,
+  "db_id": "codebase_community",
+  "question": "Harvey Motulsky 的哪个帖子浏览量最高？给出帖子 ID 和标题。",
+  "evidence": "DisplayName = 'Harvey Motulsky'; the most views refer to MAX(ViewCount);",
+  "SQL": "SELECT T2.Id, T2.Title FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId WHERE T1.DisplayName = 'Harvey Motulsky' ORDER BY T2.ViewCount DESC LIMIT 1",
+  "difficulty": "simple",
+  "question_en": "Which post by Harvey Motulsky has the most views? Please give the id and title of this post.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 683,
+  "db_id": "codebase_community",
+  "question": "2011 年发帖人声望超过 1000 的帖子占多少比例？",
+  "evidence": "percentage = DIVIDE(COUNT(Id where YEAR(CreationDate) = 2011 and Reputation > 1000), COUNT(Id) ) * 100;",
+  "SQL": "SELECT CAST(SUM(IIF(STRFTIME('%Y', T2.CreaionDate) = '2011' AND T1.Reputation > 1000, 1, 0)) AS REAL) * 100 / COUNT(T1.Id) FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId",
+  "difficulty": "moderate",
+  "question_en": "What is the percentage of posts whose owners had a reputation of over 1000 in 2011?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 701,
+  "db_id": "codebase_community",
+  "question": "影响力最大的用户发的帖子里，得分超过 50 的占多少比例？",
+  "evidence": "The higher reputation the user has the more influence; percentage = DIVIDE(COUNT(stats_posts.Id where Score > 50 and MAX(Reputation))), COUNT(stats_posts.Id where MAX(Reputation));",
+  "SQL": "SELECT CAST(SUM(CASE WHEN T2.Score > 50 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.Id) FROM users T1 INNER JOIN posts T2 ON T1.Id = T2.OwnerUserId INNER JOIN ( SELECT MAX(Reputation) AS max_reputation FROM users ) T3 ON T1.Reputation = T3.max_reputation",
+  "difficulty": "challenging",
+  "question_en": "Among all the posts posted by the most influential user, identify the percentage with a score above 50.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 716,
+  "db_id": "codebase_community",
+  "question": "得分在 5 到 10 之间的评论中，评论者获得 0 个赞的比例是多少？",
+  "evidence": "percentage = DIVIDE(COUNT(UserId where UpVotes = 0 and Score BETWEEN 5 and 10))*100, (COUNT(UserId where Score BETWEEN 5 and 10));",
+  "SQL": "SELECT CAST(SUM(IIF(T1.UpVotes = 0, 1, 0)) AS REAL) * 100/ COUNT(T1.Id) AS per FROM users AS T1 INNER JOIN comments AS T2 ON T1.Id = T2.UserId WHERE T2.Score BETWEEN 5 AND 10",
+  "difficulty": "moderate",
+  "question_en": "Among the comments with scores between 5 to 10, what is the percentage of the users with 0 up votes?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 723,
+  "db_id": "superhero",
+  "question": "蓝眼睛的超级英雄里，有多少个拥有 \"Agility\" 超能力？",
+  "evidence": "blue eyes refers to colour = 'Blue' and eye_colour_id = colour.id; super power of \"Agility\" refers to power_name = 'Agility'",
+  "SQL": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id INNER JOIN colour AS T4 ON T1.eye_colour_id = T4.id WHERE T3.power_name = 'Agility' AND T4.colour = 'Blue'",
+  "difficulty": "moderate",
+  "question_en": "Among the superheroes with blue eyes, how many of them have the super power of \"Agility\"?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 724,
+  "db_id": "superhero",
+  "question": "列出所有蓝眼睛、金发的超级英雄名字。",
+  "evidence": "blue eyes refers to colour = 'Blue' and eye_colour_id = colour.id; blond hair refers to colour = 'Blond' and hair_colour_id = colour.id; super power of \"Agility\" refers to power_name = 'Agility'",
+  "SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id INNER JOIN colour AS T3 ON T1.hair_colour_id = T3.id WHERE T2.colour = 'Blue' AND T3.colour = 'Blond'",
+  "difficulty": "challenging",
+  "question_en": "Please list the superhero names of all the superheroes that have blue eyes and blond hair.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 737,
+  "db_id": "superhero",
+  "question": "Copycat 是什么种族？",
+  "evidence": "Copycat is the superhero_name;",
+  "SQL": "SELECT T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.superhero_name = 'Copycat'",
+  "difficulty": "simple",
+  "question_en": "What is Copycat's race?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 740,
+  "db_id": "superhero",
+  "question": "力量值为 100 的女性超级英雄有多少个？",
+  "evidence": "female refers to gender = 'Female'; strength value of 100 refers to attribute_name = 'Strength' AND attribute_value = 100",
+  "SQL": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id INNER JOIN gender AS T4 ON T1.gender_id = T4.id WHERE T3.attribute_name = 'Strength' AND T2.attribute_value = 100 AND T4.gender = 'Female'",
+  "difficulty": "moderate",
+  "question_en": "How many female superheroes have a strength value of 100?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 743,
+  "db_id": "superhero",
+  "question": "只顾自身利益、或按自己的道德准则行事的超级英雄占多少比例？其中有多少个属于 Marvel Comics？",
+  "evidence": "published by Marvel Comics refers to publisher_name = 'Marvel Comics'; superheroes who act in their own self-interest or make decisions based on their own moral code refers to alignment = 'Bad'; calculation = MULTIPLY(DIVIDE(SUM(alignment = 'Bad); count(id)), 100)",
+  "SQL": "SELECT (CAST(COUNT(*) AS REAL) * 100 / (SELECT COUNT(*) FROM superhero)), CAST(SUM(CASE WHEN T2.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) AS REAL) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN alignment AS T3 ON T3.id = T1.alignment_id WHERE T3.alignment = 'Bad'",
+  "difficulty": "challenging",
+  "question_en": "What is the percentage of superheroes who act in their own self-interest or make decisions based on their own moral code? Indicate how many of the said superheroes were published by Marvel Comics.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 753,
+  "db_id": "superhero",
+  "question": "身高在 170 到 190 之间的超级英雄里，列出没有眼睛颜色的那些。",
+  "evidence": "height from 170 to 190 refers to height_cm BETWEEN 170 AND 190; no eye color refers to colour = 'No Colour'",
+  "SQL": "SELECT DISTINCT T1.superhero_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T1.height_cm BETWEEN 170 AND 190 AND T2.colour = 'No Colour'",
+  "difficulty": "moderate",
+  "question_en": "Among the superheroes with height from 170 to 190, list the names of the superheroes with no eye color.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 760,
+  "db_id": "superhero",
+  "question": "身高在 150 到 180 之间的超级英雄中，Marvel Comics 出版的占多少比例？",
+  "evidence": "height between 150 to 180 refers to height_cm BETWEEN 150 AND 180; heroes published by Marvel Comics refers to publisher_name = 'Marvel Comics'; calculation = MULTIPLY(DIVIDE(SUM(publisher.id = 13)), COUNT(publisher.id), 100)",
+  "SQL": "SELECT CAST(COUNT(CASE WHEN T2.publisher_name = 'Marvel Comics' THEN 1 ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T1.height_cm BETWEEN 150 AND 180",
+  "difficulty": "challenging",
+  "question_en": "In superheroes with height between 150 to 180, what is the percentage of heroes published by Marvel Comics?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 782,
+  "db_id": "superhero",
+  "question": "列出眼睛和头发都是黑色的英雄名字。",
+  "evidence": "heroes' names refers to superhero_name; eyes and hair colours are both black refers to eye_colour_id AND hair_colour_id WHERE colour.colour = 'Black';",
+  "SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id AND T1.hair_colour_id = T2.id WHERE T2.colour = 'Black'",
+  "difficulty": "moderate",
+  "question_en": "List the heroes' names whose eyes and hair colours are both black.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 800,
+  "db_id": "superhero",
+  "question": "蓝眼睛的超级英雄占多少比例？",
+  "evidence": "percentage = MULTIPLY(DIVIDE(SUM(superhero_name WHERE color = 'Blue'), COUNT(superhero_name)), 100.0); blue eyes refers to color = 'Blue' and color.id =  eye_colour_id = 7;",
+  "SQL": "SELECT CAST(COUNT(CASE WHEN T2.colour = 'Blue' THEN 1 ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id",
+  "difficulty": "moderate",
+  "question_en": "Calculate the percentage of superheroes with blue eyes.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 824,
+  "db_id": "superhero",
+  "question": "找出能控制风的超级英雄，按字母顺序列出名字。",
+  "evidence": "superheroes refers to superhero_name; can control wind refers to power_name = 'Wind Control';",
+  "SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T3.power_name = 'Wind Control' ORDER BY T1.superhero_name",
+  "difficulty": "moderate",
+  "question_en": "Identify superheroes who can control wind and list their names in alphabetical order.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 847,
+  "db_id": "formula_1",
+  "question": "第 19 场比赛的第二节排位赛中，单圈最快的车手姓什么？",
+  "evidence": "race number refers to raceId; second qualifying period refers to q2; best lap time refers to MIN(q2);",
+  "SQL": "SELECT T2.surname FROM qualifying AS T1 INNER JOIN drivers AS T2 ON T2.driverId = T1.driverId WHERE T1.raceId = 19 ORDER BY T1.q2 ASC LIMIT 1",
+  "difficulty": "simple",
+  "question_en": "What is the surname of the driver with the best lap time in race number 19 in the second qualifying period?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 861,
+  "db_id": "formula_1",
+  "question": "第 903 场比赛的 Q3 排位赛里，成绩为 0:01:54 的车手车号是多少？",
+  "evidence": "race number refers to raceId; finished 0:0M:SS in the Q3 refers to q3 LIKE 'M:SS%'",
+  "SQL": "SELECT T2.number FROM qualifying AS T1 INNER JOIN drivers AS T2 ON T2.driverId = T1.driverId WHERE T1.raceId = 903 AND T1.q3 LIKE '1:54%'",
+  "difficulty": "simple",
+  "question_en": "What is his number of the driver who finished 0:01:54 in the Q3 of qualifying race No.903?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 877,
+  "db_id": "formula_1",
+  "question": "第 872 场比赛完赛的车手里，谁最年轻？",
+  "evidence": "race number refers to raceId; drivers who finished the race refers to time has value; the youngest is a driver where MAX(dob);",
+  "SQL": "SELECT T1.forename, T1.surname FROM drivers AS T1 INNER JOIN results AS T2 ON T2.driverId = T1.driverId WHERE T2.raceId = 872 AND T2.time IS NOT NULL ORDER BY T1.dob DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "For all the drivers who finished the game in race No. 872, who is the youngest?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 896,
+  "db_id": "formula_1",
+  "question": "2010 年以来，Hamilton 没有拿到第一名的比赛占多少比例？",
+  "evidence": "percentage = DIVIDE(COUNT(raceId) where surname = 'Hamilton' and position>1), (COUNT(raceId) where surname = 'Hamilton'); since 2010 refers to year >= 2010",
+  "SQL": "SELECT CAST(COUNT(CASE WHEN T2.position <> 1 THEN T2.position END) AS REAL) * 100 / COUNT(T2.driverStandingsId) FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.surname = 'Hamilton' AND T1.year >= 2010",
+  "difficulty": "challenging",
+  "question_en": "Calculate the percentage whereby Hamilton was not at the 1st track of the the f1 circuit since 2010.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 931,
+  "db_id": "formula_1",
+  "question": "2009 年 Spanish Grand Prix 上，所有车手中最快的单圈速度是多少？",
+  "evidence": "the fastest lap speed among all refers to max(fastestLapSpeed); Spanish Grand Prix refers to races.name = 'Spanish Grand Prix';",
+  "SQL": "SELECT T2.fastestLapSpeed FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId WHERE T1.name = 'Spanish Grand Prix' AND T1.year = 2009 AND T2.fastestLapSpeed IS NOT NULL ORDER BY T2.fastestLapSpeed DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "What was the fastest lap speed among all drivers in the 2009 Spanish Grand Prix?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 937,
+  "db_id": "formula_1",
+  "question": "2008 年 Chinese Grand Prix 排名第二的车手，完赛时间是多少？",
+  "evidence": "finish time refers to time; Chinese Grand Prix refers to races.name = 'Chinese Grand Prix';",
+  "SQL": "SELECT T1.time FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId WHERE T1.rank = 2 AND T2.name = 'Chinese Grand Prix' AND T2.year = 2008",
+  "difficulty": "simple",
+  "question_en": "What's the finish time for the driver who ranked second in 2008's AustChineseralian Grand Prix?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 945,
+  "db_id": "formula_1",
+  "question": "澳大利亚 Adelaide 有几条赛道？",
+  "evidence": "Australia is the country; Melbourne is the location of circuit;",
+  "SQL": "SELECT COUNT(circuitId) FROM circuits WHERE location = 'Adelaide' AND country = 'Australia'",
+  "difficulty": "simple",
+  "question_en": "How many circuits are there in Adelaide, Australia?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 950,
+  "db_id": "formula_1",
+  "question": "列出第 291 场比赛中得 0 分的车队名称。",
+  "evidence": "race at 291 refers to raceID = 291;",
+  "SQL": "SELECT T2.name FROM constructorStandings AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.points = 0 AND T1.raceId = 291",
+  "difficulty": "simple",
+  "question_en": "Please list the constructor names with 0 points at race 291.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 951,
+  "db_id": "formula_1",
+  "question": "有多少支日本车队在 2 场比赛中得了 0 分？",
+  "evidence": "2 races refers to COUNT(raceID) = 2; Japanese refers to constructors.nationality = 'Japanese';",
+  "SQL": "SELECT COUNT(T1.raceId) FROM constructorStandings AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.points = 0 AND T2.nationality = 'Japanese' GROUP BY T1.constructorId HAVING COUNT(raceId) = 2",
+  "difficulty": "simple",
+  "question_en": "How many Japanese constructors have 0 points in 2 races?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 971,
+  "db_id": "formula_1",
+  "question": "年龄最大的德国车手，参考名是什么？",
+  "evidence": "oldest refers to MIN(year(dob)); reference names appear in drverRef.",
+  "SQL": "SELECT driverRef FROM drivers WHERE nationality = 'German' ORDER BY JULIANDAY(dob) ASC LIMIT 1",
+  "difficulty": "simple",
+  "question_en": "Please state the reference name of the oldest German driver.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 994,
+  "db_id": "formula_1",
+  "question": "1980 到 2010 年间，哪个车队在 Monaco Grand Prix 上得分最多？列出得分、车队名和国籍。",
+  "evidence": "Monaco Grand Priz refers to the race; race in year between 1980 and 2010",
+  "SQL": "SELECT SUM(T1.points), T2.name, T2.nationality FROM constructorResults AS T1 INNER JOIN constructors AS T2 ON T1.constructorId = T2.constructorId INNER JOIN races AS T3 ON T3.raceid = T1.raceid WHERE T3.name = 'Monaco Grand Prix' AND T3.year BETWEEN 1980 AND 2010 GROUP BY T2.name ORDER BY SUM(T1.points) DESC LIMIT 1",
+  "difficulty": "challenging",
+  "question_en": "Which constructor scored most points from Monaco Grand Prix between 1980 and 2010? List the score, name and nationality of this team.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1003,
+  "db_id": "formula_1",
+  "question": "在 Canadian Grand Prix 上事故次数最多的车手，一共出了几次事故？",
+  "evidence": "number of accidents refers to the number where statusid = 3; Canadian Grand Prix refers to the race of name\n",
+  "SQL": "SELECT COUNT(T1.driverId) FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId INNER JOIN status AS T3 on T1.statusId = T3.statusId WHERE T3.statusId = 3 AND T2.name = 'Canadian Grand Prix' GROUP BY T1.driverId ORDER BY COUNT(T1.driverId) DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "How many accidents did the driver who had the highest number accidents in the Canadian Grand Prix have?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1029,
+  "db_id": "european_football_2",
+  "question": "组织进攻速度（build-up play speed）最高的前 4 支球队，进攻速度分别是多少？",
+  "evidence": "speed in which attacks are put together refers to buildUpPlaySpeed;highest build up play speed refers to MAX(buildUpPlaySpeed)",
+  "SQL": "SELECT t1.buildUpPlaySpeed FROM Team_Attributes AS t1 INNER JOIN Team AS t2 ON t1.team_api_id = t2.team_api_id ORDER BY t1.buildUpPlaySpeed ASC LIMIT 4",
+  "difficulty": "moderate",
+  "question_en": "What are the speed in which attacks are put together of the top 4 teams with the highest build Up Play Speed?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1032,
+  "db_id": "european_football_2",
+  "question": "历史上比赛场次最多的联赛是哪个？一共踢了多少场？",
+  "evidence": " league with highest matches of all time refers to MAX(COUNT(league_id));",
+  "SQL": "SELECT t2.name, t1.max_count FROM League AS t2 JOIN (SELECT league_id, MAX(cnt) AS max_count FROM (SELECT league_id, COUNT(id) AS cnt FROM Match GROUP BY league_id) AS subquery) AS t1 ON t1.league_id = t2.id",
+  "difficulty": "moderate",
+  "question_en": "Give the name of the league with the highest matches of all time and how many matches were played in the said league.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1036,
+  "db_id": "european_football_2",
+  "question": "列出 2012 年组织进攻传球数值高于平均水平的球队全称。",
+  "evidence": "long name of teams refers to team_long_name; build-up play passing refers to buildUpPlayPassing; above-average build-up play passing = buildUpPlayPassing > DIVIDE(SUM(buildUpPlayPassing), COUNT(team_long_name) WHERE buildUpPlayPassing IS NOT NULL); in 2012 refers to strftime('%Y', date) = '2012'; ",
+  "SQL": "SELECT DISTINCT t4.team_long_name FROM Team_Attributes AS t3 INNER JOIN Team AS t4 ON t3.team_api_id = t4.team_api_id WHERE SUBSTR(t3.`date`, 1, 4) = '2012' AND t3.buildUpPlayPassing > ( SELECT CAST(SUM(t2.buildUpPlayPassing) AS REAL) / COUNT(t1.id) FROM Team AS t1 INNER JOIN Team_Attributes AS t2 ON t1.team_api_id = t2.team_api_id WHERE STRFTIME('%Y',t2.`date`) = '2012')",
+  "difficulty": "challenging",
+  "question_en": "List the long name of teams with above-average build-up play passing in 2012.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1057,
+  "db_id": "european_football_2",
+  "question": "波兰在 2010/2011 赛季主队场均进球是多少？",
+  "evidence": "average home team goal = AVG(home_team_goal)= SUM(home_team_goal) / COUNT(DISTINCT Match.id) WHERE name = 'Poland' and season = '2010/2011';",
+  "SQL": "SELECT CAST(SUM(t2.home_team_goal) AS REAL) / COUNT(t2.id) FROM Country AS t1 INNER JOIN Match AS t2 ON t1.id = t2.country_id WHERE t1.name = 'Poland' AND t2.season = '2010/2011'",
+  "difficulty": "moderate",
+  "question_en": "Calculate the average home team goal in the 2010/2011 season in the country of Poland.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1092,
+  "db_id": "european_football_2",
+  "question": "2008/2009 赛季哪个联赛的比赛场次最多？",
+  "evidence": "league that had the most matches in the 2008/2009 season refers to MAX(league_name WHERE season = '2008/2009');",
+  "SQL": "SELECT t1.name FROM League AS t1 JOIN Match AS t2 ON t1.id = t2.league_id WHERE t2.season = '2008/2009' GROUP BY t1.name HAVING COUNT(t2.id) = (SELECT MAX(match_count) FROM (SELECT COUNT(t2.id) AS match_count FROM Match AS t2 WHERE t2.season = '2008/2009' GROUP BY t2.league_id))",
+  "difficulty": "simple",
+  "question_en": "Give the name of the league had the most matches in the 2008/2009 season?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1094,
+  "db_id": "european_football_2",
+  "question": "Ariel Borysiuk 的综合评分比 Paulin Puel 高百分之多少？",
+  "evidence": "how much higher in percentage = MULTIPLY(DIVIDE(SUBTRACT(overall_rating WHERE player_name = 'Ariel Borysiuk', overall_rating WHERE player_name = 'Paulin Puel'), overall_rating WHERE player_name = 'Paulin Puel'), 100);",
+  "SQL": "SELECT (SUM(CASE WHEN t1.player_name = 'Ariel Borysiuk' THEN t2.overall_rating ELSE 0 END) * 1.0 - SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END)) * 100 / SUM(CASE WHEN t1.player_name = 'Paulin Puel' THEN t2.overall_rating ELSE 0 END) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id",
+  "difficulty": "challenging",
+  "question_en": "How much higher in percentage is Ariel Borysiuk's overall rating than that of Paulin Puel?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1116,
+  "db_id": "european_football_2",
+  "question": "列出身高最高的球员名字。",
+  "evidence": "tallest refers to rank based on the height in descending order; Most tallest players refers to rank = 1 ",
+  "SQL": "SELECT player_name FROM (SELECT player_name, height, DENSE_RANK() OVER (ORDER BY height DESC) as rank FROM Player) WHERE rank = 1",
+  "difficulty": "simple",
+  "question_en": "List down most tallest players' name.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1124,
+  "db_id": "european_football_2",
+  "question": "队友进攻时也倾向于积极前插的球员有哪些？列出名字。",
+  "evidence": "tend to be attacking when their mates were doing attack moves refers to attacking_work_rate = 'high';",
+  "SQL": "SELECT DISTINCT t1.player_name FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t2.attacking_work_rate = 'high'",
+  "difficulty": "moderate",
+  "question_en": "Who are the players that tend to be attacking when their mates were doing attack moves? List down their name.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1130,
+  "db_id": "european_football_2",
+  "question": "创造机会时传球偏保守的球队，简称是什么？",
+  "evidence": "played safe while creating chance of passing refers to chanceCreationPassingClass = 'Safe'; short name of team refers to team_short_name",
+  "SQL": "SELECT DISTINCT t1.team_short_name FROM Team AS t1 INNER JOIN Team_Attributes AS t2 ON t1.team_api_id = t2.team_api_id WHERE t2.chanceCreationPassingClass = 'Safe'",
+  "difficulty": "moderate",
+  "question_en": "What are the short name of team who played safe while creating chance of passing?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1134,
+  "db_id": "european_football_2",
+  "question": "6 号和 23 号球员的弹跳评分相差多少？",
+  "evidence": "difference between players 6 and 23's jumping scores refers to SUBTRACT(jumping AND id = 6,jumping AND id = 23)",
+  "SQL": "SELECT SUM(CASE WHEN t1.id = 6 THEN t1.jumping ELSE 0 END) - SUM(CASE WHEN t1.id = 23 THEN t1.jumping ELSE 0 END) FROM Player_Attributes AS t1",
+  "difficulty": "simple",
+  "question_en": "What is the difference between players 6 and 23's jumping scores?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1139,
+  "db_id": "european_football_2",
+  "question": "2008 年 9 月 24 日比利时甲级联赛的那场比赛，主客队最终比分是多少？",
+  "evidence": "September 24, 2008 refers to date like '2008-09-24%'; in the Belgian Jupiler League refers to League.name = 'Belgium Jupiler League'; final score for home team refers to home_team_goal; final score for away team refers to away_team_goal",
+  "SQL": "SELECT t2.home_team_goal, t2.away_team_goal FROM League AS t1 INNER JOIN Match AS t2 ON t1.id = t2.league_id WHERE t1.name = 'Belgium Jupiler League' AND t2.`date` LIKE '2008-09-24%'",
+  "difficulty": "challenging",
+  "question_en": "What was the final score for the match on September 24, 2008, in the Belgian Jupiler League between the home team and the away team?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1141,
+  "db_id": "european_football_2",
+  "question": "KSV Cercle Brugge 队的速度类型是慢速、均衡还是快速？",
+  "evidence": "KSV Cercle Brugge refers to team_long_name = 'KSV Cercle Brugge'; speed class refers to buildUpPlaySpeedClass",
+  "SQL": "SELECT DISTINCT t1.buildUpPlaySpeedClass FROM Team_Attributes AS t1 INNER JOIN Team AS t2 ON t1.team_api_id = t2.team_api_id WHERE t2.team_long_name = 'KSV Cercle Brugge'",
+  "difficulty": "moderate",
+  "question_en": "Does the KSV Cercle Brugge team have a slow, balanced or fast speed class?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1146,
+  "db_id": "european_football_2",
+  "question": "进球最多的客队全称是什么？",
+  "evidence": "full name refers to team_long_name; away team refers to away_team_api_id; scored the most goals refers to MAX(away_team_goal)",
+  "SQL": "SELECT t2.team_long_name FROM Match AS t1 INNER JOIN Team AS t2 ON t1.away_team_api_id = t2.team_api_id ORDER BY t1.away_team_goal DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "Please provide the full name of the away team that scored the most goals.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1148,
+  "db_id": "european_football_2",
+  "question": "身高不到 180 厘米的球员中，综合力量超过 70 的占多少比例？",
+  "evidence": "percentage refers to DIVIDE(COUNT(height < 180 AND overall_rating > 70),COUNT(id)) * 100",
+  "SQL": "SELECT CAST(COUNT(CASE WHEN t2.overall_rating > 70  AND t1.height < 180 THEN t1.id ELSE NULL END) AS REAL) * 100 / COUNT(t1.id) percent FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id ",
+  "difficulty": "moderate",
+  "question_en": "What is the percentage of players that are under 180 cm who have an overall strength of more than 70?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1155,
+  "db_id": "thrombosis_prediction",
+  "question": "列出 LDH 超出正常范围的病人的 ID、性别和生日。",
+  "evidence": "LDH beyond normal range refers to LDH > '500';",
+  "SQL": "SELECT DISTINCT T1.ID, T1.SEX, T1.Birthday FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.LDH > 500",
+  "difficulty": "simple",
+  "question_en": "List the patient ID, sex and birthday of patient with LDH beyond normal range.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1156,
+  "db_id": "thrombosis_prediction",
+  "question": "凝血程度为阳性的病人，ID 和年龄分别是多少？",
+  "evidence": "age refers to SUBTRACT(year(current_timestamp), year(Birthday)); positive degree of coagulation refers to RVVT = '+';",
+  "SQL": "SELECT DISTINCT T1.ID, STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', T1.Birthday) FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID WHERE T2.RVVT = '+'",
+  "difficulty": "moderate",
+  "question_en": "State the ID and age of patient with positive degree of coagulation.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1157,
+  "db_id": "thrombosis_prediction",
+  "question": "对于血栓程度严重的病人，列出其 ID、性别和该病人被诊断出的疾病。",
+  "evidence": "severe degree of thrombosis refers to thrombosis = 2; disease refers to diagnosis;",
+  "SQL": "SELECT DISTINCT T1.ID, T1.SEX, T1.Diagnosis FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID WHERE T2.Thrombosis = 2",
+  "difficulty": "simple",
+  "question_en": "For patients with severe degree of thrombosis, list their ID, sex and disease the patient is diagnosed with.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1185,
+  "db_id": "thrombosis_prediction",
+  "question": "1959 年 2 月 18 日出生的那位病人，1981 年 11 月到 12 月总胆固醇的下降率是多少？",
+  "evidence": "born on 1959/2/18 refers to Birthday = '1959-02-18'; calculation = DIVISION(SUBTRACT(SUM(Birthday = '1959-02-18' and Date like '1981-11-%' THEN `T-CHO`), SUM(Birthday = '1959-02-18' and Date like '1981-12-%' THEN `T-CHO`)), SUM(Birthday = '1959-02-18' and Date like '1981-12-%' THEN `T-CHO`))",
+  "SQL": "SELECT CAST((SUM(CASE WHEN T2.Date LIKE '1981-11-%' THEN T2.`T-CHO` ELSE 0 END) - SUM(CASE WHEN T2.Date LIKE '1981-12-%' THEN T2.`T-CHO` ELSE 0 END)) AS REAL) / SUM(CASE WHEN T2.Date LIKE '1981-12-%' THEN T2.`T-CHO` ELSE 0 END) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.Birthday = '1959-02-18'",
+  "difficulty": "challenging",
+  "question_en": "For the patient who was born on 1959/2/18, what is the decrease rate for his/her total cholesterol from November to December in 1981?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1220,
+  "db_id": "thrombosis_prediction",
+  "question": "列出尿素氮（UN）刚好处于临界合格线的病人的 ID、性别和生日。",
+  "evidence": "urea nitrogen (UN) just within the borderline of passing refers to UN = 29; ",
+  "SQL": "SELECT DISTINCT T1.ID, T1.SEX, T1.Birthday FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.UN = 29",
+  "difficulty": "simple",
+  "question_en": "Provide all ID, sex and birthday of patients whose urea nitrogen (UN) just within the borderline of passing?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1238,
+  "db_id": "thrombosis_prediction",
+  "question": "确诊 SLE 的病人里，血红蛋白正常的年龄最大的是谁？给出 ID 和性别。",
+  "evidence": "diagnosed with SLE refers to Diagnosis = 'SLE'; The larger the birthday value, the younger the person is, and vice versa; normal hemoglobin level refers to 10 < HGB < 17;",
+  "SQL": "SELECT T1.ID, T1.SEX FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.Diagnosis = 'SLE' AND T2.HGB > 10 AND T2.HGB < 17 ORDER BY T1.Birthday ASC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "Among the patients who were diagnosed with SLE, who is the oldest with normal hemoglobin level. Provide the ID and sex.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1239,
+  "db_id": "thrombosis_prediction",
+  "question": "至少两次化验显示红细胞压积超出正常范围的病人，ID 和年龄是多少？",
+  "evidence": "age = SUBTRACT(year(current_timestamp), year(Birthday)); patient with two or more laboratory examinations refers to COUNT(ID) > 2; hematoclit level exceeded the normal range refers to HCT > = 52;",
+  "SQL": "SELECT DISTINCT T1.ID, STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', T1.Birthday) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.ID IN ( SELECT ID FROM Laboratory WHERE HCT >= 52 GROUP BY ID HAVING COUNT(ID) >= 2 )",
+  "difficulty": "challenging",
+  "question_en": "Name the ID and age of patient with two or more laboratory examinations which show their hematoclit level exceeded the normal range.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1334,
+  "db_id": "student_club",
+  "question": "列出在伊利诺伊州长大的社团成员全名。",
+  "evidence": "full name of member refers to first_name, last_name",
+  "SQL": "SELECT T1.first_name, T1.last_name FROM member AS T1 INNER JOIN zip_code AS T2 ON T1.zip = T2.zip_code WHERE T2.state = 'Illinois'",
+  "difficulty": "simple",
+  "question_en": "List the full name of the Student_Club members that grew up in Illinois state.",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1338,
+  "db_id": "student_club",
+  "question": "2019 年 10 月 8 日 October Meeting 的每笔支出都批准了吗？",
+  "evidence": "event_name = 'October Meeting' where event_date = '2019-10-08'; approved = True means expenses was approved; approved = False means expenses was not approved",
+  "SQL": "SELECT T3.approved FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event INNER JOIN expense AS T3 ON T2.budget_id = T3.link_to_budget WHERE T1.event_name = 'October Meeting' AND T1.event_date LIKE '2019-10-08%'",
+  "difficulty": "moderate",
+  "question_en": "Was each expense in October Meeting on October 8, 2019 approved?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1352,
+  "db_id": "student_club",
+  "question": "Business 专业的社团成员里，穿 M 码 T 恤的有几个？",
+  "evidence": "'Business' is a major name; wear medium size t-shirt refers to t_shirt_size = 'Medium'",
+  "SQL": "SELECT COUNT(T1.member_id) FROM member AS T1 INNER JOIN major AS T2 ON T1.link_to_major = T2.major_id WHERE T2.major_name = 'Business' AND T1.t_shirt_size = 'Medium'",
+  "difficulty": "moderate",
+  "question_en": "For all the club members from \"Business\" major, how many of them wear medium size t-shirt?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1356,
+  "db_id": "student_club",
+  "question": "社团主席是哪个院系的？",
+  "evidence": "'President' is a position of Student Club",
+  "SQL": "SELECT T2.department FROM member AS T1 INNER JOIN major AS T2 ON T1.link_to_major = T2.major_id WHERE T1.position = 'President'",
+  "difficulty": "simple",
+  "question_en": "Which department was the President of the club in?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1359,
+  "db_id": "student_club",
+  "question": "\"Yearly Kickoff\" 活动的广告预算是 \"October Meeting\" 的几倍？",
+  "evidence": "budget in Advertisement refer to category = 'Advertisement' in the budget table; DIVIDE(SUM(amount when event_name = 'Yearly Kickoff'), SUM(amount when event_name = 'October Meeting'))",
+  "SQL": "SELECT CAST(SUM(CASE WHEN T2.event_name = 'Yearly Kickoff' THEN T1.amount ELSE 0 END) AS REAL) / SUM(CASE WHEN T2.event_name = 'October Meeting' THEN T1.amount ELSE 0 END) FROM budget AS T1 INNER JOIN event AS T2 ON T1.link_to_event = T2.event_id WHERE T1.category = 'Advertisement' AND T2.type = 'Meeting'",
+  "difficulty": "challenging",
+  "question_en": "How many times was the budget in Advertisement for \"Yearly Kickoff\" meeting more than \"October Meeting\"?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1362,
+  "db_id": "student_club",
+  "question": "弗吉尼亚州的 Orange County 有几个城市？",
+  "evidence": "Orange County is the county name, Virginia is the state name",
+  "SQL": "SELECT COUNT(city) FROM zip_code WHERE county = 'Orange County' AND state = 'Virginia'",
+  "difficulty": "simple",
+  "question_en": "How many cities are there in Orange County, Virginia?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1380,
+  "db_id": "student_club",
+  "question": "食品上一共花了多少钱？",
+  "evidence": "total amount of money spent refers to SUM(spent); spent for food refers to category = 'Food'",
+  "SQL": "SELECT SUM(spent) FROM budget WHERE category = 'Food'",
+  "difficulty": "simple",
+  "question_en": "What is the total amount of money spent for food?",
+  "needs_mapping": true
+ },
+ {
+  "question_id": 1390,
+  "db_id": "student_club",
+  "question": "按所有活动的总花费算，Yearly Kickoff 活动的花费占百分之多少？",
+  "evidence": "percentage = DIVIDE(SUM(cost where event_name = 'Yearly Kickoff'), SUM(cost)) * 100",
+  "SQL": "SELECT CAST(SUM(CASE WHEN T1.event_name = 'Yearly Kickoff' THEN T3.cost ELSE 0 END) AS REAL) * 100 / SUM(T3.cost) FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event INNER JOIN expense AS T3 ON T2.budget_id = T3.link_to_budget",
+  "difficulty": "moderate",
+  "question_en": "Based on the total cost for all event, what is the percentage of cost for Yearly Kickoff event?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1394,
+  "db_id": "student_club",
+  "question": "社团里有多少成员的专业是 'Physics Teaching'？",
+  "evidence": "'Physics Teaching' is the major_name;",
+  "SQL": "SELECT COUNT(T2.member_id) FROM major AS T1 INNER JOIN member AS T2 ON T1.major_id = T2.link_to_major WHERE T1.major_name = 'Physics Teaching'",
+  "difficulty": "simple",
+  "question_en": "How many members of the Student_Club have major in 'Physics Teaching'?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1399,
+  "db_id": "student_club",
+  "question": "Maya Mclean 参加了 'Women's Soccer' 活动吗？",
+  "evidence": "Maya Mclean is the full name; full name refers to first_name, last_name; 'Women's Soccer' is an event_name",
+  "SQL": "SELECT CASE WHEN T3.event_name = 'Women''s Soccer' THEN 'YES' END AS result FROM member AS T1 INNER JOIN attendance AS T2 ON T1.member_id = T2.link_to_member INNER JOIN event AS T3 ON T2.link_to_event = T3.event_id WHERE T1.first_name = 'Maya' AND T1.last_name = 'Mclean'",
+  "difficulty": "moderate",
+  "question_en": "Did Maya Mclean attend the 'Women's Soccer' event?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1409,
+  "db_id": "student_club",
+  "question": "2019 年 8 月 20 日一共支出了多少钱？",
+  "evidence": "total expense refers SUM(cost) where expense_date = '2019-08-20'",
+  "SQL": "SELECT SUM(cost) FROM expense WHERE expense_date = '2019-08-20'",
+  "difficulty": "simple",
+  "question_en": "Mention the total expense used on 8/20/2019.",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1472,
+  "db_id": "debit_card_specializing",
+  "question": "2012 年 LAM 客户中，谁的消费量最少？",
+  "evidence": "Year 2012 can be presented as Between 201201 And 201212; The first 4 strings of the Date values in the yearmonth table can represent year.",
+  "SQL": "SELECT T1.CustomerID FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Segment = 'LAM' AND SUBSTR(T2.Date, 1, 4) = '2012' GROUP BY T1.CustomerID ORDER BY SUM(T2.Consumption) ASC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "In 2012, who had the least consumption in LAM?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1480,
+  "db_id": "debit_card_specializing",
+  "question": "2013 年 SME 客户的用气高峰是哪个月？",
+  "evidence": "Year 2013 can be presented as Between 201301 And 201312; The first 4 strings of the Date values in the yearmonth table can represent year; The 5th and 6th string of the date can refer to month.",
+  "SQL": "SELECT SUBSTR(T2.Date, 5, 2) FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE SUBSTR(T2.Date, 1, 4) = '2013' AND T1.Segment = 'SME' GROUP BY SUBSTR(T2.Date, 5, 2) ORDER BY SUM(T2.Consumption) DESC LIMIT 1",
+  "difficulty": "moderate",
+  "question_en": "What was the gas consumption peak month for SME customers in 2013?",
+  "needs_mapping": false
+ },
+ {
+  "question_id": 1524,
+  "db_id": "debit_card_specializing",
+  "question": "2012 年 8 月 24 日消费了 548.4 的那位客户，是哪个国家的？",
+  "evidence": "'2012/8/24' can be represented by '2012-08-24'",
+  "SQL": "SELECT T2.Country FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T1.Date = '2012-08-24' AND T1.Price  = 548.4",
+  "difficulty": "simple",
+  "question_en": "What's the nationality of the customer who spent 548.4 in 2012/8/24?",
+  "needs_mapping": false
+ }
+]

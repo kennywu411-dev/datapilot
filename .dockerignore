@@ -1,0 +1,10 @@
+.env
+.venv
+data
+dist
+runs
+web
+docs
+third_party
+.git
+**/__pycache__

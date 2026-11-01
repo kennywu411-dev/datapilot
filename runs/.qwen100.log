@@ -1,0 +1,107 @@
+100 题 × 1 组配置，预估花费约 $0.00（未计缓存，偏保守）
+[1/100] qwen7b r0 q17 ✗ ok
+[2/100] qwen7b r0 q31 ✗ ok
+[3/100] qwen7b r0 q41 ✗ ok
+[4/100] qwen7b r0 q79 ✓
+[5/100] qwen7b r0 q92 ✓
+[6/100] qwen7b r0 q95 ✗ pred_error
+[7/100] qwen7b r0 q99 ✓
+[8/100] qwen7b r0 q115 ✓
+[9/100] qwen7b r0 q116 ✗ ok
+[10/100] qwen7b r0 q129 ✗ ok
+[11/100] qwen7b r0 q137 ✓
+[12/100] qwen7b r0 q152 ✗ ok
+[13/100] qwen7b r0 q169 ✗ ok
+[14/100] qwen7b r0 q189 ✓
+[15/100] qwen7b r0 q207 ✗ ok
+[16/100] qwen7b r0 q220 ✗ ok
+[17/100] qwen7b r0 q232 ✗ ok
+[18/100] qwen7b r0 q243 ✓
+[19/100] qwen7b r0 q245 ✓
+[20/100] qwen7b r0 q255 ✗ ok
+[21/100] qwen7b r0 q346 ✓
+[22/100] qwen7b r0 q377 ✗ ok
+[23/100] qwen7b r0 q407 ✓
+[24/100] qwen7b r0 q414 ✓
+[25/100] qwen7b r0 q424 ✓
+[26/100] qwen7b r0 q427 ✓
+[27/100] qwen7b r0 q468 ✓
+[28/100] qwen7b r0 q469 ✗ pred_error
+[29/100] qwen7b r0 q474 ✓
+[30/100] qwen7b r0 q480 ✓
+[31/100] qwen7b r0 q537 ✗ ok
+[32/100] qwen7b r0 q563 ✓
+[33/100] qwen7b r0 q565 ✓
+[34/100] qwen7b r0 q572 ✓
+[35/100] qwen7b r0 q586 ✗ ok
+[36/100] qwen7b r0 q598 ✗ ok
+[37/100] qwen7b r0 q639 ✗ pred_error
+[38/100] qwen7b r0 q671 ✓
+[39/100] qwen7b r0 q672 ✗ ok
+[40/100] qwen7b r0 q678 ✗ ok
+[41/100] qwen7b r0 q683 ✗ ok
+[42/100] qwen7b r0 q701 ✗ timeout
+[43/100] qwen7b r0 q716 ✓
+[44/100] qwen7b r0 q723 ✓
+[45/100] qwen7b r0 q724 ✓
+[46/100] qwen7b r0 q737 ✓
+[47/100] qwen7b r0 q740 ✓
+[48/100] qwen7b r0 q743 ✗ ok
+[49/100] qwen7b r0 q753 ✓
+[50/100] qwen7b r0 q760 ✓
+[51/100] qwen7b r0 q782 ✓
+[52/100] qwen7b r0 q800 ✓
+[53/100] qwen7b r0 q824 ✓
+[54/100] qwen7b r0 q847 ✓
+[55/100] qwen7b r0 q861 ✗ ok
+[56/100] qwen7b r0 q877 ✗ ok
+[57/100] qwen7b r0 q896 ✗ ok
+[58/100] qwen7b r0 q931 ✗ ok
+[59/100] qwen7b r0 q937 ✓
+[60/100] qwen7b r0 q945 ✓
+[61/100] qwen7b r0 q950 ✓
+[62/100] qwen7b r0 q951 ✓
+[63/100] qwen7b r0 q971 ✓
+[64/100] qwen7b r0 q994 ✗ ok
+[65/100] qwen7b r0 q1003 ✗ ok
+[66/100] qwen7b r0 q1029 ✗ ok
+[67/100] qwen7b r0 q1032 ✗ ok
+[68/100] qwen7b r0 q1036 ✓
+[69/100] qwen7b r0 q1057 ✓
+[70/100] qwen7b r0 q1092 ✗ ok
+[71/100] qwen7b r0 q1094 ✗ ok
+[72/100] qwen7b r0 q1116 ✓
+[73/100] qwen7b r0 q1124 ✓
+[74/100] qwen7b r0 q1130 ✓
+[75/100] qwen7b r0 q1134 ✓
+[76/100] qwen7b r0 q1139 ✓
+[77/100] qwen7b r0 q1141 ✗ pred_error
+[78/100] qwen7b r0 q1146 ✓
+[79/100] qwen7b r0 q1148 ✓
+[80/100] qwen7b r0 q1155 ✗ pred_error
+[81/100] qwen7b r0 q1156 ✓
+[82/100] qwen7b r0 q1157 ✗ pred_error
+[83/100] qwen7b r0 q1185 ✓
+[84/100] qwen7b r0 q1220 ✓
+[85/100] qwen7b r0 q1238 ✗ pred_error
+[86/100] qwen7b r0 q1239 ✗ ok
+[87/100] qwen7b r0 q1334 ✓
+[88/100] qwen7b r0 q1338 ✗ pred_error
+[89/100] qwen7b r0 q1352 ✓
+[90/100] qwen7b r0 q1356 ✓
+[91/100] qwen7b r0 q1359 ✓
+[92/100] qwen7b r0 q1362 ✓
+[93/100] qwen7b r0 q1380 ✓
+[94/100] qwen7b r0 q1390 ✗ pred_error
+[95/100] qwen7b r0 q1394 ✓
+[96/100] qwen7b r0 q1399 ✗ ok
+[97/100] qwen7b r0 q1409 ✓
+[98/100] qwen7b r0 q1472 ✗ ok
+[99/100] qwen7b r0 q1480 ✗ ok
+[100/100] qwen7b r0 q1524 ✗ ok
+本次实际花费 $0.0000
+
+run_id=qwen100-7e5bf2
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| qwen7b | e4_correct | medium | 100 | 56.0% | 46.2%–65.3% | 20/30 | 29/50 | 7/20 | $0.0000 | $0.000 | 5.0s / 19.1s | {'ok': 90, 'pred_error': 9, 'timeout': 1} |

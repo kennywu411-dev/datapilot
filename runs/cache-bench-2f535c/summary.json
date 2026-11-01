@@ -1,0 +1,18 @@
+{
+  "run_id": "cache-bench-2f535c",
+  "model": "sonnet",
+  "store": "redis",
+  "requests": 200,
+  "distribution": "构造：140 道不重复 + 60 次重复（一半原样、一半改写）",
+  "hit_rate": 0.295,
+  "repeat_hit_rate": 0.9833333333333333,
+  "repeat_variant_hit_rate": 0.9629629629629629,
+  "hit_latency_p50": 0.0008913750061765313,
+  "hit_latency_p95": 0.0026360419869888574,
+  "miss_latency_p50": 3.711004041004344,
+  "miss_latency_p95": 6.090830500004813,
+  "cost_actual": 0.6522690000000003,
+  "cost_without_cache_est": 0.925204255319149,
+  "errors": 0,
+  "cost_saved_pct": 0.2949999999999997
+}

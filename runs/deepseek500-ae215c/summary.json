@@ -1,0 +1,37 @@
+[
+  {
+    "model": "deepseek",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.668,
+    "ci95": [
+      0.6255778658042676,
+      0.707860262369349
+    ],
+    "by_difficulty": {
+      "simple": [
+        114,
+        148
+      ],
+      "moderate": [
+        162,
+        250
+      ],
+      "challenging": [
+        58,
+        102
+      ]
+    },
+    "status": {
+      "ok": 493,
+      "no_sql": 5,
+      "timeout": 2
+    },
+    "cost_total": 0.66579141,
+    "cost_per_q": 0.00133158282,
+    "latency_p50": 3.1728280420065857,
+    "latency_p95": 28.53671437498997
+  }
+]

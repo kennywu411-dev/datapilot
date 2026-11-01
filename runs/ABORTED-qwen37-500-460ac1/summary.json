@@ -1,0 +1,38 @@
+[
+  {
+    "model": "qwen",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.5,
+    "ci95": [
+      0.45634046916507415,
+      0.5436595308349258
+    ],
+    "by_difficulty": {
+      "simple": [
+        96,
+        148
+      ],
+      "moderate": [
+        112,
+        250
+      ],
+      "challenging": [
+        42,
+        102
+      ]
+    },
+    "status": {
+      "no_sql": 34,
+      "ok": 348,
+      "timeout": 1,
+      "llm_error": 117
+    },
+    "cost_total": 0.143658532,
+    "cost_per_q": 0.000287317064,
+    "latency_p50": 2.7010676659992896,
+    "latency_p95": 6.285265165992314
+  }
+]

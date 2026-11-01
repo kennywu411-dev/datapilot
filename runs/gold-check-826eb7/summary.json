@@ -1,0 +1,46 @@
+{
+  "run_id": "gold-check-826eb7",
+  "questions": 500,
+  "gold_status": {
+    "ok": 499,
+    "timeout": 1
+  },
+  "gold_errors": [
+    701
+  ],
+  "gold_empty": [],
+  "gold_all_null": [
+    1526,
+    944
+  ],
+  "gold_p50_s": 0.001,
+  "gold_max_s": 29.581,
+  "selfcheck_shuffle_acc": 0.99,
+  "selfcheck_shuffle_fail": [
+    1144,
+    751,
+    701,
+    349,
+    518
+  ],
+  "selfcheck_select1_acc": 0.032,
+  "selfcheck_select1_hit": [
+    1322,
+    1352,
+    1394,
+    1164,
+    1171,
+    1189,
+    1275,
+    1134,
+    933,
+    945,
+    967,
+    547,
+    472,
+    245,
+    260,
+    62
+  ],
+  "wall_s": 101.3
+}

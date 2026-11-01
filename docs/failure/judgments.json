@@ -1,0 +1,252 @@
+{
+ "23": {
+  "pre": "C",
+  "reason": "题目要 full street address；模型多返回了 City/Zip/State。“完整地址”有歧义",
+  "final": "C"
+ },
+ "27": {
+  "pre": "C",
+  "reason": "标准答案 LEFT JOIN 保留无成绩学校（8574 行），模型 INNER JOIN（813 行）。问“写作平均分”，无成绩的学校是否该列出有歧义",
+  "final": "C"
+ },
+ "28": {
+  "pre": "C",
+  "reason": "题目说 “DOC type”，模型选了字面最匹配的 DOCType 列（描述文字），标准答案用 DOC（代码）",
+  "final": "C"
+ },
+ "37": {
+  "pre": "E",
+  "reason": "两边都把 NumGE1500 为 NULL 的学校排在最前（SQLite 升序 NULL 在前），都不是真正最低比率；标准答案列顺序也和题目要求的 Street, City, Zip, State 不一致",
+  "final": "E"
+ },
+ "41": {
+  "pre": "B",
+  "reason": "标准答案把没有阅读成绩（NULL）的学校也算进“前 5 名”；按成绩排名应排除 NULL",
+  "final": "B"
+ },
+ "115": {
+  "pre": "B",
+  "reason": "A4（人口）是 TEXT，标准答案按字符串排序，'93931' 排在 '177686' 前，选错了人口最多的地区；模型 CAST 后正确（已查证）",
+  "final": "B"
+ },
+ "129": {
+  "pre": "B",
+  "reason": "题目问取款最多的前 10，标准答案按地区名字母序取前 10，与“top withdrawals”无关",
+  "final": "B"
+ },
+ "207": {
+  "pre": "B",
+  "reason": "标准答案按 molecule_id 关联原子和键：分子里有双键就把所有原子算进来；模型经 connected 表取真正参与双键的原子",
+  "final": "B"
+ },
+ "215": {
+  "pre": "C",
+  "reason": "“single bond molecules”：模型按分子级（含单键的分子里的原子），标准答案按原子是否连着单键。题面更接近模型的理解",
+  "final": "C"
+ },
+ "218": {
+  "pre": "B",
+  "reason": "标准答案统计“含非氟原子的分子”占比，几乎恒为 100%，不是“不含氟的分子”；模型逻辑正确",
+  "final": "B"
+ },
+ "231": {
+  "pre": "B",
+  "reason": "题目同时问键型和是否致癌，标准答案只返回键型，漏了致癌标签",
+  "final": "B"
+ },
+ "245": {
+  "pre": "F",
+  "reason": "生成失控（P8），撞到 16000 token 上限没有产出 SQL；已修复",
+  "final": "F"
+ },
+ "281": {
+  "pre": "C",
+  "reason": "“Tally” 可理解为计数（模型按元素计数，多一列）或列出元素（标准答案）；标准答案的过滤条件也与 evidence 写法不同",
+  "final": "C"
+ },
+ "341": {
+  "pre": "B",
+  "reason": "标准答案笔误：cardKingdomId IS NULL OR cardKingdomId IS NULL（同一条件写两遍）；evidence 说的是 cardKingdomFoilId，模型按 evidence 写",
+  "final": "B"
+ },
+ "383": {
+  "pre": "B",
+  "reason": "标准答案按 legalities 行计数，一张卡在多个赛制被禁就重复计数（258）；问“多少张卡”应去重（89）",
+  "final": "B"
+ },
+ "391": {
+  "pre": "C",
+  "reason": "“which are” 没说返回名称还是 ID；模型返回 id，标准答案返回 name",
+  "final": "C"
+ },
+ "402": {
+  "pre": "B",
+  "reason": "题目要求百分比并“按 ID 列出”，标准答案只返回百分比",
+  "final": "B"
+ },
+ "473": {
+  "pre": "D",
+  "reason": "语义相同：标准答案 'YES'/'NO'，模型 0/1。表示方式不同被判错",
+  "final": "D"
+ },
+ "586": {
+  "pre": "B",
+  "reason": "题目问 “Which user”，evidence 说 user 指 DisplayName；标准答案多返回了 Title",
+  "final": "B"
+ },
+ "637": {
+  "pre": "B",
+  "reason": "“his posts” 应是他发的帖（OwnerUserId）；标准答案经 postHistory 关联（含编辑过的帖），结果有重复和 NULL",
+  "final": "B"
+ },
+ "701": {
+  "pre": "D",
+  "reason": "标准 SQL 单独执行 158 秒，官方口径下必然超时；模型结果 0.6644… 与标准答案的真实结果一致",
+  "final": "D"
+ },
+ "736": {
+  "pre": "C",
+  "reason": "智力最低有 3 人并列，标准答案 LIMIT 1 任取一个，模型返回全部并列者",
+  "final": "C"
+ },
+ "772": {
+  "pre": "C",
+  "reason": "evidence 说 eyes 指 eye_colour_id（返回 ID），模型返回了颜色名称。常识上颜色名更合理，但不符合 evidence",
+  "final": "C"
+ },
+ "798": {
+  "pre": "C",
+  "reason": "模型多返回了英雄名一列；问“publisher”只要出版商",
+  "final": "C"
+ },
+ "892": {
+  "pre": "A",
+  "reason": "“得分最多的车手”应看积分榜（driverStandings，Vettel 397），模型用单场比赛得分（results，最高 50），选错了表",
+  "final": "A"
+ },
+ "906": {
+  "pre": "B",
+  "reason": "题目问“第一场比赛记录的得分”，应为单场得分 8（results）；标准答案用积分榜累计分 14（已查证）",
+  "final": "B"
+ },
+ "930": {
+  "pre": "C",
+  "reason": "“排名最高的那场比赛”：标准答案返回所有排名第 1 的比赛（37 场），模型返回 1 场",
+  "final": "C"
+ },
+ "931": {
+  "pre": "D",
+  "reason": "数值相同 202.484：标准答案是 TEXT '202.484'，模型 CAST 成 REAL，类型不同被判错",
+  "final": "D"
+ },
+ "963": {
+  "pre": "B",
+  "reason": "问“多少名法国车手”，标准答案数的是圈速记录行数（23295）；且时间解析 SUBSTR(time,7,2)/1000 写错",
+  "final": "B"
+ },
+ "967": {
+  "pre": "B",
+  "reason": "题目要求给出前 3 名的代号并统计荷兰车手数，标准答案只返回计数",
+  "final": "B"
+ },
+ "989": {
+  "pre": "B",
+  "reason": "问“谁是冠军并给出成绩”，标准答案只返回成绩，漏了车手",
+  "final": "B"
+ },
+ "1058": {
+  "pre": "F",
+  "reason": "生成失控（P8），没有产出 SQL；已修复",
+  "final": "F"
+ },
+ "1080": {
+  "pre": "B",
+  "reason": "问“多少名球员”，标准答案数的是属性快照行（1569），模型去重球员（189）",
+  "final": "B"
+ },
+ "1094": {
+  "pre": "E",
+  "reason": "球员有多期评分快照：标准答案把所有快照相加，模型的标量子查询任取一期。两者都没有明确选哪一期",
+  "final": "E"
+ },
+ "1107": {
+  "pre": "B",
+  "reason": "问“第一次”达到最高传中分的日期，标准答案按日期倒序取最晚一次，且没有限定为最高分",
+  "final": "B"
+ },
+ "1135": {
+  "pre": "B",
+  "reason": "标准答案返回属性表的行 id 而非球员 ID，且没排除 potential 为 NULL 的行（升序 NULL 在前）",
+  "final": "B"
+ },
+ "1144": {
+  "pre": "B",
+  "reason": "标准答案多返回 id 列（题目只要 finishing 和 curve），且用了没有 ORDER BY 的 LIMIT（P3）",
+  "final": "B"
+ },
+ "1175": {
+  "pre": "E",
+  "reason": "evidence 说用 Examination Date 算年龄，标准答案用了 Laboratory 的 Date；模型按 evidence 关联 Examination，却因此把没有检查记录的病人排除了，选出的病人也变了",
+  "final": "E"
+ },
+ "1179": {
+  "pre": "B",
+  "reason": "evidence 明确 anti-Cardiolipin 指 aCL IgM，标准答案却返回 IgA/IgG/IgM 三列",
+  "final": "B"
+ },
+ "1205": {
+  "pre": "D",
+  "reason": "语义相同：标准答案 true/false（1/0），模型 'Yes'/'No'",
+  "final": "D"
+ },
+ "1227": {
+  "pre": "B",
+  "reason": "平均年龄应按病人算，标准答案 JOIN 化验表后按化验行平均（化验多的病人权重大）",
+  "final": "B"
+ },
+ "1235": {
+  "pre": "A",
+  "reason": "内容完全相同，但题目顺序是“诊断、ID、年龄”，模型输出成 ID、诊断、年龄，列顺序错",
+  "final": "A"
+ },
+ "1243": {
+  "pre": "B",
+  "reason": "标准答案分母 COUNT(CASE … ELSE 0 END) 会把 0 也计数，等于数所有行；结果 1.2% 明显不对，模型按 evidence 得 78.4%",
+  "final": "B"
+ },
+ "1255": {
+  "pre": "B",
+  "reason": "标准答案按化验行计数（病人多次化验被重复计），且 NOT BETWEEN 40 AND 400 漏掉了 evidence 规定的 =40、=400 边界",
+  "final": "B"
+ },
+ "1427": {
+  "pre": "B",
+  "reason": "问预算类别，标准答案多返回了 type 列（全是 'Guest Speaker'）",
+  "final": "B"
+ },
+ "1486": {
+  "pre": "C",
+  "reason": "“Is it true…? If so, how many more?” 模型同时返回真假和差值，标准答案只返回差值",
+  "final": "C"
+ },
+ "1490": {
+  "pre": "B",
+  "reason": "evidence 说按客户数算，标准答案按月度消费行计数",
+  "final": "B"
+ },
+ "1525": {
+  "pre": "B",
+  "reason": "问“客户”的百分比，标准答案按交易笔数算，模型按去重客户算",
+  "final": "B"
+ },
+ "1526": {
+  "pre": "B",
+  "reason": "题目说支付 634.8，标准答案却用 Price = 1513.12，结果为 NULL",
+  "final": "B"
+ },
+ "1531": {
+  "pre": "B",
+  "reason": "evidence 说平均单价 = 总价 / 总数量，标准答案用 SUM(Price/Amount)；“最高消费客户”也用月度消费而非交易额",
+  "final": "B"
+ }
+}

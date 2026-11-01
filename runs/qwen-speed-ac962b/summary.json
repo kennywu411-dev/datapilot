@@ -1,0 +1,36 @@
+[
+  {
+    "model": "qwen7b",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 5,
+    "repeats": 1,
+    "ex": 0.4,
+    "ci95": [
+      0.1176182311592533,
+      0.769280067791163
+    ],
+    "by_difficulty": {
+      "simple": [
+        1,
+        1
+      ],
+      "moderate": [
+        0,
+        3
+      ],
+      "challenging": [
+        1,
+        1
+      ]
+    },
+    "status": {
+      "pred_error": 1,
+      "ok": 4
+    },
+    "cost_total": 0.0,
+    "cost_per_q": 0.0,
+    "latency_p50": 8.81546066699957,
+    "latency_p95": 34.90785337499983
+  }
+]

@@ -1,0 +1,44 @@
+[project]
+name = "datapilot"
+version = "0.0.1"
+description = "DataPilot：面向 ChatBI 场景的智能问数系统（BIRD Mini-Dev 评测）"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "anthropic>=2.1.0",
+    "fastapi>=0.159.1",
+    "langgraph>=1.2.16",
+    "mcp>=2",
+    "python-dotenv>=1.2.4",
+    "rank-bm25>=0.2.2",
+    "redis>=8.1.0",
+    "sqlglot>=30.24.0",
+    "sse-starlette>=3.5.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["."]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["third_party"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.17.1",
+]
