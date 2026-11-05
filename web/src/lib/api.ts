@@ -20,7 +20,7 @@ export type TableInfo = {
 };
 export type ChartSpec = { type: "kpi" | "line" | "bar" | "pie" | "table"; x?: string; y?: string[] };
 export type TableData = { columns: string[]; rows: unknown[][]; truncated: boolean };
-export type Step = { name: string; label: string; sql?: string; issues?: string[] };
+export type Step = { name: string; label: string; sql?: string; issues?: string[]; matched?: string[] };
 export type Done = { cached: boolean; latency_s: number; cost_usd: number; model: string };
 
 export type AskEvent =

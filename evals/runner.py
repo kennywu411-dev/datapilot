@@ -38,6 +38,7 @@ from datapilot.ex import evaluate_one  # noqa: E402
 from datapilot.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
 from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
 from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
+from datapilot.semantic import SemanticPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
 # 实验序列见 docs/adr/002-D2实验设计.md
@@ -60,6 +61,9 @@ PIPELINES = {
 ROUTE_MODELS = ("haiku", "sonnet")
 for _rule in RULES:
     PIPELINES[f"routed_{_rule.split('_')[0]}"] = RoutedPipeline(PIPELINES["e4_correct"], _rule)
+# 指标语义层（v1.5，ADR 006）：E4 外面包一层，口径注入 / 语义层直出（映射不了退回注入）
+PIPELINES["sem_context"] = SemanticPipeline(PIPELINES["e4_correct"], "context")
+PIPELINES["sem_compile"] = SemanticPipeline(PIPELINES["e4_correct"], "compile")
 # 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
@@ -117,7 +121,7 @@ async def run_one(q: dict, cfg: Config, llm: LLM, role: str | None = None) -> di
         pipe = PIPELINES[cfg.pipeline]
         if role is None:
             gen = await pipe(llm, path, q["question"], q["evidence"])
-        else:  # 行列级权限（v1.4）：只有固定流程和路由支持角色
+        else:  # 行列级权限（v1.4）：固定流程、路由、语义层流程支持角色
             gen = await pipe(llm, path, q["question"], q["evidence"], role)
     except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
         raise
@@ -386,10 +390,11 @@ def main(argv=None) -> None:
     validate(models, args.pipeline)
     if args.role:
         pipe = PIPELINES[args.pipeline]
-        base = pipe.base if isinstance(pipe, RoutedPipeline) else pipe
+        base = pipe.base if isinstance(pipe, (RoutedPipeline, SemanticPipeline)) else pipe
         if not isinstance(base, FixedPipeline) or base.cfg.schema != "enhanced":
             raise SystemExit(
-                "--role 只支持增强 schema 的固定流程和路由流程（如 e4_correct、routed_r1）"
+                "--role 只支持增强 schema 的固定流程、路由和语义层流程"
+                "（如 e4_correct、routed_r1、sem_context）"
             )
         for db in {q["db_id"] for q in questions}:
             config_role_check(db, args.role)

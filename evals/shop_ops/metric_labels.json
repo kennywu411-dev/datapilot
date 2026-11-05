@@ -1,0 +1,15 @@
+{
+ "_说明": "每题提到的指标 / 术语（按问题字面涉及的业务概念标注，不看模型输出）",
+ "1": [], "2": [], "3": ["order_count"], "4": [], "5": [], "6": [],
+ "7": ["ticket_count"], "8": ["order_count"], "9": ["ticket_open", "ticket_count"],
+ "10": ["new_users"], "11": ["sales"], "12": ["order_count"], "13": ["ticket_count"],
+ "14": ["aov"], "15": ["refund_rate"], "16": ["campaign_order", "valid_order"],
+ "17": ["sales"], "18": ["items_sold"], "19": ["ticket_count"], "20": ["buyers"],
+ "21": ["order_count"], "22": ["ticket_closed", "resolve_days"], "23": ["gross_profit"],
+ "24": ["delivered_order", "order_count"], "25": [], "26": ["new_users"],
+ "27": ["refund_amount"], "28": ["order_count"], "29": ["sales"], "30": ["sales"],
+ "31": ["after_sales_rate"], "32": ["repurchase_rate"], "33": ["sales"], "34": ["buyers"],
+ "35": [], "36": ["valid_order"], "37": ["first_order"],
+ "38": ["valid_order", "campaign_order", "aov"], "39": ["sales"],
+ "40": ["refund_amount", "sales"]
+}

@@ -9,6 +9,7 @@ dependencies = [
     "langgraph>=1.2.16",
     "mcp>=2",
     "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
     "rank-bm25>=0.2.2",
     "redis>=8.1.0",
     "sqlglot>=30.24.0",

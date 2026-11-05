@@ -78,6 +78,9 @@ function Steps({ turn }: { turn: Turn }) {
                   </ul>
                 )}
                 {s.issues && s.issues.length === 0 && <span className="ml-2 text-xs">没有发现问题</span>}
+                {s.matched && (
+                  <span className="ml-2 text-xs">{s.matched.length > 0 ? s.matched.join("、") : "没有匹配到指标"}</span>
+                )}
               </div>
             </li>
           ))}
