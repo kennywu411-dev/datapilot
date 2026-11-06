@@ -363,3 +363,30 @@ def test_compile_never_fans_out_one_to_many(layer):
     q = SemanticQuery(mappable=True, metric="new_users", group_by=["category"])
     with pytest.raises(NotCompilable):
         layer.compile(q)
+
+
+def test_time_dimension_filter_needs_time_column():
+    lay = SemanticLayer.from_dict(
+        {
+            "db_id": "t",
+            "metrics": {"n": {"name": "数量", "kind": "simple", "base": "x", "expr": "COUNT(*)"}},
+            "dimensions": {"month": {"name": "月份", "expr": "substr({time}, 1, 7)"}},
+        }
+    )
+    q = SemanticQuery(
+        mappable=True, metric="n", filters=[DimFilter(dimension="month", values=["2025-01"])]
+    )
+    with pytest.raises(NotCompilable, match="时间列"):
+        lay.compile(q)
+
+
+@needs_shop
+def test_follow_up_matches_only_current_question():
+    tools._tables_cached.cache_clear()
+    llm = ScriptedLLM([SQLAnswer(sql="SELECT 1")])
+    history = "-- Previous question: 2025 年的销售额\n-- Previous SQL: SELECT 1\n"
+    full = f"{history}-- Current question (may refer to the previous ones): 每笔订单平均金额是多少"
+    out = asyncio.run(
+        SemanticPipeline(E4, "context")(llm, SHOP, full, "", match_on="每笔订单平均金额是多少")
+    )
+    assert out.trace[0]["matched"] == ["aov"]  # 没有带上前一轮的"销售额"，模糊检索照常生效

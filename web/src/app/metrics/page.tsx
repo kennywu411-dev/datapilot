@@ -41,17 +41,22 @@ export default function MetricsPage() {
   }, []);
   useEffect(() => {
     api.roles(db).then(setRoles).catch(() => setRoles([]));
-    setRole("");
   }, [db]);
   useEffect(() => {
+    // 切换库或角色时旧请求可能晚到：只采用最后一次请求的结果
+    let stale = false;
     setError("");
     api
       .metrics(db, role || undefined)
-      .then(setCat)
+      .then((c) => !stale && setCat(c))
       .catch((e: Error) => {
+        if (stale) return;
         setCat(null);
         setError(e.message.startsWith("404") ? `${db} 还没有指标字典` : `加载失败：${e.message}`);
       });
+    return () => {
+      stale = true;
+    };
   }, [db, role]);
 
   const dims = useMemo(() => Object.fromEntries((cat?.dimensions ?? []).map((d) => [d.id, d.name])), [cat]);
@@ -68,7 +73,13 @@ export default function MetricsPage() {
       note="公司口径的唯一出处：问数时先按同义词匹配这里的指标和术语，把口径交给生成 SQL 的模型。每个指标列出计算方式、过滤条件、可分析维度，以及依赖的表和列（血缘）；切换角色可以看到哪些指标因列权限不能使用。"
     >
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        <select value={db} onChange={(e) => setDb(e.target.value)} className="rounded-md border bg-background px-2 py-1.5" aria-label="数据库">
+        <select
+          value={db}
+          onChange={(e) => {
+            setDb(e.target.value);
+            setRole(""); // 角色是按库定义的，换库时一并重置，避免带着旧角色多发一次请求
+          }}
+          className="rounded-md border bg-background px-2 py-1.5" aria-label="数据库">
           {(dbs.length ? dbs : [DEFAULT_DB]).map((d) => (
             <option key={d}>{d}</option>
           ))}

@@ -29,6 +29,7 @@ from sqlglot import exp
 from datapilot import rls
 from datapilot.baseline import GenerationResult
 from datapilot.llm import LLM
+from datapilot.schema import _sql_literal
 from datapilot.sql_guard import SQLRejected, run_readonly, table_columns
 
 METRICS_DIR = Path(__file__).with_name("metrics")
@@ -126,10 +127,6 @@ def _columns(fragment: str, *, strict: bool) -> set[tuple[str, str]]:
     return cols
 
 
-def _quote(v: str) -> str:
-    return "'" + str(v).replace("'", "''") + "'"
-
-
 def _bigrams(text: str) -> list[str]:
     s = re.sub(r"\s+", "", text.lower())
     return [s[i : i + 2] for i in range(len(s) - 1)] or ([s] if s else [])
@@ -153,6 +150,7 @@ class SemanticLayer:
         self.dimensions = dimensions
         self.time_columns = time_columns
         self.joins = joins
+        self._defs: dict[tuple[str, str], tuple[dict, set]] = {}
         self._check_refs()
         # 同义词按长度倒序：最长匹配，"有效订单数"不会再拆出"订单数"
         entries = [(s, mid, "metric") for mid, m in metrics.items() for s in (m.name, *m.synonyms)]
@@ -271,9 +269,13 @@ class SemanticLayer:
             (f"指标 {m.id}", m.reference_sql) for m in self.metrics.values() if m.reference_sql
         ]
         sqls += [(f"术语 {t.id}", t.reference_sql) for t in self.terms.values() if t.reference_sql]
+        simple = [m for m in self.metrics.values() if m.kind == "simple"]
         for d in self.dimensions.values():
-            base = next((m for m in self.metrics.values() if m.kind == "simple"), None)
-            if base is not None and self._reachable(base.base, d):
+            # 每个维度找一个能关联到它的指标来执行，售后、用户维度也都要跑到
+            base = next((m for m in simple if d.id in self.dimensions_for(m)), None)
+            if base is None:
+                errors.append(f"维度 {d.id} 没有任何指标能关联到")
+            else:
                 sqls.append(
                     (
                         f"维度 {d.id}",
@@ -393,7 +395,10 @@ class SemanticLayer:
     ) -> dict:
         """一个指标或术语的完整定义，含血缘（依赖的表和列）。
         当前角色看不到的列标在 restricted 里，计算片段照常给出：列名本身在表结构里也可见，
-        真正的限制在执行层。"""
+        真正的限制在执行层。字典加载后不变，除权限外的部分算一次后缓存。"""
+        if (id_, kind) in self._defs:
+            d, cols = self._defs[(id_, kind)]
+            return {**d, "restricted": self._hidden(cols, role)}
         if kind == "metric":
             m = self.metrics[id_]
             cols = self.columns_of_metric(m)
@@ -419,8 +424,8 @@ class SemanticLayer:
                     if m.kind == "simple"
                     else ""
                 ),
-                "dimensions": self.dimensions_for(m),
-                "dimension_names": [self.dimensions[i].name for i in self.dimensions_for(m)],
+                "dimensions": (dims := self.dimensions_for(m)),
+                "dimension_names": [self.dimensions[i].name for i in dims],
             }
         else:
             t = self.terms[id_]
@@ -437,8 +442,8 @@ class SemanticLayer:
             }
         d["lineage"] = [f"{t}.{c}" for t, c in sorted(cols)]
         d["tables"] = sorted({t for t, _ in cols})
-        d["restricted"] = self._hidden(cols, role)
-        return d
+        self._defs[(id_, kind)] = (d, cols)
+        return {**d, "restricted": self._hidden(cols, role)}
 
     def definitions(self, matches: list[Match], role: str | None = None) -> list[dict]:
         return [
@@ -537,7 +542,8 @@ class SemanticLayer:
         for d in (q.time_from, q.time_to):
             if d and not _DATE_RE.match(d):
                 raise NotCompilable(f"日期格式不对：{d}")
-        if (q.time_from or q.time_to or any("{time}" in d.expr for d in dims)) and not time_col:
+        uses_time = any("{time}" in d.expr for d in [*dims, *(d for d, _ in filters)])
+        if (q.time_from or q.time_to or uses_time) and not time_col:
             raise NotCompilable(f"{m.base} 没有时间列")
         if not q.output_metric and not dims:
             raise NotCompilable("不输出指标值时至少要有一个维度")
@@ -566,11 +572,14 @@ class SemanticLayer:
         joins = [f"JOIN {t} ON {tree[t][1]}" for t in tree if t in closure and tree[t]]
 
         where = self._where(m) + [t.sql for t in terms]
-        where += [f"{expr_of(d)} IN ({', '.join(_quote(v) for v in vals)})" for d, vals in filters]
+        where += [
+            f"{expr_of(d)} IN ({', '.join(_sql_literal(str(v)) for v in vals)})"
+            for d, vals in filters
+        ]
         if q.time_from:
-            where.append(f"{time_col} >= {_quote(q.time_from)}")
+            where.append(f"{time_col} >= {_sql_literal(q.time_from)}")
         if q.time_to:
-            where.append(f"{time_col} <= {_quote(q.time_to + ' 23:59:59')}")
+            where.append(f"{time_col} <= {_sql_literal(q.time_to + ' 23:59:59')}")
         value = f"ROUND({m.expr}, {q.round})" if q.round >= 0 else m.expr
         select = [expr_of(d) for d in dims] + ([value] if q.output_metric else [])
         sql = f"SELECT {', '.join(select)} FROM {m.base}"
@@ -626,19 +635,29 @@ class SemanticPipeline:
         self.base = base
         self.mode = mode
 
-    def _prepare(self, db_path: Path, question: str, evidence: str, role: str | None):
+    def _prepare(
+        self, db_path: Path, question: str, evidence: str, role: str | None, match_on: str | None
+    ):
         layer = load_layer(db_path.stem)
         if layer is None:
             return None, [], evidence
-        matches = layer.match(question)
+        matches = layer.match(match_on if match_on is not None else question)
         ctx = layer.context(matches, role)
         return layer, matches, "\n".join(p for p in (evidence.strip(), ctx) if p)
 
     async def astream(
-        self, llm: LLM, db_path: str | Path, question: str, evidence: str, role: str | None = None
+        self,
+        llm: LLM,
+        db_path: str | Path,
+        question: str,
+        evidence: str,
+        role: str | None = None,
+        match_on: str | None = None,
     ):
+        """match_on：只用这段文字匹配指标（追问时传当前问题，不让前几轮的问题和 SQL
+        把旧指标带进来、挡住当前问题的模糊检索）；默认用 question。"""
         db_path = Path(db_path)
-        layer, matches, merged = self._prepare(db_path, question, evidence, role)
+        layer, matches, merged = self._prepare(db_path, question, evidence, role, match_on)
         trace = []
         calls = []
         if layer is not None:
@@ -717,10 +736,16 @@ class SemanticPipeline:
         return res, result, step
 
     async def __call__(
-        self, llm: LLM, db_path: str | Path, question: str, evidence: str, role: str | None = None
+        self,
+        llm: LLM,
+        db_path: str | Path,
+        question: str,
+        evidence: str,
+        role: str | None = None,
+        match_on: str | None = None,
     ) -> GenerationResult:
         result = None
-        async for node, payload in self.astream(llm, db_path, question, evidence, role):
+        async for node, payload in self.astream(llm, db_path, question, evidence, role, match_on):
             if node == "result":
                 result = payload
         return result
@@ -729,7 +754,7 @@ class SemanticPipeline:
         self, db_path: str | Path, question: str, evidence: str, role: str | None = None
     ) -> int:
         db_path = Path(db_path)
-        layer, _, merged = self._prepare(db_path, question, evidence, role)
+        layer, _, merged = self._prepare(db_path, question, evidence, role, None)
         n = self.base.input_chars(db_path, question, merged, role)
         if layer is not None and self.mode == "compile":
             n += len(PLAN_SYSTEM) + len(layer.catalog()) + len(question)

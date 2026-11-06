@@ -20,14 +20,16 @@ import argparse
 import json
 import sys
 from dataclasses import asdict, dataclass, field
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
 import yaml
 
 from datapilot import config
+from datapilot.schema import _sql_literal as _lit
 from datapilot.sql_guard import connect_readonly
+from datapilot.tools import _q
 
 RULES_DIR = Path(__file__).with_name("quality_rules")
 SAMPLE_KEYS = 5
@@ -47,14 +49,6 @@ class Check:
     total: int = 0
     sample_keys: list = field(default_factory=list)
     detail: str = ""
-
-
-def _q(name: str) -> str:
-    return '"' + name.replace('"', '""') + '"'
-
-
-def _lit(v) -> str:
-    return "'" + str(v).replace("'", "''") + "'" if isinstance(v, str) else repr(v)
 
 
 def load_rules(db_id: str) -> dict:
@@ -255,13 +249,22 @@ class QualityChecker:
                 r.get("severity", "warn"),
             )
             ch.total = 1
+            try:
+                latest_day = None if latest is None else date.fromisoformat(str(latest)[:10])
+            except ValueError:
+                latest_day = None
             if latest is None:
                 ch.status, ch.failed, ch.detail = ch.severity, 1, "表里没有数据"
+            elif latest_day is None:
+                ch.status, ch.failed, ch.detail = ch.severity, 1, f"无法解析时间：{latest}"
             else:
-                age = (as_of - datetime.fromisoformat(str(latest)[:10]).date()).days
+                age = (as_of - latest_day).days
                 ch.detail = f"最新 {latest}，距 {as_of.isoformat()} {age} 天"
                 if age > limit:
                     ch.status, ch.failed = ch.severity, 1
+                elif age < 0:  # 数据晚于检查日期：时钟或时区有问题，或检查日期选错
+                    ch.status, ch.failed = ch.severity, 1
+                    ch.detail += "（数据晚于检查日期）"
             out.append(ch)
         return out
 

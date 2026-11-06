@@ -24,6 +24,8 @@ def score(questions: list[dict], labels: dict[str, list[str]]) -> dict:
     cases = []
     for q in questions:
         layer = load_layer(q["db_id"])
+        if layer is None:
+            raise SystemExit(f"{q['db_id']} 没有指标字典，不能评测指标匹配")
         matches = layer.match(q["question"])
         got = {m.id for m in matches}
         want = set(labels[str(q["question_id"])])

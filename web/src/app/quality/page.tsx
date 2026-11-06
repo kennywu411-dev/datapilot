@@ -36,12 +36,17 @@ export default function QualityPage() {
     api.databases().then((d) => setDbs(d.map((x) => x.db_id))).catch(() => setDbs([]));
   }, []);
   useEffect(() => {
+    // 切换库或日期时旧请求可能晚到：只采用最后一次请求的结果
+    let stale = false;
     setError("");
     setRep(null);
     api
       .quality(db, asOf || undefined)
-      .then(setRep)
-      .catch((e: Error) => setError(`加载失败：${e.message}`));
+      .then((r) => !stale && setRep(r))
+      .catch((e: Error) => !stale && setError(`加载失败：${e.message}`));
+    return () => {
+      stale = true;
+    };
   }, [db, asOf]);
 
   const groups = useMemo(() => {

@@ -181,3 +181,14 @@ async def test_api_quality_and_metrics_respect_roles():
         assert (await c.get("/api/databases/california_schools/metrics")).status_code == 404
         bad = await c.get("/api/databases/shop_ops/metrics", headers={"X-Role": "ceo"})
         assert bad.status_code == 403
+
+
+def test_freshness_flags_future_and_unparseable(mini):
+    future = run(mini, date(2025, 12, 31))["freshness:orders.created_at"]
+    assert future.status == "warn" and "晚于检查日期" in future.detail
+    conn = sqlite3.connect(mini)
+    conn.execute("UPDATE orders SET created_at = 'yesterday'")
+    conn.commit()
+    conn.close()
+    bad = run(mini)["freshness:orders.created_at"]
+    assert bad.status == "warn" and "无法解析" in bad.detail

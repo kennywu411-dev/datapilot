@@ -270,7 +270,9 @@ class ChatService:
         path = config.db_path(db_id)
         result, cost = None, 0.0
         definitions: list[dict] = []
-        async for node, update in PIPELINE.astream(llm, path, full_question, "", role):
+        async for node, update in PIPELINE.astream(
+            llm, path, full_question, "", role, match_on=question
+        ):
             if node == "result":
                 result = update
                 continue
@@ -286,6 +288,12 @@ class ChatService:
             yield {"event": "step", "data": {"name": node, "label": STEP_LABELS[node], **detail}}
         cost += sum(c.cost_usd for c in result.llm_calls)
 
+        events = []
+        if definitions:
+            # 本题用到的指标定义，前端可点开看口径；生成失败时也发，能看出按什么口径尝试的
+            events.append({"event": "metrics", "data": {"items": definitions}})
+            yield events[-1]
+
         if not result.sql:
             message = "模型没有生成 SQL，请换个问法再试。"
             yield {"event": "error", "data": {"message": message}}
@@ -293,11 +301,6 @@ class ChatService:
             yield {"event": "done", "data": self._done(start, False, cost)}
             return
 
-        events = []
-        if definitions:
-            # 本题用到的指标定义：前端放在回答下面，可以点开看口径
-            events.append({"event": "metrics", "data": {"items": definitions}})
-            yield events[-1]
         events.append({"event": "sql", "data": {"sql": result.sql}})
         yield events[-1]
         if result.exec_error or result.rows is None:
