@@ -103,7 +103,7 @@
 - README：截图、核心数字、架构、结果、复现、诚实边界、数据许可
 - ROI 测算框架（实测与假设分开、盈亏平衡、敏感性分析）
 - Agent Skill（接入新库并评测）+ scripts/add_database.py，并用它实际接入 opspilot 库；SOP
-- MCP 接入（项目级 .mcp.json）与冒烟脚本
+- MCP 客户端接入配置（项目级 .mcp.json）与冒烟脚本
 - 代码包脚本（文件清单检查 + 密钥扫描 + 解压自检）
 
 ### 修复

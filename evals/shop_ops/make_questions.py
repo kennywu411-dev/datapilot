@@ -1,5 +1,5 @@
 # ruff: noqa: E501  （题目数据，中文问法和 SQL 不折行便于对照）
-"""电商经营分析评测题（AI 起草，待本人确认）。运行后写出 questions.json。
+"""电商经营分析评测题（逐条执行核对，待本人确认）。运行后写出 questions.json。
 
 口径约定（写进需要的题的 evidence）：
 - 有效订单：status 不是 cancelled、pending

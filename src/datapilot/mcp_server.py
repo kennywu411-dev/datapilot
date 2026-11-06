@@ -1,6 +1,6 @@
 """DataPilot 只读 MCP Server（stdio）。
 
-把 tools.py 的数据库工具按 MCP 协议暴露，任何 MCP 客户端（
+把 tools.py 的数据库工具按 MCP 协议暴露，任何 MCP 客户端（桌面客户端、IDE 插件、
 MCP Inspector）都能调用。所有工具只读：run_sql 走 sql_guard 的分层防御。
 
 启动：uv run python -m datapilot.mcp_server

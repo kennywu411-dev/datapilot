@@ -41,9 +41,9 @@
 - 缓存实测的请求分布是**构造的**（140 道不重复 + 60 次重复），不是真实流量。
 - 并发压测用的是**模拟模型**（固定延迟、不调 API），测的是服务端自身；客户端与服务端同机，吞吐在两次运行间相差近一倍。用户身份是前端生成的匿名 id，客户端每次换一个就能绕过限流；要真正防滥用需要网关校验身份。
 - "真实准确率约 90%" 是由 50 道人工判定外推的**估计**，不是实测。
-- **电商经营分析用的是模拟数据**：`scripts/gen_shop_ops.py` 固定种子生成，不代表任何真实公司；40 道题由 AI 起草、本人确认。
+- **电商经营分析用的是模拟数据**：`scripts/gen_shop_ops.py` 固定种子生成，不代表任何真实公司；40 道题起草后逐条执行核对、本人确认。
 - 指标字典是看过原 40 题的口径说明之后写的，原题上的提升有拟合成分；字典定稿后另写了 19 道留出题，同样从 60–65% 提到 100%，但题少、已到天花板，只能说明没有只拟合原题。
-- 中文问法由 AI 翻译、本人校对；首轮有 3 条译文偏离原意，修正后重跑（`docs/问题日志.md` P18）。
+- 中文问法先机翻再由本人校对；首轮有 3 条译文偏离原意，修正后重跑（`docs/问题日志.md` P18）。
 - 国产模型走 OpenAI 兼容接口的 JSON 模式，Claude 用结构化输出 + adaptive thinking，提示方式不完全相同；各模型主要结论来自单次运行，Haiku / Sonnet 有 3 次重复。
 
 ## 架构
@@ -67,7 +67,7 @@ FastAPI ─── Redis：会话（按用户隔离，最近 3 轮）+ 查询缓�
                                                     RoutedPipeline：Haiku 先答，失败信号升级 Sonnet
   2. mode=ro 只读连接
   3. SQLite 授权回调只放行读操作                 只读 MCP Server（list_tables / describe_table /
-  + 超时、行数上限                                 search_values / run_sql），可接入 MCP 客户端
+  + 超时、行数上限                                 search_values / run_sql），可接入任意 MCP 客户端
 
 评测：BIRD Mini-Dev 500 题 → runner（断点续跑、花费硬上限）→ 与官方逐题对齐的 EX → 看板
 ```
@@ -238,24 +238,25 @@ uv run python evals/compare.py <run_a> <run_b> --model haiku   # 配对检验
 uv run python scripts/build_dashboard.py                        # 重新生成看板数据
 ```
 
-## 用只读 MCP Server
+## 在 MCP 客户端里用只读 MCP Server
 
-项目根目录的 `.mcp.json` 已配置好。在本目录打开 MCP 客户端，批准 `datapilot` 服务后即可直接问数据库，例如"用 datapilot 查一下 superhero 库里各出版商有多少英雄"。不打开 MCP 客户端 也能验证：
+项目根目录的 `.mcp.json` 已配置好。在本目录打开支持项目级 MCP 配置的客户端，批准 `datapilot` 服务后即可直接问数据库，例如"用 datapilot 查一下 superhero 库里各出版商有多少英雄"。不打开客户端也能验证：
 
 ```bash
 uv run python scripts/mcp_smoke.py   # 按 .mcp.json 的命令拉起服务，列工具、查询、验证 DROP 被拒
 ```
 
+![在 MCP 客户端里通过 datapilot MCP 查询](docs/images/mcp-client-query.png)
 
-要求删表时的表现（下图）：Claude 自己拒绝了，没有调用工具。删表的防护是分层的，越往后越不依赖模型：
+要求删表时的表现（下图）：模型自己拒绝了，没有调用工具。删表的防护是分层的，越往后越不依赖模型：
 
 | 层 | 谁负责 | 能否依赖 |
 |---|---|---|
-| 1. 模型拒绝 | Claude 自身判断（下图） | 不能：可能被数据里的提示注入带偏 |
-| 2. Agent 产品的安全检查 | Agent 产品的权限模式拦截破坏性调用 | 不能：别的 Agent 产品不一定有 |
+| 1. 模型拒绝 | 模型自身判断（下图） | 不能：可能被数据里的提示注入带偏 |
+| 2. Agent 产品的安全检查 | 客户端的权限确认拦截破坏性调用 | 不能：别的 Agent 产品不一定有 |
 | 3. MCP 服务三道防线 | sqlglot 单条 SELECT 白名单 → 只读连接 → SQLite 授权回调 | 能：在数据库一侧，冒烟脚本实测 DROP 返回 `rejected` |
 
-![要求删表时 Claude 拒绝](docs/images/mcp-drop-refused.png)
+![要求删表时模型拒绝](docs/images/mcp-drop-refused.png)
 
 ## 接入新数据库
 

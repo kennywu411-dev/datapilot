@@ -1,6 +1,6 @@
 """D2：从校对表生成中文题集 evals/zh100/zh100.json（与 BIRD 原题同 question_id，可直接配对比较）。
 
-校对表 evals/zh100/校对表.csv 的"校对后"一列留空表示采用 AI 草稿；填了就用填的。
+校对表 evals/zh100/校对表.csv 的"校对后"一列留空表示采用机翻初稿；填了就用填的。
 题集只替换 question（原文保存在 question_en），evidence、SQL、db_id 等保持 BIRD 原样。
 
 用法：uv run python scripts/build_zh100.py

@@ -1,4 +1,4 @@
-"""按 .mcp.json 里写的命令拉起 MCP Server，走一遍客户端会做的事：列工具、调工具。
+"""按 .mcp.json 里写的命令拉起 MCP Server，走一遍 MCP 客户端会做的事：列工具、调工具。
 
 用来证明"能被真实的 Agent 产品调用"的配置本身是对的（客户端启动 MCP Server 的方式相同）。
 用法：uv run python scripts/mcp_smoke.py
