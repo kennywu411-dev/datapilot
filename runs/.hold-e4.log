@@ -1,0 +1,122 @@
+19 题 × 6 组配置，预估花费约 $0.43（未计缓存，偏保守）
+[1/114] haiku r0 q101 ✗ ok
+[2/114] haiku r0 q104 ✓
+[3/114] haiku r0 q106 ✓
+[4/114] haiku r0 q103 ✓
+[5/114] haiku r0 q102 ✓
+[6/114] haiku r0 q105 ✓
+[7/114] haiku r0 q107 ✗ ok
+[8/114] haiku r0 q108 ✓
+[9/114] haiku r0 q111 ✓
+[10/114] haiku r0 q110 ✗ ok
+[11/114] haiku r0 q113 ✓
+[12/114] haiku r0 q109 ✓
+[13/114] haiku r0 q112 ✗ ok
+[14/114] haiku r0 q118 ✓
+[15/114] haiku r0 q116 ✗ ok
+[16/114] haiku r0 q114 ✗ ok
+[17/114] haiku r0 q119 ✓
+[18/114] haiku r0 q117 ✓
+[19/114] haiku r0 q115 ✓
+[20/114] haiku r1 q101 ✓
+[21/114] haiku r1 q102 ✓
+[22/114] haiku r1 q103 ✓
+[23/114] haiku r1 q104 ✓
+[24/114] haiku r1 q106 ✓
+[25/114] haiku r1 q107 ✗ ok
+[26/114] haiku r1 q105 ✓
+[27/114] haiku r1 q108 ✓
+[28/114] haiku r1 q113 ✓
+[29/114] haiku r1 q110 ✗ ok
+[30/114] haiku r1 q109 ✓
+[31/114] haiku r1 q111 ✓
+[32/114] haiku r1 q112 ✗ ok
+[33/114] haiku r1 q114 ✗ ok
+[34/114] haiku r1 q117 ✓
+[35/114] haiku r1 q118 ✓
+[36/114] haiku r1 q116 ✗ ok
+[37/114] haiku r1 q119 ✓
+[38/114] haiku r2 q101 ✗ ok
+[39/114] haiku r1 q115 ✓
+[40/114] haiku r2 q104 ✓
+[41/114] haiku r2 q103 ✓
+[42/114] haiku r2 q102 ✓
+[43/114] haiku r2 q105 ✗ ok
+[44/114] haiku r2 q106 ✗ ok
+[45/114] haiku r2 q108 ✗ ok
+[46/114] haiku r2 q107 ✗ ok
+[47/114] haiku r2 q113 ✓
+[48/114] haiku r2 q110 ✗ ok
+[49/114] haiku r2 q111 ✓
+[50/114] haiku r2 q109 ✓
+[51/114] haiku r2 q112 ✗ ok
+[52/114] haiku r2 q114 ✗ ok
+[53/114] haiku r2 q118 ✓
+[54/114] haiku r2 q116 ✗ ok
+[55/114] haiku r2 q119 ✓
+[56/114] haiku r2 q117 ✓
+[57/114] haiku r2 q115 ✓
+[58/114] sonnet r0 q103 ✓
+[59/114] sonnet r0 q104 ✗ ok
+[60/114] sonnet r0 q102 ✗ ok
+[61/114] sonnet r0 q105 ✗ ok
+[62/114] sonnet r0 q107 ✓
+[63/114] sonnet r0 q106 ✓
+[64/114] sonnet r0 q101 ✗ ok
+[65/114] sonnet r0 q110 ✗ ok
+[66/114] sonnet r0 q108 ✓
+[67/114] sonnet r0 q111 ✓
+[68/114] sonnet r0 q113 ✓
+[69/114] sonnet r0 q109 ✓
+[70/114] sonnet r0 q112 ✓
+[71/114] sonnet r0 q114 ✗ ok
+[72/114] sonnet r0 q115 ✓
+[73/114] sonnet r0 q117 ✓
+[74/114] sonnet r0 q119 ✓
+[75/114] sonnet r0 q118 ✓
+[76/114] sonnet r0 q116 ✗ ok
+[77/114] sonnet r1 q102 ✓
+[78/114] sonnet r1 q103 ✓
+[79/114] sonnet r1 q104 ✗ ok
+[80/114] sonnet r1 q105 ✗ ok
+[81/114] sonnet r1 q101 ✗ ok
+[82/114] sonnet r1 q107 ✓
+[83/114] sonnet r1 q106 ✗ ok
+[84/114] sonnet r1 q111 ✓
+[85/114] sonnet r1 q108 ✓
+[86/114] sonnet r1 q110 ✗ ok
+[87/114] sonnet r1 q112 ✗ ok
+[88/114] sonnet r1 q113 ✓
+[89/114] sonnet r1 q109 ✓
+[90/114] sonnet r1 q114 ✗ ok
+[91/114] sonnet r1 q115 ✓
+[92/114] sonnet r1 q117 ✓
+[93/114] sonnet r1 q118 ✓
+[94/114] sonnet r1 q119 ✓
+[95/114] sonnet r1 q116 ✗ ok
+[96/114] sonnet r2 q104 ✗ ok
+[97/114] sonnet r2 q103 ✓
+[98/114] sonnet r2 q102 ✗ ok
+[99/114] sonnet r2 q105 ✗ ok
+[100/114] sonnet r2 q101 ✗ ok
+[101/114] sonnet r2 q107 ✓
+[102/114] sonnet r2 q106 ✓
+[103/114] sonnet r2 q110 ✗ ok
+[104/114] sonnet r2 q111 ✓
+[105/114] sonnet r2 q108 ✓
+[106/114] sonnet r2 q113 ✓
+[107/114] sonnet r2 q112 ✗ ok
+[108/114] sonnet r2 q109 ✓
+[109/114] sonnet r2 q114 ✗ ok
+[110/114] sonnet r2 q117 ✓
+[111/114] sonnet r2 q115 ✓
+[112/114] sonnet r2 q118 ✓
+[113/114] sonnet r2 q119 ✓
+[114/114] sonnet r2 q116 ✗ ok
+本次实际花费 $0.1366
+
+run_id=hold-e4-560ecc
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| haiku | e4_correct | medium | 57 | 64.9% | 51.9%–76.0% | 18/27 | 13/18 | 6/12 | $0.0002 | $0.012 | 2.3s / 3.3s | {'ok': 57} |
+| sonnet | e4_correct | medium | 57 | 59.6% | 46.7%–71.4% | 16/27 | 11/18 | 7/12 | $0.0022 | $0.124 | 2.1s / 4.0s | {'ok': 57} |

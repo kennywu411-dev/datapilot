@@ -18,7 +18,8 @@ import { ChartView } from "@/components/chart-view";
 import { DataTable } from "@/components/data-table";
 import { SqlBlock } from "@/components/sql-block";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ChartSpec, Done, Step, TableData } from "@/lib/api";
+import { MetricDetail, MetricTypeBadge } from "@/components/metric-card";
+import type { ChartSpec, Done, MetricDef, Step, TableData } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export type Turn = {
@@ -26,6 +27,7 @@ export type Turn = {
   question: string;
   status: "running" | "done" | "error" | "disconnected";
   steps: Step[];
+  metrics?: MetricDef[];
   sql?: string;
   table?: TableData;
   chart?: ChartSpec;
@@ -78,6 +80,9 @@ function Steps({ turn }: { turn: Turn }) {
                   </ul>
                 )}
                 {s.issues && s.issues.length === 0 && <span className="ml-2 text-xs">没有发现问题</span>}
+                {s.matched && (
+                  <span className="ml-2 text-xs">{s.matched.length > 0 ? s.matched.join("、") : "没有匹配到指标"}</span>
+                )}
               </div>
             </li>
           ))}
@@ -157,6 +162,42 @@ function Result({ turn }: { turn: Turn }) {
   );
 }
 
+/** 本题用到的指标定义：点开看口径，让用户知道数字是按哪个口径算的。 */
+function UsedMetrics({ metrics }: { metrics: MetricDef[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  const current = metrics.find((m) => m.id === open);
+  return (
+    <div className="space-y-2 text-sm">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">本题用到的指标口径</span>
+        {metrics.map((m) => (
+          <button
+            key={m.id}
+            onClick={() => setOpen(open === m.id ? null : m.id)}
+            aria-expanded={open === m.id}
+            className={cn(
+              "rounded-full border px-2.5 py-0.5 text-xs transition-colors",
+              open === m.id ? "border-primary bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {m.name}
+          </button>
+        ))}
+      </div>
+      {current && (
+        <div className="rounded-lg border px-4 py-3">
+          <div className="mb-2.5 flex items-center gap-2">
+            <span className="font-medium">{current.name}</span>
+            <MetricTypeBadge m={current} />
+            {current.matched_by === "fuzzy" && <span className="text-xs text-muted-foreground">按相近说法匹配，请确认是否符合本意</span>}
+          </div>
+          <MetricDetail m={current} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void }) {
   return (
     <article className="space-y-4">
@@ -171,6 +212,7 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void })
       )}
 
       {turn.answer && <p className="leading-relaxed text-foreground/95">{turn.answer}</p>}
+      {turn.metrics && turn.metrics.length > 0 && <UsedMetrics metrics={turn.metrics} />}
       <Result turn={turn} />
 
       {(turn.status === "error" || turn.status === "disconnected") && (

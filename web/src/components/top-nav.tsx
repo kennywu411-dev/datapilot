@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 
 const LINKS = [
   { href: "/", label: "问数" },
+  { href: "/metrics", label: "指标目录" },
+  { href: "/quality", label: "数据质量" },
   { href: "/eval", label: "评测看板" },
 ];
 

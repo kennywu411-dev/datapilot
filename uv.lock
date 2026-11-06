@@ -208,10 +208,12 @@ version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
+    { name = "evalkit" },
     { name = "fastapi" },
     { name = "langgraph" },
     { name = "mcp" },
     { name = "python-dotenv" },
+    { name = "pyyaml" },
     { name = "rank-bm25" },
     { name = "redis" },
     { name = "sqlglot" },
@@ -230,10 +232,12 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=2.1.0" },
+    { name = "evalkit", git = "https://github.com/kennywu411-dev/evalkit?rev=816ce037cc853db55e0961aaf7e7616242469fb3" },
     { name = "fastapi", specifier = ">=0.159.1" },
     { name = "langgraph", specifier = ">=1.2.16" },
     { name = "mcp", specifier = ">=2" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "rank-bm25", specifier = ">=0.2.2" },
     { name = "redis", specifier = ">=8.1.0" },
     { name = "sqlglot", specifier = ">=30.24.0" },
@@ -266,6 +270,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/e0/4d/f332313098c1de1b2
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a7/5f/ed01f9a3cdffbd5a008556fc7b2a08ddb1cc6ace7effa7340604b1d16699/docstring_parser-0.18.0-py3-none-any.whl", hash = "sha256:b3fcbed555c47d8479be0796ef7e19c2670d428d72e96da63f3a40122860374b", size = 22484, upload-time = "2026-04-14T04:09:18.638Z" },
 ]
+
+[[package]]
+name = "evalkit"
+version = "0.1.0"
+source = { git = "https://github.com/kennywu411-dev/evalkit?rev=816ce037cc853db55e0961aaf7e7616242469fb3#816ce037cc853db55e0961aaf7e7616242469fb3" }
 
 [[package]]
 name = "fastapi"

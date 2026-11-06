@@ -1,0 +1,58 @@
+{
+ "101": [
+  "sales"
+ ],
+ "102": [
+  "sales"
+ ],
+ "103": [
+  "sales"
+ ],
+ "104": [
+  "aov"
+ ],
+ "105": [
+  "aov"
+ ],
+ "106": [
+  "items_sold"
+ ],
+ "107": [
+  "buyers"
+ ],
+ "108": [
+  "buyers"
+ ],
+ "109": [
+  "repurchase_rate"
+ ],
+ "110": [
+  "refund_rate"
+ ],
+ "111": [
+  "gross_profit"
+ ],
+ "112": [
+  "after_sales_rate"
+ ],
+ "113": [
+  "refund_amount"
+ ],
+ "114": [
+  "net_sales"
+ ],
+ "115": [
+  "sales"
+ ],
+ "116": [
+  "valid_order_count"
+ ],
+ "117": [
+  "resolve_days",
+  "ticket_closed"
+ ],
+ "118": [
+  "new_users"
+ ],
+ "119": []
+}

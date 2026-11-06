@@ -20,7 +20,6 @@ import asyncio
 import itertools
 import json
 import os
-import random
 import sys
 import time
 import uuid
@@ -31,6 +30,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from evalkit import store  # noqa: E402
+from evalkit.dataset import Dataset, Item  # noqa: E402
+from evalkit.dataset import stratified_sample as ek_stratified_sample  # noqa: E402
+from evalkit.runner import AbortRun, TaskResult, Variant  # noqa: E402
+from evalkit.runner import arun as ek_arun  # noqa: E402
+from evalkit.scorers import Score  # noqa: E402
+
 from datapilot import config  # noqa: E402
 from datapilot.agent import SQLAgent  # noqa: E402
 from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
@@ -38,6 +44,7 @@ from datapilot.ex import evaluate_one  # noqa: E402
 from datapilot.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
 from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
 from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
+from datapilot.semantic import SemanticPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
 # 实验序列见 docs/adr/002-改进实验设计.md
@@ -60,6 +67,9 @@ PIPELINES = {
 ROUTE_MODELS = ("haiku", "sonnet")
 for _rule in RULES:
     PIPELINES[f"routed_{_rule.split('_')[0]}"] = RoutedPipeline(PIPELINES["e4_correct"], _rule)
+# 指标语义层（v1.5，ADR 006）：E4 外面包一层，口径注入 / 语义层直出（映射不了退回注入）
+PIPELINES["sem_context"] = SemanticPipeline(PIPELINES["e4_correct"], "context")
+PIPELINES["sem_compile"] = SemanticPipeline(PIPELINES["e4_correct"], "compile")
 # 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-c0b9f9 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
@@ -83,103 +93,169 @@ def load_done(run_dir: Path) -> set[tuple]:
     if not path.exists():
         return set()
     rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
-    return {key_of(r) for r in rows if r["status"] != "llm_error"}
+    return {key_of(r) for r in rows if r["status"] not in RETRY_STATUS}
 
 
 def stratified_sample(questions: list[dict], n: int, seed: int = 0) -> list[dict]:
     """按难度分层抽样，各层按原比例分配名额（最大余数法，总数恰为 n），固定种子可复现。"""
-    rng = random.Random(seed)
-    by_diff: dict[str, list[dict]] = {}
-    for q in questions:
-        by_diff.setdefault(q["difficulty"], []).append(q)
-    strata = sorted(by_diff.items())
-    exact = [n * len(qs) / len(questions) for _, qs in strata]
-    quota = [int(x) for x in exact]
-    by_remainder = sorted(range(len(strata)), key=lambda i: exact[i] - quota[i], reverse=True)
-    for i in by_remainder[: n - sum(quota)]:
-        quota[i] += 1
-    picked = []
-    for (_, qs), k in zip(strata, quota, strict=True):
-        picked += rng.sample(qs, k)
-    return sorted(picked, key=lambda q: q["question_id"])
+    items = [Item(q["question_id"], q, tags={"difficulty": q["difficulty"]}) for q in questions]
+    return [it.input for it in ek_stratified_sample(items, n, "difficulty", seed)]
 
 
-async def run_one(q: dict, cfg: Config, llm: LLM, role: str | None = None) -> dict:
+USAGE_KEYS = (
+    "input_tokens",
+    "output_tokens",
+    "cache_read_input_tokens",
+    "cache_creation_input_tokens",
+)
+SCORER = "execution_match"
+# 续跑时要重跑的状态：模型调用出错（网络、限流等）
+RETRY_STATUS = ("error", "llm_error")
+
+
+async def generate(q: dict, cfg: Config, llm: LLM, role: str | None = None) -> dict:
+    """调用流程生成 SQL。模型调用出错返回 {"error": ...}（不中断评测）；账户错误照常抛出。"""
     path = config.db_path(q["db_id"])
+    start = time.perf_counter()
+    try:
+        pipe = PIPELINES[cfg.pipeline]
+        if role is None:
+            gen = await pipe(llm, path, q["question"], q["evidence"])
+        else:  # 行列级权限（v1.4）：固定流程、路由、语义层流程支持角色
+            gen = await pipe(llm, path, q["question"], q["evidence"], role)
+    except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
+        raise
+    except Exception as e:  # 记录为失败，不中断整个评测
+        return {"error": f"{type(e).__name__}: {e}", "latency_s": time.perf_counter() - start}
+    return {
+        "sql": gen.sql,
+        "first_sql": gen.first_sql,
+        "stop_reason": gen.stop_reason,
+        # 记下模型最后一次的原话，排查解析失败用
+        "said": gen.llm_calls[-1].text[:300] if gen.llm_calls else "",
+        "cost_usd": sum(c.cost_usd for c in gen.llm_calls),
+        "usage": {k: sum(c.usage.get(k, 0) for c in gen.llm_calls) for k in USAGE_KEYS},
+        "latency_s": time.perf_counter() - start,
+        "llm_calls": len(gen.llm_calls),
+        "trace": gen.trace,
+    }
+
+
+def score(q: dict, gen: dict, role: str | None = None) -> dict:
+    """按官方口径算 EX；纠错改过 SQL 时单独评测第一版，统计"改对 / 改错"。"""
+    if "error" in gen:
+        return {"status": "llm_error", "correct": False, "detail": gen["error"]}
+    path, policy = config.db_path(q["db_id"]), _policy(q["db_id"], role)
+    if gen["stop_reason"] == "refusal":
+        status, correct, detail = "refusal", False, ""
+    elif not gen["sql"]:
+        status, correct, detail = "no_sql", False, f"{gen['stop_reason']}: {gen['said']}"
+    else:
+        try:
+            out = evaluate_one(path, gen["sql"], q["SQL"], policy=policy)
+            status, correct, detail = out.status, out.correct, out.detail
+        except Exception as e:  # 评测器意外错误：记为失败并保留 SQL，不中断整次运行
+            status, correct, detail = "eval_error", False, f"{type(e).__name__}: {e}"
+    first_correct = correct
+    if gen["first_sql"] and gen["first_sql"] != gen["sql"]:
+        try:
+            first_correct = evaluate_one(path, gen["first_sql"], q["SQL"], policy=policy).correct
+        except Exception:
+            first_correct = False
+    return {"status": status, "correct": correct, "detail": detail, "first_correct": first_correct}
+
+
+def result_row(q: dict, cfg: Config, gen: dict, scored: dict) -> dict:
+    """结果行的 DataPilot 字段（report / compare / 看板 / 各脚本读的就是这些）。"""
     row = {
         "question_id": q["question_id"],
         "db_id": q["db_id"],
         "difficulty": q["difficulty"],
         **asdict(cfg),
     }
-    start = time.perf_counter()
-    try:
-        pipe = PIPELINES[cfg.pipeline]
-        if role is None:
-            gen = await pipe(llm, path, q["question"], q["evidence"])
-        else:  # 行列级权限（v1.4）：只有固定流程和路由支持角色
-            gen = await pipe(llm, path, q["question"], q["evidence"], role)
-    except FatalAPIError:  # 密钥、欠费、额度用完：继续跑只会把剩下的题全记成失败
-        raise
-    except Exception as e:  # 记录为失败，不中断整个评测
+    if "error" in gen:
         return {
             **row,
             "pred_sql": "",
             "correct": False,
             "status": "llm_error",
-            "detail": f"{type(e).__name__}: {e}",
+            "detail": gen["error"],
             "cost_usd": 0.0,
             "usage": {},
-            "latency_s": time.perf_counter() - start,
+            "latency_s": gen["latency_s"],
             "llm_calls": 0,
         }
-    gen_latency = time.perf_counter() - start
-    usage_keys = (
-        "input_tokens",
-        "output_tokens",
-        "cache_read_input_tokens",
-        "cache_creation_input_tokens",
-    )
-    usage = {k: sum(c.usage.get(k, 0) for c in gen.llm_calls) for k in usage_keys}
-    if gen.stop_reason == "refusal":
-        status, correct, detail = "refusal", False, ""
-    elif not gen.sql:
-        # 记下模型最后一次的原话，排查解析失败用
-        said = gen.llm_calls[-1].text[:300] if gen.llm_calls else ""
-        status, correct, detail = "no_sql", False, f"{gen.stop_reason}: {said}"
-    else:
-        try:
-            out = await asyncio.to_thread(
-                evaluate_one, path, gen.sql, q["SQL"], policy=_policy(q["db_id"], role)
-            )
-            status, correct, detail = out.status, out.correct, out.detail
-        except Exception as e:  # 评测器意外错误：记为失败并保留 SQL，不中断整次运行
-            status, correct, detail = "eval_error", False, f"{type(e).__name__}: {e}"
-    # 纠错改过 SQL 时，单独评测第一版，统计"改对 / 改错"
-    first_correct = correct
-    if gen.first_sql and gen.first_sql != gen.sql:
-        try:
-            first = await asyncio.to_thread(
-                evaluate_one, path, gen.first_sql, q["SQL"], policy=_policy(q["db_id"], role)
-            )
-            first_correct = first.correct
-        except Exception:
-            first_correct = False
     return {
         **row,
-        "pred_sql": gen.sql,
-        "correct": correct,
-        "status": status,
-        "detail": detail,
-        "stop_reason": gen.stop_reason,
-        "cost_usd": sum(c.cost_usd for c in gen.llm_calls),
-        "usage": usage,
-        "latency_s": gen_latency,
-        "llm_calls": len(gen.llm_calls),
-        "first_sql": gen.first_sql,
-        "first_correct": first_correct,
-        "trace": gen.trace,
+        "pred_sql": gen["sql"],
+        "correct": scored["correct"],
+        "status": scored["status"],
+        "detail": scored["detail"],
+        "stop_reason": gen["stop_reason"],
+        "cost_usd": gen["cost_usd"],
+        "usage": gen["usage"],
+        "latency_s": gen["latency_s"],
+        "llm_calls": gen["llm_calls"],
+        "first_sql": gen["first_sql"],
+        "first_correct": scored["first_correct"],
+        "trace": gen["trace"],
     }
+
+
+async def run_one(q: dict, cfg: Config, llm: LLM, role: str | None = None) -> dict:
+    gen = await generate(q, cfg, llm, role)
+    scored = await asyncio.to_thread(score, q, gen, role)
+    return result_row(q, cfg, gen, scored)
+
+
+# ---------- 交给 evalkit 运行：并发、逐题落盘、续跑、花费上限 ----------
+
+
+class ExScorer:
+    """evalkit 打分器：执行结果比对（EX），detail 里带状态和第一版 SQL 的判分。"""
+
+    name = SCORER
+
+    def __init__(self, role: str | None = None):
+        self.role = role
+
+    def __call__(self, item: Item, gen: dict) -> Score:
+        s = score(item.input, gen, self.role)
+        return Score(float(s["correct"]), s["correct"], s, s["status"])
+
+
+def as_dataset(questions: list[dict]) -> Dataset:
+    return Dataset(
+        "questions",
+        [
+            Item(
+                q["question_id"],
+                q,
+                q.get("SQL"),
+                {"difficulty": q.get("difficulty"), "db_id": q.get("db_id")},
+            )
+            for q in questions
+        ],
+    )
+
+
+# evalkit 自己写进 config.json 的字段；其余（命令行参数、题目 id）沿用 main() 写的
+EVALKIT_CONFIG_KEYS = {
+    "run_id",
+    "tag",
+    "created_at",
+    "dataset",
+    "variants",
+    "scorers",
+    "primary_metric",
+    "repeats",
+    "concurrency",
+    "max_cost",
+    "item_ids",
+    "item_hashes",
+    "code_version",
+    "python",
+}
 
 
 async def run(
@@ -191,45 +267,75 @@ async def run(
     max_cost: float | None = None,
     role: str | None = None,
 ) -> list[dict]:
-    """max_cost：本次累计花费达到上限后不再发起新调用（已在途的请求会跑完，可能略超）。"""
-    run_dir.mkdir(parents=True, exist_ok=True)
-    done = load_done(run_dir)
-    jobs = [
-        (q, c)
-        for c in configs
-        for q in questions
-        if (q["question_id"], c.model, c.pipeline, c.effort, c.repeat) not in done
-    ]
-    if done:
-        print(f"续跑：已完成 {len(done)}，本次 {len(jobs)}")
-    sem = asyncio.Semaphore(concurrency)
-    lock = asyncio.Lock()
-    finished = 0
-    spent = 0.0
+    """由 evalkit 运行，返回本次新跑的结果行。
 
-    async def one(q, cfg):
-        nonlocal finished, spent
-        async with sem:
-            if max_cost is not None and spent >= max_cost:
-                return None
-            r = await run_one(q, cfg, llm_factory(cfg, q), role)
-        async with lock:
-            spent += r["cost_usd"]
-            with (run_dir / "results.jsonl").open("a", encoding="utf-8") as f:
-                f.write(json.dumps(r, ensure_ascii=False) + "\n")
-            finished += 1
-            mark = "✓" if r["correct"] else f"✗ {r['status']}"
-            print(
-                f"[{finished}/{len(jobs)}] {cfg.model} r{cfg.repeat} q{q['question_id']} {mark}",
-                flush=True,
-            )
-        return r
+    max_cost：本次花费上限（续跑前已花的不算），达到后不再发起新调用（在途请求会跑完，可能略超）。
+    结果行同时带 evalkit 字段（item_id / variant / passed / scores）和原有字段，
+    evalkit 的对比、门禁、看板可以直接读；中间步骤照旧记在结果行的 trace 里，不另写 trace 文件。
+    """
+    groups = list(dict.fromkeys((c.model, c.pipeline, c.effort) for c in configs))
+    if len({m for m, _, _ in groups}) != len(groups):
+        raise ValueError("同一次运行里每个模型只能对应一组流程和 effort")
+    repeats = max(c.repeat for c in configs) + 1
+    if {(c.model, c.pipeline, c.effort, c.repeat) for c in configs} != {
+        (*g, r) for g in groups for r in range(repeats)
+    }:
+        raise ValueError("重复次数必须从 0 连续编号，各模型相同")
+    results = run_dir / store.RESULTS
+    first = results.read_text(encoding="utf-8").split("\n", 1)[0] if results.exists() else ""
+    if first.strip() and "item_id" not in json.loads(first):
+        raise SystemExit(f"{run_dir.name} 是接入 evalkit 之前的运行格式，不能用当前 runner 续跑")
+    existing = store.load_rows(run_dir)
+    before = {store.row_key(r) for r in existing if r["status"] not in RETRY_STATUS}
+    spent_before = sum(r.get("cost_usd", 0.0) for r in existing)
+    if before:
+        print(f"续跑：已完成 {len(before)}，出错的会重跑")
 
-    rows = [r for r in await asyncio.gather(*(one(q, c) for q, c in jobs)) if r is not None]
-    if len(rows) < len(jobs):
-        print(f"达到花费上限 ${max_cost:.2f}，跳过 {len(jobs) - len(rows)} 题，可用 --resume 续跑")
-    print(f"本次实际花费 ${spent:.4f}")
-    return rows
+    def task_for(model: str, pipeline: str, effort: str):
+        async def task(item: Item) -> TaskResult:
+            cfg = Config(model, pipeline, effort, 0)
+            try:
+                gen = await generate(item.input, cfg, llm_factory(cfg, item.input), role)
+            except FatalAPIError as e:
+                raise AbortRun(str(e)) from e
+            trace = gen.pop("trace", None)
+            cost = gen.get("cost_usd", 0.0)
+            return TaskResult(gen, cost, gen.get("usage"), meta={"trace": trace})
+
+        return task
+
+    def fields(item: Item, row: dict) -> dict:
+        m, p, e = (row["variant"], *next((g[1], g[2]) for g in groups if g[0] == row["variant"]))
+        gen = (row["output"] or {}) | {"trace": row.get("trace")}
+        scored = row["scores"][SCORER]["detail"] if SCORER in row["scores"] else {}
+        return result_row(item.input, Config(m, p, e, row["repeat"]), gen, scored)
+
+    cfg_path = run_dir / store.CONFIG
+    prev = json.loads(cfg_path.read_text()) if cfg_path.exists() else {}
+    try:
+        res = await ek_arun(
+            as_dataset(questions),
+            [
+                Variant(m, task_for(m, p, e), {"model": m, "pipeline": p, "effort": e})
+                for m, p, e in groups
+            ],
+            [ExScorer(role)],
+            runs_dir=run_dir.parent,
+            resume=run_dir.name,
+            tag=run_dir.name,
+            repeats=repeats,
+            concurrency=concurrency,
+            max_cost=None if max_cost is None else max_cost + spent_before,
+            extra_config={k: v for k, v in prev.items() if k not in EVALKIT_CONFIG_KEYS},
+            row_fields=fields,
+            save_traces=False,
+            retry_status=RETRY_STATUS,
+        )
+    except AbortRun as e:
+        raise FatalAPIError(str(e).split("（已停止")[0]) from None
+    new = [r for r in res.rows if store.row_key(r) not in before]
+    print(f"本次实际花费 ${res.spent_usd - spent_before:.4f}")
+    return new
 
 
 def estimate(questions: list[dict], configs: list[Config]) -> float:
@@ -386,10 +492,11 @@ def main(argv=None) -> None:
     validate(models, args.pipeline)
     if args.role:
         pipe = PIPELINES[args.pipeline]
-        base = pipe.base if isinstance(pipe, RoutedPipeline) else pipe
+        base = pipe.base if isinstance(pipe, (RoutedPipeline, SemanticPipeline)) else pipe
         if not isinstance(base, FixedPipeline) or base.cfg.schema != "enhanced":
             raise SystemExit(
-                "--role 只支持增强 schema 的固定流程和路由流程（如 e4_correct、routed_r1）"
+                "--role 只支持增强 schema 的固定流程、路由和语义层流程"
+                "（如 e4_correct、routed_r1、sem_context）"
             )
         for db in {q["db_id"] for q in questions}:
             config_role_check(db, args.role)

@@ -3,6 +3,8 @@
   uv run python evals/gate.py --offline        # 标准答案当模型跑全管线，必须 100%（不花钱）
   uv run python evals/gate.py --set-baseline   # 用 Haiku 跑一次，记为门禁基线（约 $0.006）
   uv run python evals/gate.py                  # Haiku 跑一次，EX 比基线下降超过阈值则退出码 1
+  uv run python evals/gate.py --compare <基线运行> <候选运行> --model haiku
+                                               # 两次已有运行之间的配对门禁（evalkit，不花钱）
 
 由 .githooks/pre-commit 调用。
 """
@@ -74,12 +76,36 @@ def run_smoke(model: str, mock: bool) -> float:
     return sum(r["correct"] for r in rows) / len(smoke_questions())
 
 
+def compare_gate(base: str, cand: str, model: str, max_drop: float, alpha: float) -> int:
+    """evalkit 回归门禁：通过率显著变差（McNemar）或降幅超过阈值都不通过。"""
+    from evalkit.gate import gate
+
+    from evals.report import evalkit_rows
+
+    g = gate(
+        evalkit_rows(config.RUNS_DIR / base),
+        evalkit_rows(config.RUNS_DIR / cand),
+        model,
+        model,
+        max_drop=max_drop,
+        alpha=alpha,
+    )
+    print(g.render())
+    return 0 if g.passed else 1
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--offline", action="store_true")
     p.add_argument("--set-baseline", action="store_true")
     p.add_argument("--max-drop", type=float, default=0.10)
+    p.add_argument("--compare", nargs=2, metavar=("BASE", "CAND"), help="两次已有运行的配对门禁")
+    p.add_argument("--model", default="haiku", help="--compare 时比较的模型")
+    p.add_argument("--alpha", type=float, default=0.05, help="--compare 时的显著性水平")
     args = p.parse_args()
+
+    if args.compare:
+        return compare_gate(*args.compare, args.model, args.max_drop, args.alpha)
 
     if not config.QUESTIONS_PATH.exists():
         print(f"[gate] 找不到题库 {config.QUESTIONS_PATH}")

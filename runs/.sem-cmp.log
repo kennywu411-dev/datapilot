@@ -1,0 +1,248 @@
+40 题 × 6 组配置，预估花费约 $1.16（未计缓存，偏保守）
+[1/240] haiku r0 q2 ✓
+[2/240] haiku r0 q7 ✓
+[3/240] haiku r0 q6 ✓
+[4/240] haiku r0 q5 ✓
+[5/240] haiku r0 q3 ✓
+[6/240] haiku r0 q1 ✓
+[7/240] haiku r0 q4 ✗ ok
+[8/240] haiku r0 q8 ✓
+[9/240] haiku r0 q9 ✓
+[10/240] haiku r0 q11 ✓
+[11/240] haiku r0 q12 ✓
+[12/240] haiku r0 q13 ✓
+[13/240] haiku r0 q14 ✓
+[14/240] haiku r0 q16 ✓
+[15/240] haiku r0 q10 ✓
+[16/240] haiku r0 q15 ✓
+[17/240] haiku r0 q18 ✗ ok
+[18/240] haiku r0 q21 ✓
+[19/240] haiku r0 q20 ✓
+[20/240] haiku r0 q17 ✓
+[21/240] haiku r0 q19 ✓
+[22/240] haiku r0 q23 ✓
+[23/240] haiku r0 q26 ✓
+[24/240] haiku r0 q25 ✓
+[25/240] haiku r0 q27 ✓
+[26/240] haiku r0 q22 ✓
+[27/240] haiku r0 q24 ✓
+[28/240] haiku r0 q28 ✓
+[29/240] haiku r0 q32 ✓
+[30/240] haiku r0 q29 ✓
+[31/240] haiku r0 q30 ✓
+[32/240] haiku r0 q31 ✓
+[33/240] haiku r0 q35 ✓
+[34/240] haiku r0 q34 ✗ ok
+[35/240] haiku r0 q36 ✗ ok
+[36/240] haiku r0 q38 ✓
+[37/240] haiku r0 q37 ✓
+[38/240] haiku r0 q33 ✓
+[39/240] haiku r1 q2 ✓
+[40/240] haiku r1 q3 ✓
+[41/240] haiku r0 q39 ✓
+[42/240] haiku r0 q40 ✗ ok
+[43/240] haiku r1 q1 ✓
+[44/240] haiku r1 q5 ✓
+[45/240] haiku r1 q7 ✓
+[46/240] haiku r1 q8 ✓
+[47/240] haiku r1 q9 ✓
+[48/240] haiku r1 q4 ✗ ok
+[49/240] haiku r1 q6 ✓
+[50/240] haiku r1 q10 ✓
+[51/240] haiku r1 q11 ✓
+[52/240] haiku r1 q12 ✓
+[53/240] haiku r1 q13 ✓
+[54/240] haiku r1 q14 ✓
+[55/240] haiku r1 q15 ✓
+[56/240] haiku r1 q17 ✓
+[57/240] haiku r1 q20 ✓
+[58/240] haiku r1 q19 ✓
+[59/240] haiku r1 q18 ✗ ok
+[60/240] haiku r1 q16 ✓
+[61/240] haiku r1 q21 ✓
+[62/240] haiku r1 q23 ✓
+[63/240] haiku r1 q22 ✓
+[64/240] haiku r1 q26 ✓
+[65/240] haiku r1 q24 ✓
+[66/240] haiku r1 q25 ✓
+[67/240] haiku r1 q27 ✓
+[68/240] haiku r1 q28 ✓
+[69/240] haiku r1 q32 ✓
+[70/240] haiku r1 q29 ✓
+[71/240] haiku r1 q30 ✓
+[72/240] haiku r1 q31 ✓
+[73/240] haiku r1 q33 ✓
+[74/240] haiku r1 q35 ✓
+[75/240] haiku r1 q38 ✓
+[76/240] haiku r1 q37 ✓
+[77/240] haiku r1 q34 ✗ ok
+[78/240] haiku r1 q36 ✗ ok
+[79/240] haiku r1 q39 ✓
+[80/240] haiku r2 q1 ✓
+[81/240] haiku r2 q2 ✓
+[82/240] haiku r2 q3 ✓
+[83/240] haiku r2 q5 ✓
+[84/240] haiku r1 q40 ✗ ok
+[85/240] haiku r2 q7 ✓
+[86/240] haiku r2 q8 ✓
+[87/240] haiku r2 q4 ✗ ok
+[88/240] haiku r2 q6 ✓
+[89/240] haiku r2 q12 ✓
+[90/240] haiku r2 q11 ✓
+[91/240] haiku r2 q9 ✓
+[92/240] haiku r2 q10 ✓
+[93/240] haiku r2 q13 ✓
+[94/240] haiku r2 q14 ✓
+[95/240] haiku r2 q17 ✓
+[96/240] haiku r2 q15 ✓
+[97/240] haiku r2 q16 ✓
+[98/240] haiku r2 q20 ✓
+[99/240] haiku r2 q18 ✗ ok
+[100/240] haiku r2 q19 ✓
+[101/240] haiku r2 q22 ✓
+[102/240] haiku r2 q23 ✓
+[103/240] haiku r2 q21 ✓
+[104/240] haiku r2 q26 ✓
+[105/240] haiku r2 q25 ✓
+[106/240] haiku r2 q27 ✓
+[107/240] haiku r2 q24 ✓
+[108/240] haiku r2 q29 ✓
+[109/240] haiku r2 q28 ✓
+[110/240] haiku r2 q32 ✓
+[111/240] haiku r2 q30 ✓
+[112/240] haiku r2 q31 ✓
+[113/240] haiku r2 q33 ✓
+[114/240] haiku r2 q34 ✗ ok
+[115/240] haiku r2 q35 ✓
+[116/240] haiku r2 q36 ✗ ok
+[117/240] haiku r2 q38 ✓
+[118/240] haiku r2 q37 ✓
+[119/240] sonnet r0 q1 ✓
+[120/240] sonnet r0 q2 ✓
+[121/240] sonnet r0 q3 ✓
+[122/240] haiku r2 q39 ✓
+[123/240] haiku r2 q40 ✗ ok
+[124/240] sonnet r0 q7 ✓
+[125/240] sonnet r0 q8 ✓
+[126/240] sonnet r0 q9 ✓
+[127/240] sonnet r0 q4 ✗ ok
+[128/240] sonnet r0 q10 ✓
+[129/240] sonnet r0 q5 ✓
+[130/240] sonnet r0 q6 ✓
+[131/240] sonnet r0 q12 ✓
+[132/240] sonnet r0 q11 ✓
+[133/240] sonnet r0 q14 ✓
+[134/240] sonnet r0 q13 ✓
+[135/240] sonnet r0 q17 ✓
+[136/240] sonnet r0 q15 ✓
+[137/240] sonnet r0 q20 ✓
+[138/240] sonnet r0 q16 ✓
+[139/240] sonnet r0 q19 ✓
+[140/240] sonnet r0 q18 ✗ ok
+[141/240] sonnet r0 q22 ✓
+[142/240] sonnet r0 q23 ✓
+[143/240] sonnet r0 q21 ✓
+[144/240] sonnet r0 q27 ✓
+[145/240] sonnet r0 q24 ✓
+[146/240] sonnet r0 q25 ✓
+[147/240] sonnet r0 q26 ✓
+[148/240] sonnet r0 q29 ✓
+[149/240] sonnet r0 q28 ✓
+[150/240] sonnet r0 q30 ✓
+[151/240] sonnet r0 q31 ✓
+[152/240] sonnet r0 q32 ✓
+[153/240] sonnet r0 q33 ✓
+[154/240] sonnet r0 q35 ✓
+[155/240] sonnet r0 q36 ✗ ok
+[156/240] sonnet r0 q37 ✓
+[157/240] sonnet r0 q34 ✗ ok
+[158/240] sonnet r0 q38 ✓
+[159/240] sonnet r1 q1 ✓
+[160/240] sonnet r0 q39 ✓
+[161/240] sonnet r0 q40 ✓
+[162/240] sonnet r1 q4 ✗ ok
+[163/240] sonnet r1 q3 ✓
+[164/240] sonnet r1 q2 ✓
+[165/240] sonnet r1 q8 ✓
+[166/240] sonnet r1 q7 ✓
+[167/240] sonnet r1 q5 ✓
+[168/240] sonnet r1 q9 ✓
+[169/240] sonnet r1 q6 ✓
+[170/240] sonnet r1 q10 ✓
+[171/240] sonnet r1 q12 ✓
+[172/240] sonnet r1 q13 ✓
+[173/240] sonnet r1 q11 ✓
+[174/240] sonnet r1 q14 ✓
+[175/240] sonnet r1 q17 ✓
+[176/240] sonnet r1 q20 ✓
+[177/240] sonnet r1 q15 ✓
+[178/240] sonnet r1 q16 ✓
+[179/240] sonnet r1 q18 ✗ ok
+[180/240] sonnet r1 q19 ✓
+[181/240] sonnet r1 q22 ✓
+[182/240] sonnet r1 q23 ✓
+[183/240] sonnet r1 q21 ✓
+[184/240] sonnet r1 q26 ✓
+[185/240] sonnet r1 q27 ✓
+[186/240] sonnet r1 q25 ✓
+[187/240] sonnet r1 q24 ✓
+[188/240] sonnet r1 q28 ✓
+[189/240] sonnet r1 q29 ✓
+[190/240] sonnet r1 q30 ✓
+[191/240] sonnet r1 q32 ✓
+[192/240] sonnet r1 q31 ✓
+[193/240] sonnet r1 q33 ✓
+[194/240] sonnet r1 q35 ✓
+[195/240] sonnet r1 q36 ✗ ok
+[196/240] sonnet r1 q34 ✗ ok
+[197/240] sonnet r1 q38 ✓
+[198/240] sonnet r1 q37 ✓
+[199/240] sonnet r1 q39 ✓
+[200/240] sonnet r2 q3 ✓
+[201/240] sonnet r2 q4 ✗ ok
+[202/240] sonnet r2 q1 ✓
+[203/240] sonnet r2 q2 ✓
+[204/240] sonnet r1 q40 ✓
+[205/240] sonnet r2 q7 ✓
+[206/240] sonnet r2 q8 ✓
+[207/240] sonnet r2 q9 ✓
+[208/240] sonnet r2 q10 ✓
+[209/240] sonnet r2 q5 ✓
+[210/240] sonnet r2 q12 ✓
+[211/240] sonnet r2 q11 ✓
+[212/240] sonnet r2 q6 ✓
+[213/240] sonnet r2 q13 ✓
+[214/240] sonnet r2 q14 ✓
+[215/240] sonnet r2 q17 ✓
+[216/240] sonnet r2 q20 ✓
+[217/240] sonnet r2 q16 ✓
+[218/240] sonnet r2 q19 ✓
+[219/240] sonnet r2 q15 ✓
+[220/240] sonnet r2 q18 ✗ ok
+[221/240] sonnet r2 q22 ✓
+[222/240] sonnet r2 q23 ✓
+[223/240] sonnet r2 q21 ✓
+[224/240] sonnet r2 q26 ✓
+[225/240] sonnet r2 q27 ✓
+[226/240] sonnet r2 q24 ✓
+[227/240] sonnet r2 q25 ✓
+[228/240] sonnet r2 q28 ✓
+[229/240] sonnet r2 q30 ✓
+[230/240] sonnet r2 q29 ✓
+[231/240] sonnet r2 q31 ✓
+[232/240] sonnet r2 q32 ✓
+[233/240] sonnet r2 q33 ✓
+[234/240] sonnet r2 q35 ✓
+[235/240] sonnet r2 q36 ✗ ok
+[236/240] sonnet r2 q38 ✓
+[237/240] sonnet r2 q37 ✓
+[238/240] sonnet r2 q34 ✗ ok
+[239/240] sonnet r2 q39 ✓
+[240/240] sonnet r2 q40 ✓
+本次实际花费 $0.3843
+
+run_id=sem-cmp-736ce2
+| 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| haiku | sem_compile | medium | 120 | 87.5% | 80.4%–92.3% | 27/30 | 51/54 | 27/36 | $0.0003 | $0.034 | 2.8s / 7.8s | {'ok': 120} |
+| sonnet | sem_compile | medium | 120 | 90.0% | 83.3%–94.2% | 27/30 | 51/54 | 30/36 | $0.0029 | $0.351 | 3.4s / 4.6s | {'ok': 120} |

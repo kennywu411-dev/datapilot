@@ -1,0 +1,256 @@
+# 电商经营分析库的指标字典（公司口径）。
+#
+# 结构：
+# - conventions：全局约定，每次提问都带上
+# - terms：业务术语（过滤条件），如"有效订单""已签收订单"
+# - metrics：指标。kind=simple 的指标可以由语义层直接生成 SQL（expr 是聚合表达式，
+#   base 是主表，filters 引用 terms）；kind=derived 的指标（比率、同比等）只给口径和参考 SQL，
+#   由模型按口径写 SQL
+# - dimensions：可分组 / 可过滤的维度
+# - joins：表之间的关联（子表 → 父表），语义层生成 SQL 时从主表沿关联补齐 JOIN
+#
+# 所有 SQL 片段里的列都写成"表名.列名"，加载时逐个校验列存在，并据此判断行列级权限。
+
+db_id: shop_ops
+
+conventions:
+  - 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date
+  - 时间差用 julianday 相减，单位是天，可以带小数；"超过 N 天"指大于 N 天
+  - 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500
+  - 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND
+  - 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数
+
+terms:
+  valid_order:
+    name: 有效订单
+    synonyms: [有效订单, 有效单]
+    description: 剔除已取消和待支付的订单；已退款订单仍算有效订单
+    sql: orders.status NOT IN ('cancelled', 'pending')
+  paid_order:
+    name: 已支付订单
+    synonyms: [已支付订单, 支付过的订单, 付过款]
+    description: 支付时间不为空的订单（含之后退款的）
+    sql: orders.paid_at IS NOT NULL
+  delivered_order:
+    name: 已签收订单
+    synonyms: [已签收订单, 签收的订单, 已签收]
+    description: status 为 delivered 或 refunded 的订单（已退款订单都已签收过）
+    sql: orders.status IN ('delivered', 'refunded')
+  campaign_order:
+    name: 活动订单
+    synonyms: [参加活动, 参加了活动, 参与活动, 活动订单]
+    description: 参加了营销活动的订单
+    sql: orders.campaign_id IS NOT NULL
+  ticket_closed:
+    name: 已完结工单
+    synonyms: [已完结, 完结的工单, 已结案]
+    description: 售后工单 status = 'closed'；已拒绝（rejected）不算完结
+    sql: tickets.status = 'closed'
+  ticket_open:
+    name: 处理中工单
+    synonyms: [处理中, 未处理完, 还在处理]
+    description: 售后工单 status = 'open'
+    sql: tickets.status = 'open'
+  first_order:
+    name: 首单
+    synonyms: [首单, 第一单, 新客]
+    description: 用户最早的一笔有效订单；新客按首单时间归属
+    reference_sql: >-
+      SELECT * FROM (SELECT orders.*, ROW_NUMBER() OVER (PARTITION BY orders.user_id
+      ORDER BY orders.created_at) AS rn FROM orders
+      WHERE orders.status NOT IN ('cancelled', 'pending')) WHERE rn = 1
+
+metrics:
+  order_count:
+    name: 订单数
+    kind: simple
+    synonyms: [订单数, 订单量, 下单数, 下单次数, 单量, 多少单]
+    description: 下单笔数，包含所有状态（含已取消、待支付）
+    base: orders
+    expr: COUNT(*)
+  valid_order_count:
+    name: 有效订单数
+    kind: simple
+    synonyms: [有效订单数, 有效单量]
+    description: 有效订单的笔数
+    base: orders
+    expr: COUNT(*)
+    filters: [valid_order]
+  sales:
+    name: 销售额
+    kind: simple
+    synonyms: [销售额, GMV, gmv, 成交额, 成交金额, 营业额, 销售金额, 营收, 花钱, 消费金额]
+    description: 有效订单的实付金额 amount 之和（包含已退款订单，不扣退款）
+    base: orders
+    expr: SUM(orders.amount)
+    filters: [valid_order]
+  net_sales:
+    name: 净销售额
+    kind: derived
+    synonyms: [净销售额, 净成交额, 扣除退款后的销售额]
+    description: 销售额减去售后退款金额；退款按关联订单的下单时间归属
+    reference_sql: >-
+      SELECT SUM(orders.amount) - (SELECT SUM(tickets.refund_amount) FROM tickets
+      JOIN orders ON tickets.order_id = orders.order_id) FROM orders
+      WHERE orders.status NOT IN ('cancelled', 'pending')
+  items_sold:
+    name: 销量
+    kind: simple
+    synonyms: [销量, 卖出, 售出, 卖了多少件, 件数]
+    description: 有效订单的商品件数 qty 之和
+    base: orders
+    expr: SUM(orders.qty)
+    filters: [valid_order]
+  aov:
+    name: 客单价
+    kind: simple
+    synonyms: [客单价, 笔单价, 平均订单金额, 平均每单, 平均实付]
+    description: 有效订单的实付金额之和 ÷ 有效订单数，即有效订单 amount 的平均值
+    base: orders
+    expr: AVG(orders.amount)
+    filters: [valid_order]
+  buyers:
+    name: 购买用户数
+    kind: simple
+    synonyms: [购买用户数, 下单用户数, 买过, 购买过, 活跃用户, 活跃买家, 购买人数]
+    description: 下过有效订单的去重用户数；"活跃用户"按统计期内下过有效订单计
+    base: orders
+    expr: COUNT(DISTINCT orders.user_id)
+    filters: [valid_order]
+  gross_profit:
+    name: 毛利
+    kind: simple
+    synonyms: [毛利, 毛利润, 毛利额]
+    description: 实付金额 − 进货成本 × 件数；只算 status 为 paid、shipped、delivered 的订单（已退款不算）
+    base: orders
+    expr: SUM(orders.amount - products.cost * orders.qty)
+    filters_sql: ["orders.status IN ('paid', 'shipped', 'delivered')"]
+  refund_rate:
+    name: 退款率
+    kind: derived
+    synonyms: [退款率]
+    description: status 为 refunded 的订单数 ÷ 已支付订单数（paid_at 不为空）× 100
+    reference_sql: >-
+      SELECT 100.0 * SUM(orders.status = 'refunded') / COUNT(*) FROM orders
+      WHERE orders.paid_at IS NOT NULL
+  after_sales_rate:
+    name: 售后率
+    kind: derived
+    synonyms: [售后率, 售后申请率]
+    description: 申请过售后的已签收订单数 ÷ 已签收订单数 × 100；已签收订单指 status 为 delivered 或 refunded
+    reference_sql: >-
+      SELECT 100.0 * COUNT(DISTINCT tickets.order_id) / COUNT(DISTINCT orders.order_id)
+      FROM orders LEFT JOIN tickets ON tickets.order_id = orders.order_id
+      WHERE orders.status IN ('delivered', 'refunded')
+  repurchase_rate:
+    name: 复购率
+    kind: derived
+    synonyms: [复购率, 回购率, 回头客比例, 复购]
+    description: 统计期内下过 2 次及以上有效订单的用户数 ÷ 统计期内下过有效订单的用户数 × 100
+    reference_sql: >-
+      SELECT 100.0 * SUM(n >= 2) / COUNT(*) FROM (SELECT orders.user_id, COUNT(*) AS n
+      FROM orders WHERE orders.status NOT IN ('cancelled', 'pending') GROUP BY orders.user_id)
+  refund_amount:
+    name: 退款金额
+    kind: simple
+    synonyms: [退款金额, 退了多少钱, 退款总额, 退款额]
+    description: 售后工单的 refund_amount 之和；和销售额对比时按关联订单的下单时间归属
+    base: tickets
+    expr: SUM(tickets.refund_amount)
+  ticket_count:
+    name: 售后工单数
+    kind: simple
+    synonyms: [售后工单数, 工单数, 售后单量]
+    description: 售后工单张数，按申请时间归属
+    base: tickets
+    expr: COUNT(*)
+  resolve_days:
+    name: 售后处理时长
+    kind: simple
+    synonyms: [处理时长, 从申请到完结, 处理天数, 完结用时]
+    description: 已完结工单从申请到完结的平均天数（julianday 相减，可带小数）
+    base: tickets
+    expr: AVG(julianday(tickets.closed_at) - julianday(tickets.created_at))
+    filters: [ticket_closed]
+  new_users:
+    name: 新注册用户数
+    kind: simple
+    synonyms: [新注册, 新增用户, 注册用户数, 注册了多少]
+    description: 按注册日期 register_date 统计的用户数
+    base: users
+    expr: COUNT(*)
+
+dimensions:
+  year:
+    name: 年份
+    expr: substr({time}, 1, 4)
+    synonyms: [每年, 各年, 年度]
+  quarter:
+    name: 季度
+    expr: (CAST(substr({time}, 6, 2) AS INTEGER) + 2) / 3
+    synonyms: [季度]
+    description: 取值 1–4
+  month:
+    name: 月份
+    expr: substr({time}, 1, 7)
+    synonyms: [每个月, 各月, 月份, 哪个月]
+    description: 格式 YYYY-MM
+  category:
+    name: 品类
+    expr: products.category
+    synonyms: [品类, 类目]
+    values: {apparel: 服饰, digital: 数码, home: 家居, food: 食品, beauty: 美妆}
+  brand:
+    name: 品牌
+    expr: products.brand
+    synonyms: [品牌]
+  product:
+    name: 商品
+    expr: products.name
+    synonyms: [商品, 产品]
+  city:
+    name: 城市
+    expr: users.city
+    synonyms: [城市]
+  tier:
+    name: 会员等级
+    expr: users.tier
+    synonyms: [会员等级, 会员]
+    values: {normal: 普通会员, vip: VIP 会员, svip: 超级会员}
+  gender:
+    name: 性别
+    expr: users.gender
+    synonyms: [性别]
+    values: {F: 女, M: 男}
+  channel:
+    name: 下单渠道
+    expr: orders.channel
+    synonyms: [渠道]
+    values: {app: App, web: 网页, mini_program: 小程序}
+  campaign:
+    name: 活动
+    expr: campaigns.name
+    synonyms: [活动, 大促]
+  ticket_type:
+    name: 售后类型
+    expr: tickets.type
+    synonyms: [售后类型]
+    values: {refund: 仅退款, return: 退货退款, exchange: 换货}
+  ticket_reason:
+    name: 售后原因
+    expr: tickets.reason
+    synonyms: [原因]
+    values: {quality: 质量问题, wrong_item: 发错货, size: 尺码不合适, late: 物流太慢, no_reason: 七天无理由}
+
+# 每个主表的时间列（{time} 占位符和时间过滤用）
+time_columns:
+  orders: orders.created_at
+  tickets: tickets.created_at
+  users: users.register_date
+
+# [子表, 父表, 关联条件]：语义层只沿子表 → 父表（多对一）方向补 JOIN，避免一对多扇出把指标算重
+joins:
+  - [orders, products, orders.sku = products.sku]
+  - [orders, users, orders.user_id = users.user_id]
+  - [orders, campaigns, orders.campaign_id = campaigns.campaign_id]
+  - [tickets, orders, tickets.order_id = orders.order_id]

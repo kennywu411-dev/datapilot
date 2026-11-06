@@ -1,0 +1,35 @@
+[
+  {
+    "model": "gold",
+    "pipeline": "sem_compile",
+    "effort": "medium",
+    "n": 40,
+    "repeats": 1,
+    "ex": 1.0,
+    "ci95": [
+      0.9123754607496077,
+      1.0
+    ],
+    "by_difficulty": {
+      "simple": [
+        10,
+        10
+      ],
+      "moderate": [
+        18,
+        18
+      ],
+      "challenging": [
+        12,
+        12
+      ]
+    },
+    "status": {
+      "ok": 40
+    },
+    "cost_total": 0.0,
+    "cost_per_q": 0.0,
+    "latency_p50": 0.047634624992497265,
+    "latency_p95": 0.056527749984525144
+  }
+]

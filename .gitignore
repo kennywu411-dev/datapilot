@@ -23,3 +23,6 @@ node_modules/
 
 .DS_Store
 dist/
+
+# evalkit 生成的评测看板
+site/
