@@ -5,6 +5,7 @@ description = "DataPilot：面向 ChatBI 场景的智能问数系统（BIRD Mini
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "anthropic>=2.1.0",
+    "evalkit",
     "fastapi>=0.159.1",
     "langgraph>=1.2.16",
     "mcp>=2",
@@ -35,6 +36,10 @@ extend-exclude = ["third_party"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.uv.sources]
+# 评测平台（同级目录的 evalkit 仓库）：运行、续跑、统计、门禁、看板由它提供
+evalkit = { path = "../evalkit", editable = true }
 
 [dependency-groups]
 dev = [

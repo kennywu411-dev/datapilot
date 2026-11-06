@@ -7,28 +7,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 from collections import Counter, defaultdict
 from pathlib import Path
+
+from evalkit import stats as ek_stats
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUP_KEYS = ("model", "pipeline", "effort")
 
 
-def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
-    if n == 0:
-        return (0.0, 0.0)
-    p = k / n
-    denom = 1 + z * z / n
-    center = (p + z * z / (2 * n)) / denom
-    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
-    return (center - half, center + half)
-
-
-def pct(sorted_vals: list[float], q: float) -> float:
-    if not sorted_vals:
-        return 0.0
-    return sorted_vals[min(len(sorted_vals) - 1, int(q * len(sorted_vals)))]
+# 区间和分位数的口径由评测平台 evalkit 统一提供（与本项目原实现逐位一致）
+wilson = ek_stats.wilson
+pct = ek_stats.percentile  # 排序后取第 int(q·n) 个，不插值；调用方传入的列表已排好序也无妨
 
 
 def summarize(rows: list[dict]) -> list[dict]:
@@ -91,6 +81,25 @@ def load_rows(run_dir: Path) -> list[dict]:
         (r["question_id"], r["model"], r["pipeline"], r["effort"], r["repeat"]): r for r in rows
     }
     return list(latest.values())
+
+
+def evalkit_rows(run_dir: Path) -> list[dict]:
+    """任意一次运行的 evalkit 结果行：新运行本身就带 evalkit 字段，旧运行现场补上。"""
+    out = []
+    for r in load_rows(run_dir):
+        if "item_id" not in r:
+            r = r | {
+                "item_id": r["question_id"],
+                "variant": r["model"],
+                "passed": bool(r["correct"]),
+                "tags": {"difficulty": r.get("difficulty"), "db_id": r.get("db_id")},
+                "scores": {
+                    "execution_match": {"value": float(r["correct"]), "passed": r["correct"]}
+                },
+                "output": r.get("pred_sql"),
+            }
+        out.append(r)
+    return out
 
 
 def main() -> None:

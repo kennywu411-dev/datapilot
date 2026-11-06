@@ -377,3 +377,76 @@ def test_run_one_reraises_fatal_api_error(shop_db_dir):
     }
     with pytest.raises(FatalAPIError):
         _asyncio.run(run_one(q, Config("qwen", "baseline", "medium", 0), Boom()))
+
+
+def test_rows_are_readable_by_evalkit(setup):
+    """新运行的结果行同时带 evalkit 字段：evalkit 的对比、门禁、看板直接读，不需要转换。"""
+    from evalkit import store
+    from evalkit.compare import compare as ek_compare
+
+    questions, run_dir = setup
+    answers = {
+        1: "SELECT count(*) FROM t WHERE id < 1",
+        2: "SELECT 0",
+        3: "SELECT 9",
+        4: "SELECT 9",
+    }
+    cfgs = [Config("haiku", "baseline", "medium", r) for r in range(2)]
+    asyncio.run(run(questions, cfgs, scripted_factory(answers, []), run_dir, 2))
+    rows = store.load_rows(run_dir)
+    assert len(rows) == 8 and {r["variant"] for r in rows} == {"haiku"}
+    assert all(r["passed"] == r["correct"] and r["item_id"] == r["question_id"] for r in rows)
+    assert rows[0]["scores"]["execution_match"]["detail"]["status"] == rows[0]["status"]
+    assert not (run_dir / "traces").exists()  # 过程照旧记在结果行里
+    c = ek_compare(rows, rows, repeat=1)
+    assert c["n"] == 4 and c["p_value"] == 1.0
+    cfg = json.loads((run_dir / "config.json").read_text())
+    assert cfg["dataset"]["n"] == 4 and cfg["repeats"] == 2
+
+
+def test_resume_refuses_legacy_run(setup):
+    questions, run_dir = setup
+    run_dir.mkdir()
+    (run_dir / "results.jsonl").write_text(
+        json.dumps({"question_id": 1, "model": "haiku", "status": "ok", "correct": True}) + "\n"
+    )
+    cfg = Config(model="haiku", pipeline="baseline", effort="medium", repeat=0)
+    with pytest.raises(SystemExit, match="之前的运行格式"):
+        asyncio.run(run(questions, [cfg], scripted_factory({}, []), run_dir, 1))
+
+
+def test_evalkit_rows_converts_legacy_and_gate(tmp_path, monkeypatch):
+    from evals import gate as gate_mod
+    from evals.report import evalkit_rows
+
+    def legacy(name, correct):
+        d = tmp_path / name
+        d.mkdir()
+        lines = [
+            json.dumps(
+                {
+                    "question_id": i,
+                    "model": "haiku",
+                    "pipeline": "e4_correct",
+                    "effort": "medium",
+                    "repeat": 0,
+                    "difficulty": "simple",
+                    "db_id": "x",
+                    "correct": c,
+                    "status": "ok",
+                    "cost_usd": 0.0,
+                    "latency_s": 1.0,
+                }
+            )
+            for i, c in enumerate(correct)
+        ]
+        (d / "results.jsonl").write_text("\n".join(lines) + "\n")
+        return d
+
+    legacy("a", [True] * 30)
+    legacy("b", [True] * 20 + [False] * 10)
+    rows = evalkit_rows(tmp_path / "a")
+    assert rows[0]["item_id"] == 0 and rows[0]["variant"] == "haiku" and rows[0]["passed"]
+    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path)
+    assert gate_mod.compare_gate("a", "b", "haiku", 0.1, 0.05) == 1
+    assert gate_mod.compare_gate("b", "a", "haiku", 0.1, 0.05) == 0

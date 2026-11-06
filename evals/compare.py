@@ -1,6 +1,10 @@
 """两次运行的配对比较：同一批题、同一模型，A → B 的 EX 变化是否显著。
 
   uv run python evals/compare.py <run_a> <run_b> --model sonnet
+  uv run python evals/compare.py <run_a> <run_b> --model haiku --repeat 2 --slice difficulty
+
+不加 --repeat 时同一题以最后一条结果为准（与历史口径一致）；加 --repeat 时用 evalkit 按指定的
+那一次重复配对，适合各跑了多次的运行（如语义层 3 次对 3 次），可按难度等子集拆分。
 
 - McNemar 精确检验：只看"A 对 B 错"与"B 对 A 错"的题数，比较两个总分更严谨
 - 纠错统计：B 中纠错改动了 SQL 的题，改对 / 改错 / 仍错 / 仍对 的数量
@@ -11,23 +15,16 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from math import comb
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from evals.report import load_rows  # noqa: E402
+from evalkit.compare import compare as ek_compare  # noqa: E402
+from evalkit.compare import render as ek_render  # noqa: E402
+from evalkit.stats import mcnemar_exact  # noqa: E402,F401  （双侧精确检验，其他脚本从这里导入）
 
-
-def mcnemar_exact(b: int, c: int) -> float:
-    """双侧精确 McNemar：b = A 对 B 错，c = B 对 A 错。"""
-    n = b + c
-    if n == 0:
-        return 1.0
-    k = min(b, c)
-    p = sum(comb(n, i) for i in range(k + 1)) / 2**n
-    return min(1.0, 2 * p)
+from evals.report import evalkit_rows, load_rows  # noqa: E402
 
 
 def compare(rows_a: list[dict], rows_b: list[dict], model: str) -> dict:
@@ -66,7 +63,20 @@ def main() -> None:
     ap.add_argument("run_a")
     ap.add_argument("run_b")
     ap.add_argument("--model", default="sonnet")
+    ap.add_argument("--repeat", type=int, help="按第几次重复配对（从 0 开始），用 evalkit 比较")
+    ap.add_argument("--slice", action="append", help="按子集拆分（如 difficulty），配合 --repeat")
     args = ap.parse_args()
+    if args.repeat is not None:
+        c = ek_compare(
+            evalkit_rows(ROOT / "runs" / args.run_a),
+            evalkit_rows(ROOT / "runs" / args.run_b),
+            args.model,
+            args.model,
+            args.repeat,
+            args.slice or (),
+        )
+        print(ek_render(c))
+        return
     out = compare(
         load_rows(ROOT / "runs" / args.run_a), load_rows(ROOT / "runs" / args.run_b), args.model
     )

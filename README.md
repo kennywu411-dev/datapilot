@@ -238,6 +238,14 @@ uv run python evals/compare.py <run_a> <run_b> --model haiku   # 配对检验
 uv run python scripts/build_dashboard.py                        # 重新生成看板数据
 ```
 
+评测的运行、续跑、花费上限、配对检验、回归门禁和静态看板由评测平台 [evalkit](../evalkit) 提供（`pyproject.toml` 里以同级目录依赖引入）。结果行同时带 evalkit 的字段，下面几条命令只读已有运行，不调用 API：
+
+```bash
+uv run python evals/compare.py <run_a> <run_b> --model haiku --repeat 2 --slice difficulty   # 按第几次重复配对
+uv run python evals/gate.py --compare <基线运行> <候选运行> --model haiku                     # 显著变差时退出码 1
+uv run python evals/dashboard.py                                                             # 生成 site/eval.html
+```
+
 ## 在 MCP 客户端里用只读 MCP Server
 
 项目根目录的 `.mcp.json` 已配置好。在本目录打开支持项目级 MCP 配置的客户端，批准 `datapilot` 服务后即可直接问数据库，例如"用 datapilot 查一下 superhero 库里各出版商有多少英雄"。不打开客户端也能验证：
