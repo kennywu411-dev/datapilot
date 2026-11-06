@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -22,6 +23,7 @@ import random
 import re
 import time
 from contextlib import asynccontextmanager
+from datetime import date
 from functools import cache
 
 import anthropic
@@ -33,6 +35,8 @@ from sse_starlette.sse import EventSourceResponse
 
 from datapilot import config, rls, tools
 from datapilot.llm import SimulatedLLM
+from datapilot.quality import report as quality_report
+from datapilot.semantic import load_layer
 from datapilot.service import MAX_INFLIGHT, ChatService
 from datapilot.store import make_store
 
@@ -178,6 +182,34 @@ def create_app(
     async def roles(db_id: str):
         """该库定义的角色（演示用：前端据此显示角色切换）。"""
         return [{"role": k, "label": v} for k, v in rls.roles_of(db_id).items()]
+
+    @app.get("/api/databases/{db_id}/metrics")
+    async def metrics(db_id: str, request: Request):
+        """指标目录：指标、术语、维度、口径、计算 SQL、同义词、血缘（v1.5）。"""
+        layer = load_layer(db_id) if db_id in tools.list_databases() else None
+        if layer is None:
+            raise HTTPException(404, f"{db_id} 没有指标字典")
+        try:
+            return layer.catalog_json(role_of(request))
+        except ValueError as e:
+            raise HTTPException(403, str(e)) from e
+
+    @app.get("/api/databases/{db_id}/quality")
+    async def quality(db_id: str, request: Request, as_of: str | None = None):
+        """数据质量报告。只给不受限的角色看：报告不按行列权限裁剪。"""
+        if db_id not in tools.list_databases():
+            raise HTTPException(404, f"未知数据库：{db_id}")
+        try:
+            restricted = rls.policy_for(db_id, role_of(request)) is not None
+        except ValueError as e:
+            raise HTTPException(403, str(e)) from e
+        if restricted:
+            raise HTTPException(403, "当前角色无权查看数据质量报告")
+        try:
+            day = date.fromisoformat(as_of) if as_of else None
+        except ValueError as e:
+            raise HTTPException(400, "as_of 格式应为 YYYY-MM-DD") from e
+        return await asyncio.to_thread(quality_report, db_id, day)
 
     @app.get("/api/databases/{db_id}/examples")
     async def examples(db_id: str):

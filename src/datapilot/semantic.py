@@ -375,6 +375,97 @@ class SemanticLayer:
             parts.append("通用约定：\n" + "\n".join(f"- {c}" for c in self.conventions))
         return "\n".join(parts) if parts else ""
 
+    # ---------- 指标目录（页面、问数回答里的"用到的指标"） ----------
+
+    def dimensions_for(self, m: Metric) -> list[str]:
+        """simple 指标能按哪些维度分组：维度的表能从主表关联到，时间维度要求主表有时间列。"""
+        if m.kind != "simple":
+            return []
+        return [
+            d.id
+            for d in self.dimensions.values()
+            if self._reachable(m.base, d)
+            and ("{time}" not in d.expr or m.base in self.time_columns)
+        ]
+
+    def definition(
+        self, id_: str, kind: Literal["metric", "term"], role: str | None = None
+    ) -> dict:
+        """一个指标或术语的完整定义，含血缘（依赖的表和列）。
+        当前角色看不到的列标在 restricted 里，计算片段照常给出：列名本身在表结构里也可见，
+        真正的限制在执行层。"""
+        if kind == "metric":
+            m = self.metrics[id_]
+            cols = self.columns_of_metric(m)
+            d = {
+                "id": m.id,
+                "kind": "metric",
+                "type": m.kind,
+                "name": m.name,
+                "description": m.description,
+                "synonyms": list(m.synonyms),
+                "base": m.base,
+                "expr": m.expr,
+                "filters": [
+                    {"id": f, "name": self.terms[f].name, "sql": self.terms[f].sql}
+                    for f in m.filters
+                ]
+                + [{"id": "", "name": "指标自带条件", "sql": f} for f in m.filters_sql],
+                "reference_sql": m.reference_sql,
+                "time_column": self.time_columns.get(m.base, "") if m.kind == "simple" else "",
+                # 语义层直出的整体 SQL（含 JOIN）；展示用，按不受限生成，权限标在 restricted
+                "example_sql": (
+                    self.compile(SemanticQuery(mappable=True, metric=m.id))
+                    if m.kind == "simple"
+                    else ""
+                ),
+                "dimensions": self.dimensions_for(m),
+                "dimension_names": [self.dimensions[i].name for i in self.dimensions_for(m)],
+            }
+        else:
+            t = self.terms[id_]
+            cols = self.columns_of_term(t)
+            d = {
+                "id": t.id,
+                "kind": "term",
+                "type": "term",
+                "name": t.name,
+                "description": t.description,
+                "synonyms": list(t.synonyms),
+                "sql": t.sql,
+                "reference_sql": t.reference_sql,
+            }
+        d["lineage"] = [f"{t}.{c}" for t, c in sorted(cols)]
+        d["tables"] = sorted({t for t, _ in cols})
+        d["restricted"] = self._hidden(cols, role)
+        return d
+
+    def definitions(self, matches: list[Match], role: str | None = None) -> list[dict]:
+        return [
+            {**self.definition(m.id, m.kind, role), "matched_by": m.via, "matched_text": m.text}
+            for m in matches
+        ]
+
+    def catalog_json(self, role: str | None = None) -> dict:
+        return {
+            "db_id": self.db_id,
+            "conventions": self.conventions,
+            "metrics": [self.definition(k, "metric", role) for k in self.metrics],
+            "terms": [self.definition(k, "term", role) for k in self.terms],
+            "dimensions": [
+                {
+                    "id": d.id,
+                    "name": d.name,
+                    "expr": d.expr,
+                    "synonyms": list(d.synonyms),
+                    "description": d.description,
+                    "values": d.values,
+                }
+                for d in self.dimensions.values()
+            ],
+            "joins": [{"left": a, "right": b, "on": c} for a, b, c in self.joins],
+        }
+
     # ---------- 语义层直出 ----------
 
     def catalog(self) -> str:
@@ -403,14 +494,16 @@ class SemanticLayer:
         return tables <= set(self._join_tree(base))
 
     def _join_tree(self, base: str) -> dict[str, tuple[str, str] | None]:
-        """从主表出发 BFS：表 → (父表, 关联条件)，按发现顺序。"""
+        """从主表出发 BFS：表 → (上一张表, 关联条件)，按发现顺序。
+        只沿 [子表, 父表] 的多对一方向走：反过来走一对多会让每行被复制（扇出），
+        比如按品类数注册用户会变成数订单。"""
         tree: dict[str, tuple[str, str] | None] = {base: None}
         frontier = [base]
         while frontier:
             nxt = []
             for cur in frontier:
                 for a, b, cond in self.joins:
-                    other = b if a == cur else a if b == cur else None
+                    other = b if a == cur else None
                     if other and other not in tree:
                         tree[other] = (cur, cond)
                         nxt.append(other)
@@ -551,11 +644,15 @@ class SemanticPipeline:
         if layer is not None:
             step = {"step": "semantic", "matched": [m.id for m in matches]}
             trace.append(step)
-            names = [
-                (layer.metrics[m.id] if m.kind == "metric" else layer.terms[m.id]).name
-                for m in matches
-            ]
-            yield "semantic", {"matched": [m.id for m in matches], "names": names}
+            defs = layer.definitions(matches, role)
+            yield (
+                "semantic",
+                {
+                    "matched": [m.id for m in matches],
+                    "names": [d["name"] for d in defs],
+                    "definitions": defs,
+                },
+            )
         if layer is not None and self.mode == "compile":
             out = await self._try_compile(layer, llm, db_path, question, matches, role)
             plan_res, compiled = out[0], out[1]

@@ -7,7 +7,7 @@
 #   base 是主表，filters 引用 terms）；kind=derived 的指标（比率、同比等）只给口径和参考 SQL，
 #   由模型按口径写 SQL
 # - dimensions：可分组 / 可过滤的维度
-# - joins：表之间的关联，语义层生成 SQL 时按主表沿关联补齐 JOIN
+# - joins：表之间的关联（子表 → 父表），语义层生成 SQL 时从主表沿关联补齐 JOIN
 #
 # 所有 SQL 片段里的列都写成"表名.列名"，加载时逐个校验列存在，并据此判断行列级权限。
 
@@ -248,6 +248,7 @@ time_columns:
   tickets: tickets.created_at
   users: users.register_date
 
+# [子表, 父表, 关联条件]：语义层只沿子表 → 父表（多对一）方向补 JOIN，避免一对多扇出把指标算重
 joins:
   - [orders, products, orders.sku = products.sku]
   - [orders, users, orders.user_id = users.user_id]

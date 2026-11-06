@@ -1,6 +1,7 @@
 """问数服务：把最终配置（指标语义层 + E4 固定流程）包装成前端可用的流式事件。
 
-事件（按顺序）：step* → sql → table → chart → answer → done；出错时 error → done。
+事件（按顺序）：step* → metrics（本题用到的指标定义，有才发）→ sql → table → chart → answer → done；
+出错时 error → done。
 - 追问：会话保存最近几轮的问题和 SQL（Redis / 内存），同库追问时一并交给模型
 - 查询缓存：key = 库 + 配置版本 + 模型 + hash(规范化问题 + 追问上下文)，命中直接返回
 - 图表：按结果列类型用规则选，稳定、可解释，前端可手动切换
@@ -268,10 +269,13 @@ class ChatService:
         )
         path = config.db_path(db_id)
         result, cost = None, 0.0
+        definitions: list[dict] = []
         async for node, update in PIPELINE.astream(llm, path, full_question, "", role):
             if node == "result":
                 result = update
                 continue
+            if node == "semantic":
+                definitions = update.get("definitions", [])
             detail = {}
             if node == "check":
                 detail = {"issues": update.get("issues", [])}
@@ -289,7 +293,12 @@ class ChatService:
             yield {"event": "done", "data": self._done(start, False, cost)}
             return
 
-        events = [{"event": "sql", "data": {"sql": result.sql}}]
+        events = []
+        if definitions:
+            # 本题用到的指标定义：前端放在回答下面，可以点开看口径
+            events.append({"event": "metrics", "data": {"items": definitions}})
+            yield events[-1]
+        events.append({"event": "sql", "data": {"sql": result.sql}})
         yield events[-1]
         if result.exec_error or result.rows is None:
             # 流程已经执行过这条 SQL 并确认失败（纠错次数用完），直接用那次的报错，不再执行一遍

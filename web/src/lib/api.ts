@@ -23,8 +23,67 @@ export type TableData = { columns: string[]; rows: unknown[][]; truncated: boole
 export type Step = { name: string; label: string; sql?: string; issues?: string[]; matched?: string[] };
 export type Done = { cached: boolean; latency_s: number; cost_usd: number; model: string };
 
+// 指标语义层（指标目录、问数回答里"用到的指标"）
+export type MetricDef = {
+  id: string;
+  kind: "metric" | "term";
+  type: "simple" | "derived" | "term";
+  name: string;
+  description: string;
+  synonyms: string[];
+  base?: string;
+  expr?: string;
+  sql?: string;
+  filters?: { id: string; name: string; sql: string }[];
+  reference_sql: string;
+  example_sql?: string;
+  time_column?: string;
+  dimensions?: string[];
+  dimension_names?: string[];
+  lineage: string[];
+  tables: string[];
+  restricted: string[];
+  matched_by?: "synonym" | "fuzzy";
+  matched_text?: string;
+};
+export type Dimension = {
+  id: string;
+  name: string;
+  expr: string;
+  synonyms: string[];
+  description: string;
+  values: Record<string, string>;
+};
+export type Catalog = {
+  db_id: string;
+  conventions: string[];
+  metrics: MetricDef[];
+  terms: MetricDef[];
+  dimensions: Dimension[];
+  joins: { left: string; right: string; on: string }[];
+};
+export type QualityCheck = {
+  id: string;
+  category: string;
+  table: string;
+  description: string;
+  severity: "fail" | "warn";
+  status: "pass" | "warn" | "fail";
+  failed: number;
+  total: number;
+  sample_keys: unknown[];
+  detail: string;
+};
+export type QualityReport = {
+  db_id: string;
+  as_of: string;
+  summary: { pass: number; warn: number; fail: number; total: number };
+  checks: QualityCheck[];
+};
+
 export type AskEvent =
   | { event: "step"; data: Step }
+  | { event: "metrics"; data: { items: MetricDef[] } }
   | { event: "sql"; data: { sql: string } }
   | { event: "table"; data: TableData }
   | { event: "chart"; data: ChartSpec }
@@ -65,6 +124,9 @@ export const api = {
     getJSON<{ db_id: string; tables: TableInfo[] }>(`/api/databases/${db}/schema`, role),
   roles: (db: string) => getJSON<{ role: string; label: string }[]>(`/api/databases/${db}/roles`),
   examples: (db: string) => getJSON<string[]>(`/api/databases/${db}/examples`),
+  metrics: (db: string, role?: string) => getJSON<Catalog>(`/api/databases/${db}/metrics`, role),
+  quality: (db: string, asOf?: string) =>
+    getJSON<QualityReport>(`/api/databases/${db}/quality${asOf ? `?as_of=${encodeURIComponent(asOf)}` : ""}`),
 };
 
 /** 发起一次问数，逐个回调事件。返回 true 表示收到 done，false 表示中途断线。 */

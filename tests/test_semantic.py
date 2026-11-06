@@ -317,3 +317,49 @@ def test_db_without_layer_passes_through(shop_db_dir):
     out = asyncio.run(SemanticPipeline(E4, "context")(llm, config.db_path("shop"), "q", "ev"))
     assert llm.calls[0]["messages"][0]["content"] == "-- Question: q\n-- External Knowledge: ev"
     assert out.sql == "SELECT 1"
+
+
+# ---------- 指标目录与问数回答 ----------
+
+
+def test_catalog_has_lineage_dimensions_and_restricted(layer):
+    cat = layer.catalog_json()
+    sales = next(m for m in cat["metrics"] if m["id"] == "sales")
+    assert sales["lineage"] == ["orders.amount", "orders.status"]
+    assert sales["filters"][0]["name"] == "有效订单"
+    assert {"month", "category", "city"} <= set(sales["dimensions"])
+    # users 为主表时关联不到商品，不能按品类分
+    assert "category" not in next(m for m in cat["metrics"] if m["id"] == "new_users")["dimensions"]
+    assert next(m for m in cat["metrics"] if m["id"] == "repurchase_rate")["dimensions"] == []
+    # 整体 SQL 带上 JOIN，可直接执行
+    assert "JOIN products" in layer.definition("gross_profit", "metric")["example_sql"]
+    gp = layer.definition("gross_profit", "metric", role="ops")
+    assert gp["restricted"] == ["products.cost"] and "products" in gp["tables"]
+    assert {t["id"] for t in cat["terms"]} >= {"valid_order", "first_order"}
+
+
+@needs_shop
+async def test_service_emits_metrics_event_before_sql():
+    from datapilot.service import ChatService
+    from datapilot.store import MemoryStore
+
+    tools._tables_cached.cache_clear()
+    llm = ScriptedLLM([SQLAnswer(sql="SELECT SUM(amount) FROM orders"), "答案"])
+    svc = ChatService(MemoryStore(), llm_factory=lambda: llm)
+    events = [e async for e in svc.ask("s1", "shop_ops", "2025 年的销售额是多少")]
+    names = [e["event"] for e in events]
+    assert names.index("metrics") < names.index("sql")
+    items = next(e for e in events if e["event"] == "metrics")["data"]["items"]
+    assert items[0]["name"] == "销售额" and items[0]["matched_by"] == "synonym"
+    step = next(e for e in events if e["event"] == "step" and e["data"]["name"] == "semantic")
+    assert step["data"]["matched"] == ["销售额"]
+    # 命中缓存时同样带上指标定义
+    again = [e["event"] async for e in svc.ask("s2", "shop_ops", "2025 年的销售额是多少")]
+    assert "metrics" in again
+
+
+def test_compile_never_fans_out_one_to_many(layer):
+    # users 为主表时不能为了按品类分组去关联订单：那样每个用户会按订单数被重复计数
+    q = SemanticQuery(mappable=True, metric="new_users", group_by=["category"])
+    with pytest.raises(NotCompilable):
+        layer.compile(q)

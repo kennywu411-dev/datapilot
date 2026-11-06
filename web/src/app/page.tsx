@@ -68,6 +68,8 @@ export default function Home() {
             switch (e.event) {
               case "step":
                 return { ...t, steps: [...t.steps, e.data] };
+              case "metrics":
+                return { ...t, metrics: e.data.items };
               case "sql":
                 return { ...t, sql: e.data.sql };
               case "table":
