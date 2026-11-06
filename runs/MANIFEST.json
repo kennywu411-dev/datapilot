@@ -59,5 +59,14 @@
   "rls": {
     "with_note": "rls-eval-20261023-231515-a4d7",
     "no_note": "rls-nonote-20261023-231802-33da"
+  },
+  "semantic": {
+    "noev_baseline": "shop-noev-20261023-221707-882e",
+    "noev_context": "sem-ctx-20261106-211247-a40c",
+    "noev_compile": "sem-cmp-20261106-211406-e5aa",
+    "holdout_baseline": "hold-e4-20261106-211617-4e9e",
+    "holdout_context": "hold-ctx-20261106-211704-343b",
+    "holdout_compile": "hold-cmp-20261106-211739-fdf8",
+    "gold_check": "gold-sem-20261105-114127-866e"
   }
 }

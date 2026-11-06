@@ -1,0 +1,71 @@
+# 电商经营分析库的数据质量规则。
+# 主键重复 / 主键为空、外键一致性按库里声明的约束自动检查，不用写在这里。
+# severity：fail = 会算错指标，必须处理；warn = 影响分析质量，需要关注。
+
+db_id: shop_ops
+
+not_null:  # 表结构允许为空、但业务上应该有值的列
+  - {column: users.gender, severity: warn}
+  - {column: users.city, severity: warn}
+  - {column: products.brand, severity: warn}
+
+unique:  # 业务键不重复（主键唯一由库保证，这里查的是"换了主键的重复数据"）
+  - columns: [orders.user_id, orders.sku, orders.created_at]
+    description: 同一用户同一时刻同一商品不应有两笔订单（疑似重复下单 / 重复导入）
+    severity: warn
+
+accepted_values:
+  - {column: users.tier, values: [normal, vip, svip]}
+  - {column: users.gender, values: [F, M]}
+  - {column: products.category, values: [apparel, digital, home, food, beauty]}
+  - {column: orders.channel, values: [app, web, mini_program]}
+  - {column: orders.status, values: [pending, paid, shipped, delivered, cancelled, refunded]}
+  - {column: tickets.type, values: [refund, return, exchange]}
+  - {column: tickets.reason, values: [quality, wrong_item, size, late, no_reason]}
+  - {column: tickets.status, values: [open, approved, rejected, closed]}
+
+ranges:
+  - {column: products.price, min: 0, min_inclusive: false}
+  - {column: products.cost, min: 0}
+  - {column: orders.qty, min: 1}
+  - {column: orders.amount, min: 0}
+  - {column: tickets.refund_amount, min: 0}
+  - {column: campaigns.discount_rate, min: 0, max: 1}
+
+expressions:  # 每一行都应满足的业务规则；不满足的行计入失败
+  - id: paid_status_has_paid_at
+    table: orders
+    description: 已支付、已发货、已签收、已退款的订单都应有支付时间
+    condition: status NOT IN ('paid', 'shipped', 'delivered', 'refunded') OR paid_at IS NOT NULL
+  - id: unpaid_has_no_paid_at
+    table: orders
+    description: 待支付、已取消的订单不应有支付时间
+    condition: status NOT IN ('pending', 'cancelled') OR paid_at IS NULL
+  - id: delivered_has_delivered_at
+    table: orders
+    description: 已签收、已退款的订单应有签收时间
+    condition: status NOT IN ('delivered', 'refunded') OR delivered_at IS NOT NULL
+  - id: order_time_sequence
+    table: orders
+    description: 下单 ≤ 支付 ≤ 签收
+    condition: (paid_at IS NULL OR paid_at >= created_at) AND (delivered_at IS NULL OR delivered_at >= COALESCE(paid_at, created_at))
+  - id: ticket_time_sequence
+    table: tickets
+    description: 售后完结时间不早于申请时间
+    condition: closed_at IS NULL OR closed_at >= created_at
+  - id: closed_ticket_has_closed_at
+    table: tickets
+    description: 已完结、已拒绝的工单应有完结时间
+    condition: status NOT IN ('closed', 'rejected') OR closed_at IS NOT NULL
+  - id: refund_not_exceed_amount
+    table: tickets
+    description: 退款金额不超过订单实付金额
+    condition: refund_amount <= (SELECT o.amount FROM orders o WHERE o.order_id = tickets.order_id)
+  - id: campaign_dates
+    table: campaigns
+    description: 活动结束日期不早于开始日期
+    condition: end_date >= start_date
+
+freshness:  # 最新一条数据距检查日期的天数（按周批量导入，允许 7 天）
+  - {column: orders.created_at, max_age_days: 7}
+  - {column: tickets.created_at, max_age_days: 7}

@@ -1,6 +1,7 @@
-"""问数服务：把最终配置（E4 固定流程）包装成前端可用的流式事件。
+"""问数服务：把最终配置（指标语义层 + E4 固定流程）包装成前端可用的流式事件。
 
-事件（按顺序）：step* → sql → table → chart → answer → done；出错时 error → done。
+事件（按顺序）：step* → metrics（本题用到的指标定义，有才发）→ sql → table → chart → answer → done；
+出错时 error → done。
 - 追问：会话保存最近几轮的问题和 SQL（Redis / 内存），同库追问时一并交给模型
 - 查询缓存：key = 库 + 配置版本 + 模型 + hash(规范化问题 + 追问上下文)，命中直接返回
 - 图表：按结果列类型用规则选，稳定、可解释，前端可手动切换
@@ -21,9 +22,10 @@ from collections.abc import AsyncIterator, Callable
 from datapilot import config, rls, tools
 from datapilot.llm import LLM, ClaudeLLM
 from datapilot.pipeline import FixedPipeline, PipelineConfig
+from datapilot.semantic import SemanticPipeline
 from datapilot.store import Store
 
-CONFIG_VERSION = "e4-v4"  # 流程或提示词改了就升版本，旧缓存自然失效
+CONFIG_VERSION = "e4-v5"  # 流程或提示词改了就升版本，旧缓存自然失效
 SESSION_TTL_S = 24 * 3600
 CACHE_TTL_S = 3600
 KEEP_TURNS = 3
@@ -31,10 +33,14 @@ CONTEXT_TURNS = 2
 TABLE_MAX_ROWS = 500
 ANSWER_PREVIEW_ROWS = 100  # 给回答模型看的行数；20 行时 68 行的趋势被误判为数据不全（P11）
 
-PIPELINE = FixedPipeline(
-    PipelineConfig(
-        schema="enhanced", value_check=True, max_corrections=3, result_rows=TABLE_MAX_ROWS
-    )
+# 有指标字典的库先匹配指标口径再生成 SQL（v1.5，ADR 006）；没有字典的库行为不变
+PIPELINE = SemanticPipeline(
+    FixedPipeline(
+        PipelineConfig(
+            schema="enhanced", value_check=True, max_corrections=3, result_rows=TABLE_MAX_ROWS
+        )
+    ),
+    "context",
 )
 LOCKS_MAX = 10_000
 MAX_INFLIGHT = 8  # 同时调用模型的请求上限，按 API 速率限制估算
@@ -43,6 +49,8 @@ BUSY_MESSAGE = "系统繁忙，请稍后再试。"
 
 STEP_LABELS = {
     "queue": "排队等待",
+    "semantic": "匹配指标口径",
+    "plan": "映射到指标",
     "generate": "生成 SQL",
     "execute": "执行查询",
     "check": "检查结果",
@@ -261,17 +269,30 @@ class ChatService:
         )
         path = config.db_path(db_id)
         result, cost = None, 0.0
-        async for node, update in PIPELINE.astream(llm, path, full_question, "", role):
+        definitions: list[dict] = []
+        async for node, update in PIPELINE.astream(
+            llm, path, full_question, "", role, match_on=question
+        ):
             if node == "result":
                 result = update
                 continue
+            if node == "semantic":
+                definitions = update.get("definitions", [])
             detail = {}
             if node == "check":
                 detail = {"issues": update.get("issues", [])}
+            elif node == "semantic":
+                detail = {"matched": update.get("names", [])}
             elif "sql" in update:
                 detail = {"sql": update["sql"]}
             yield {"event": "step", "data": {"name": node, "label": STEP_LABELS[node], **detail}}
         cost += sum(c.cost_usd for c in result.llm_calls)
+
+        events = []
+        if definitions:
+            # 本题用到的指标定义，前端可点开看口径；生成失败时也发，能看出按什么口径尝试的
+            events.append({"event": "metrics", "data": {"items": definitions}})
+            yield events[-1]
 
         if not result.sql:
             message = "模型没有生成 SQL，请换个问法再试。"
@@ -280,7 +301,7 @@ class ChatService:
             yield {"event": "done", "data": self._done(start, False, cost)}
             return
 
-        events = [{"event": "sql", "data": {"sql": result.sql}}]
+        events.append({"event": "sql", "data": {"sql": result.sql}})
         yield events[-1]
         if result.exec_error or result.rows is None:
             # 流程已经执行过这条 SQL 并确认失败（纠错次数用完），直接用那次的报错，不再执行一遍
