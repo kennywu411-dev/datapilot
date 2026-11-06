@@ -1,5 +1,7 @@
 # DataPilot
 
+[![CI](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml/badge.svg)](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 中文问数（NL2SQL）。输入一个问题，系统读表结构、写 SQL、在只读库上执行，报错或结果可疑时带着反馈重写，最后返回答案、SQL、表格和图表，支持追问。
 
 这个项目的重点不在功能多，而在每个选型都有对照实验：用固定流程还是 Agent、要不要 schema 检索、用哪个模型、要不要路由，都在同一批题上做了配对检验。所有数字和运行 ID 在 [docs/numbers.md](docs/numbers.md)。
