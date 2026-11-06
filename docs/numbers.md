@@ -406,7 +406,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 ## v1.3 电商经营分析中文评测：40 题（2026-10-23，模拟数据）
 
-**数据是模拟的**：`scripts/gen_shop_ops.py` 固定种子生成（600 用户、25 商品、8 活动、6000 订单、611 售后，2024-10 到 2026-09）。题目 `evals/shop_ops/questions.json`（AI 起草、本人确认），标准答案空跑 100%。
+**数据是模拟的**：`scripts/gen_shop_ops.py` 固定种子生成（600 用户、25 商品、8 活动、6000 订单、611 售后，2024-10 到 2026-09）。题目 `evals/shop_ops/questions.json`（起草后逐条执行核对、本人确认），标准答案空跑 100%。
 运行 ID：`shop-20261023-220333-1947`（Haiku、Sonnet 各 3 次，$0.267）、`shop-cn-20261023-220333-f418`（deepseek-flash、qwen3.7-plus 各 1 次，$0.040）。最终配置 E4。
 
 | 模型 | 各次 EX | 均值 | simple / moderate / challenging | 单题成本 |
