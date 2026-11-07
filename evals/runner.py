@@ -47,7 +47,7 @@ from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
 from datapilot.semantic import SemanticPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
 
-# 实验序列见 docs/adr/002-D2实验设计.md
+# 实验序列见 docs/adr/002-改进实验设计.md
 PIPELINES = {
     "baseline": generate_sql,  # E0：官方提示词，schema 在 user 消息里
     "e1_cached": FixedPipeline(PipelineConfig(schema="ddl")),
@@ -70,7 +70,7 @@ for _rule in RULES:
 # 指标语义层（v1.5，ADR 006）：E4 外面包一层，口径注入 / 语义层直出（映射不了退回注入）
 PIPELINES["sem_context"] = SemanticPipeline(PIPELINES["e4_correct"], "context")
 PIPELINES["sem_compile"] = SemanticPipeline(PIPELINES["e4_correct"], "compile")
-# 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-20261022-144501-d822 实测均值
+# 每题输出 token 预估（SQL + adaptive thinking）。试跑 trial-c0b9f9 实测均值
 # Haiku 255 / Sonnet 108 / Opus 123，取 2 倍余量。
 EST_OUTPUT_TOKENS = 500
 

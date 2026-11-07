@@ -59,7 +59,7 @@ def offline_checks() -> list[str]:
 
 
 # SELECT 1 判对的题以 gold-check 运行记录为准（与官方逐题一致），重跑 gold-check 后改这里的 run_id
-GOLD_CHECK_RUN = "gold-check-20261022-143358"
+GOLD_CHECK_RUN = "gold-check-d1190b"
 
 
 def select1_hits() -> set[int]:

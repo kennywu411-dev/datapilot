@@ -1,0 +1,36 @@
+[
+  {
+    "model": "gold",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.996,
+    "ci95": [
+      0.9855339859585811,
+      0.9989023924587627
+    ],
+    "by_difficulty": {
+      "simple": [
+        148,
+        148
+      ],
+      "moderate": [
+        249,
+        250
+      ],
+      "challenging": [
+        101,
+        102
+      ]
+    },
+    "status": {
+      "ok": 498,
+      "pred_timeout": 2
+    },
+    "cost_total": 0.0,
+    "cost_per_q": 0.0,
+    "latency_p50": 2.7124988264404237e-05,
+    "latency_p95": 7.55420041969046e-05
+  }
+]

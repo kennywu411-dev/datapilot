@@ -1,7 +1,7 @@
 """下载 BIRD Mini-Dev（CC BY-SA 4.0）。
 
 - 题目与标准 SQL：Hugging Face `birdsql/bird_mini_dev`（官方 README 称其为 canonical 版本），
-  固定取 2026-01-18 的修订 f65faf4：2026-10-26 起 main 分支换成了另一版题库（题号、题目都不同，
+  固定取 2026-01-18 的修订 f65faf4：main 分支后来换成了另一版题库（题号、题目都不同，
   文件名也改为 mini_dev_sqlite.jsonl），而本仓库所有运行记录和门禁对应的是 f65faf4 这一版
 - SQLite 数据库：官方完整包 minidev.zip（约 801MB），只解出 SQLite 数据库
 

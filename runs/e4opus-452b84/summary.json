@@ -1,0 +1,36 @@
+[
+  {
+    "model": "opus",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.864,
+    "ci95": [
+      0.8311642695066905,
+      0.8912850082028119
+    ],
+    "by_difficulty": {
+      "simple": [
+        139,
+        148
+      ],
+      "moderate": [
+        211,
+        250
+      ],
+      "challenging": [
+        82,
+        102
+      ]
+    },
+    "status": {
+      "ok": 498,
+      "timeout": 2
+    },
+    "cost_total": 2.8502038,
+    "cost_per_q": 0.0057004076,
+    "latency_p50": 2.1455136659933487,
+    "latency_p95": 4.205325709001045
+  }
+]

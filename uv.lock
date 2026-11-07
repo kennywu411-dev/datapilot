@@ -232,7 +232,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=2.1.0" },
-    { name = "evalkit", editable = "../evalkit" },
+    { name = "evalkit", git = "https://github.com/kennywu411-dev/evalkit?rev=816ce037cc853db55e0961aaf7e7616242469fb3" },
     { name = "fastapi", specifier = ">=0.159.1" },
     { name = "langgraph", specifier = ">=1.2.16" },
     { name = "mcp", specifier = ">=2" },
@@ -274,15 +274,7 @@ wheels = [
 [[package]]
 name = "evalkit"
 version = "0.1.0"
-source = { editable = "../evalkit" }
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8" },
-    { name = "ruff", specifier = ">=0.6" },
-]
+source = { git = "https://github.com/kennywu411-dev/evalkit?rev=816ce037cc853db55e0961aaf7e7616242469fb3#816ce037cc853db55e0961aaf7e7616242469fb3" }
 
 [[package]]
 name = "fastapi"

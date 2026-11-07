@@ -4,7 +4,7 @@
   {
    "key": "E0",
    "label": "基线（官方提示词）",
-   "run_id": "baseline-20261022-144835-8314",
+   "run_id": "baseline-93aca7",
    "sonnet": {
     "n": 500,
     "ex": 0.718,
@@ -41,7 +41,7 @@
   {
    "key": "E1",
    "label": "提示缓存",
-   "run_id": "e1-20261022-161608-d69f",
+   "run_id": "e1-aed243",
    "sonnet": {
     "n": 500,
     "ex": 0.708,
@@ -80,7 +80,7 @@
   {
    "key": "E2",
    "label": "+ Schema 增强",
-   "run_id": "e2-20261022-162100-555b",
+   "run_id": "e2-13bd10",
    "sonnet": {
     "n": 500,
     "ex": 0.716,
@@ -119,7 +119,7 @@
   {
    "key": "E3",
    "label": "+ 值核对",
-   "run_id": "e3-20261022-162602-47f5",
+   "run_id": "e3-896e4c",
    "sonnet": {
     "n": 500,
     "ex": 0.728,
@@ -158,7 +158,7 @@
   {
    "key": "E4",
    "label": "+ 执行纠错（最终）",
-   "run_id": "e4-20261022-163051-724f",
+   "run_id": "e4-3463b8",
    "sonnet": {
     "n": 500,
     "ex": 0.72,
@@ -197,7 +197,7 @@
   {
    "key": "Agent",
    "label": "自主调用工具",
-   "run_id": "agent-20261022-163640-2775",
+   "run_id": "agent-002a4f",
    "sonnet": {
     "n": 500,
     "ex": 0.72,
@@ -316,7 +316,7 @@
     "challenging": 0.3922
    },
    "runs": null,
-   "run_id": "qwen500-20261022-215451-f53b",
+   "run_id": "qwen500-91ec91",
    "paired_n": 500,
    "haiku_paired_ex": 0.674,
    "p_vs_haiku": 5.8e-09
@@ -325,7 +325,7 @@
  "cn_models": [
   {
    "name": "deepseek-flash",
-   "run_id": "deepseek500-20261023-204115-ddaa",
+   "run_id": "deepseek500-ae215c",
    "n": 500,
    "ex": 0.668,
    "ci": [
@@ -347,7 +347,7 @@
   },
   {
    "name": "qwen3.7-plus",
-   "run_id": "qwen37-500-20261023-213824-dc9d",
+   "run_id": "qwen37-500-a6bbd0",
    "n": 500,
    "ex": 0.68,
    "ci": [
@@ -371,10 +371,10 @@
  "shop_ops": {
   "n": 40,
   "runs": {
-   "claude": "shop-20261023-220333-1947",
-   "cn": "shop-cn-20261023-220333-f418",
-   "claude_noev": "shop-noev-20261023-221707-882e",
-   "cn_noev": "shop-noev-cn-20261023-221834-7484"
+   "claude": "shop-8740b7",
+   "cn": "shop-cn-b102c6",
+   "claude_noev": "shop-noev-094a10",
+   "cn_noev": "shop-noev-cn-8cf5c9"
   },
   "models": [
    {
@@ -498,7 +498,7 @@
   }
  },
  "failure": {
-  "source_run": "e4-20261022-163051-724f",
+  "source_run": "e4-3463b8",
   "n_failures": 140,
   "names": {
    "A": "模型错",
@@ -2753,8 +2753,8 @@
   ]
  },
  "route": {
-  "replay_run": "route-replay-20261023-191456",
-  "live_run": "route-r1-20261023-222523-d6f6",
+  "replay_run": "route-replay-253ae6",
+  "live_run": "route-r1-4bc570",
   "haiku": {
    "ex_runs": [
     0.674,
@@ -2806,9 +2806,9 @@
  },
  "zh100": {
   "runs": {
-   "zh": "zh100v2-20261023-222812-9a3d",
-   "zh_first": "zh100-20261023-222450-2e9a",
-   "en": "en100-20261023-222450-63f7"
+   "zh": "zh100v2-19843f",
+   "zh_first": "zh100-0c81eb",
+   "en": "en100-c36e18"
   },
   "models": {
    "haiku": {
@@ -2828,7 +2828,7 @@
   }
  },
  "cache": {
-  "run_id": "cache-bench-20261022-183428",
+  "run_id": "cache-bench-2f535c",
   "model": "sonnet",
   "store": "redis",
   "requests": 200,
@@ -2846,7 +2846,7 @@
   "cost_saved_pct": 0.2949999999999997
  },
  "selfcheck": {
-  "run_id": "gold-check-20261022-145326",
+  "run_id": "gold-check-d63784",
   "questions": 500,
   "gold_status": {
    "ok": 498,

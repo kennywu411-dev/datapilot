@@ -1,4 +1,4 @@
-"""模型调用封装（复用自 OpsPilot）。Agent 只依赖 LLM 协议，测试时换成 ScriptedLLM，不花钱也能跑。"""
+"""模型调用封装。Agent 只依赖 LLM 协议，测试时换成 ScriptedLLM，不花钱也能跑。"""
 
 from __future__ import annotations
 
@@ -195,7 +195,7 @@ class LocalLLM:
         chat = [{"role": "system", "content": system}] + [
             {"role": m["role"], "content": self._text(m["content"])} for m in messages
         ]
-        # 超过 num_ctx 时 Ollama 只保留开头 4 个 token、静默丢掉之后的开头部分——schema 正好在开头。
+        # 超过 num_ctx 时 Ollama 只保留开头 4 个 token、静默丢掉之后的开头部分，schema 正好在开头。
         # 按 3 字符/token 保守估算，宁可报错也不让模型在看不到 schema 的情况下作答（代码审查发现）。
         est = sum(len(m["content"]) for m in chat) / 3
         if est + self.max_tokens > self.num_ctx:

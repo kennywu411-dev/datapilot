@@ -41,7 +41,7 @@
 [40/40] haiku r0 q9009 ✓
 本次实际花费 $0.1388
 {
-  "run_id": "injection-20261022-161834",
+  "run_id": "injection-159749",
   "db_unchanged": true,
   "by_config": {
     "sonnet/e4_correct": {

@@ -1,6 +1,6 @@
 # BIRD 官方评测脚本（原样保留）
 
-来源：https://github.com/bird-bench/mini_dev/tree/main/evaluation ，2026-10-22 获取，未做修改。
+来源：https://github.com/bird-bench/mini_dev/tree/main/evaluation ，未做修改。
 许可：CC BY-SA 4.0（见上游仓库）。
 
 仅用于 `scripts/official_crosscheck.py`，与 `src/datapilot/ex.py` 逐题对照，证明评测口径一致。

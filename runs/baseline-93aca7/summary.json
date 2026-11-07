@@ -1,0 +1,107 @@
+[
+  {
+    "model": "haiku",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.63,
+    "ci95": [
+      0.5868391297107901,
+      0.671178469471175
+    ],
+    "by_difficulty": {
+      "simple": [
+        114,
+        148
+      ],
+      "moderate": [
+        148,
+        250
+      ],
+      "challenging": [
+        53,
+        102
+      ]
+    },
+    "status": {
+      "ok": 498,
+      "pred_timeout": 1,
+      "timeout": 1
+    },
+    "cost_total": 0.1710257,
+    "cost_per_q": 0.0003420514,
+    "latency_p50": 2.0053719999996247,
+    "latency_p95": 4.188991250004619
+  },
+  {
+    "model": "opus",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.866,
+    "ci95": [
+      0.8333333333333333,
+      0.8930854459020454
+    ],
+    "by_difficulty": {
+      "simple": [
+        140,
+        148
+      ],
+      "moderate": [
+        213,
+        250
+      ],
+      "challenging": [
+        80,
+        102
+      ]
+    },
+    "status": {
+      "ok": 497,
+      "pred_error": 1,
+      "timeout": 2
+    },
+    "cost_total": 5.202848,
+    "cost_per_q": 0.010405696,
+    "latency_p50": 2.1681000829994446,
+    "latency_p95": 3.2776229580049403
+  },
+  {
+    "model": "sonnet",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 500,
+    "repeats": 1,
+    "ex": 0.718,
+    "ci95": [
+      0.6770114417638189,
+      0.7556642245567071
+    ],
+    "by_difficulty": {
+      "simple": [
+        123,
+        148
+      ],
+      "moderate": [
+        170,
+        250
+      ],
+      "challenging": [
+        66,
+        102
+      ]
+    },
+    "status": {
+      "ok": 497,
+      "timeout": 2,
+      "no_sql": 1
+    },
+    "cost_total": 2.687434,
+    "cost_per_q": 0.0053748680000000005,
+    "latency_p50": 1.6982513749971986,
+    "latency_p95": 2.725308708002558
+  }
+]

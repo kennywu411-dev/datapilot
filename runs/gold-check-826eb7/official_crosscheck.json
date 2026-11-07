@@ -1,0 +1,37 @@
+{
+  "source_run": "gold-check-826eb7",
+  "official_gold_acc": 0.996,
+  "official_gold_fail": [
+    518,
+    701
+  ],
+  "official_shuffle_acc": 0.99,
+  "official_shuffle_fail": [
+    349,
+    518,
+    701,
+    751,
+    1144
+  ],
+  "mismatch_shuffle": [],
+  "official_select1_acc": 0.032,
+  "official_select1_hit": [
+    62,
+    245,
+    260,
+    472,
+    547,
+    933,
+    945,
+    967,
+    1134,
+    1164,
+    1171,
+    1189,
+    1275,
+    1322,
+    1352,
+    1394
+  ],
+  "mismatch_select1": []
+}

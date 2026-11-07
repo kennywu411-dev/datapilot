@@ -1,8 +1,8 @@
 {
   "reference_runs": {
-    "haiku": "e4-20261022-163051-724f",
-    "sonnet": "e4-20261022-163051-724f",
-    "opus": "e4opus-20261022-175535-704b"
+    "haiku": "e4-3463b8",
+    "sonnet": "e4-3463b8",
+    "opus": "e4opus-452b84"
   },
   "models": {
     "haiku": {
@@ -102,7 +102,7 @@
       "verbatim": 16,
       "t1_gold": 368,
       "t1_both": 0,
-      "run_id": "deepseek500-20261023-204115-ddaa",
+      "run_id": "deepseek500-ae215c",
       "vs_haiku": {
         "n": 500,
         "base_only": 34,
@@ -139,7 +139,7 @@
       "verbatim": 27,
       "t1_gold": 368,
       "t1_both": 0,
-      "run_id": "qwen37-500-20261023-213824-dc9d",
+      "run_id": "qwen37-500-a6bbd0",
       "vs_haiku": {
         "n": 500,
         "base_only": 32,

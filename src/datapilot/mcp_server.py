@@ -7,7 +7,7 @@ MCP Inspector）都能调用。所有工具只读：run_sql 走 sql_guard 的分
 调试：npx @modelcontextprotocol/inspector uv run python -m datapilot.mcp_server
 
 行列级权限（v1.4）：角色由启动时的环境变量 DATAPILOT_ROLE 固定（在 .mcp.json 的 env 里配），
-工具参数里不提供角色——否则模型可以自己传一个更高的角色给自己提权。
+工具参数里不提供角色，否则模型可以自己传一个更高的角色给自己提权。
 """
 
 from __future__ import annotations

@@ -1,0 +1,36 @@
+[
+  {
+    "model": "sonnet",
+    "pipeline": "abl_retrieval",
+    "effort": "medium",
+    "n": 373,
+    "repeats": 1,
+    "ex": 0.6997319034852547,
+    "ci95": [
+      0.6513706301422462,
+      0.7440209614442455
+    ],
+    "by_difficulty": {
+      "simple": [
+        105,
+        129
+      ],
+      "moderate": [
+        113,
+        175
+      ],
+      "challenging": [
+        43,
+        69
+      ]
+    },
+    "status": {
+      "ok": 372,
+      "timeout": 1
+    },
+    "cost_total": 3.0741928,
+    "cost_per_q": 0.008241803753351207,
+    "latency_p50": 1.8053191249928204,
+    "latency_p95": 3.405471457997919
+  }
+]

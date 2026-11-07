@@ -201,7 +201,7 @@
 [199] HIT  0.00s $0.0000
 [200] HIT  0.00s $0.0000
 {
-  "run_id": "cache-bench-20261022-183428",
+  "run_id": "cache-bench-2f535c",
   "model": "sonnet",
   "store": "redis",
   "requests": 200,

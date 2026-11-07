@@ -81,7 +81,7 @@
 [80/80] deepseek r0 q40 ✗ no_sql
 本次实际花费 $0.0737
 
-run_id=shop-noev-cn-20261023-221834-7484
+run_id=shop-noev-cn-8cf5c9
 | 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | deepseek | e4_correct | medium | 40 | 62.5% | 47.0%–75.8% | 10/10 | 13/18 | 2/12 | $0.0016 | $0.064 | 3.8s / 44.1s | {'ok': 39, 'no_sql': 1} |

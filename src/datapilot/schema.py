@@ -89,7 +89,7 @@ def _render_table(db_id: str, table: str, role: str | None = None) -> str:
 
 
 def _sql_literal(v) -> str:
-    """示例值按 SQL 字面量输出（'O''Brien'），不用 Python repr——后者会给含单引号的
+    """示例值按 SQL 字面量输出（'O''Brien'），不用 Python repr，后者会给含单引号的
     字符串加双引号，而 SQLite 里双引号表示标识符，模型照抄会出错（代码审查发现）。"""
     if isinstance(v, str):
         return "'" + v.replace("'", "''") + "'"

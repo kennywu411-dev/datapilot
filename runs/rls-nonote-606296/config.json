@@ -1,0 +1,52 @@
+{
+  "models": [
+    "haiku",
+    "sonnet"
+  ],
+  "roles": [
+    "ops",
+    "sh_manager"
+  ],
+  "picked": [
+    1,
+    4,
+    11,
+    13,
+    15,
+    17,
+    21,
+    23,
+    25,
+    28,
+    31,
+    35,
+    37,
+    39
+  ],
+  "extra": [
+    {
+      "question_id": 101,
+      "question": "列出进货成本最高的 5 个商品及其成本价。",
+      "evidence": "",
+      "SQL": "SELECT name, cost FROM products ORDER BY cost DESC LIMIT 5"
+    },
+    {
+      "question_id": 102,
+      "question": "2025 年消费金额最高的 3 位用户叫什么名字？",
+      "evidence": "只算有效订单（status 不是 cancelled 和 pending）",
+      "SQL": "SELECT u.name FROM orders o JOIN users u ON o.user_id = u.user_id WHERE o.created_at LIKE '2025%' AND o.status NOT IN ('cancelled', 'pending') GROUP BY u.user_id ORDER BY SUM(o.amount) DESC LIMIT 3"
+    },
+    {
+      "question_id": 103,
+      "question": "北京用户 2025 年一共下了多少单？",
+      "evidence": "",
+      "SQL": "SELECT COUNT(*) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京' AND o.created_at LIKE '2025%'"
+    }
+  ],
+  "prompt_note": false,
+  "policies": {
+    "analyst": "分析师",
+    "ops": "运营",
+    "sh_manager": "上海区域经理"
+  }
+}

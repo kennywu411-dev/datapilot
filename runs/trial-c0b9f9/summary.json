@@ -1,0 +1,101 @@
+[
+  {
+    "model": "haiku",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 20,
+    "repeats": 1,
+    "ex": 0.85,
+    "ci95": [
+      0.6395767041130426,
+      0.9476322080405041
+    ],
+    "by_difficulty": {
+      "simple": [
+        5,
+        6
+      ],
+      "moderate": [
+        8,
+        10
+      ],
+      "challenging": [
+        4,
+        4
+      ]
+    },
+    "status": {
+      "ok": 20
+    },
+    "cost_total": 0.0064722,
+    "cost_per_q": 0.00032361,
+    "latency_p50": 2.21023941700696,
+    "latency_p95": 7.2009532499942
+  },
+  {
+    "model": "opus",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 20,
+    "repeats": 1,
+    "ex": 0.95,
+    "ci95": [
+      0.7638641064874331,
+      0.9911187805671268
+    ],
+    "by_difficulty": {
+      "simple": [
+        5,
+        6
+      ],
+      "moderate": [
+        10,
+        10
+      ],
+      "challenging": [
+        4,
+        4
+      ]
+    },
+    "status": {
+      "ok": 20
+    },
+    "cost_total": 0.206148,
+    "cost_per_q": 0.0103074,
+    "latency_p50": 2.2779200410004705,
+    "latency_p95": 2.995536500005983
+  },
+  {
+    "model": "sonnet",
+    "pipeline": "baseline",
+    "effort": "medium",
+    "n": 20,
+    "repeats": 1,
+    "ex": 0.9,
+    "ci95": [
+      0.6989617935882066,
+      0.9721341060158468
+    ],
+    "by_difficulty": {
+      "simple": [
+        5,
+        6
+      ],
+      "moderate": [
+        9,
+        10
+      ],
+      "challenging": [
+        4,
+        4
+      ]
+    },
+    "status": {
+      "ok": 20
+    },
+    "cost_total": 0.100104,
+    "cost_per_q": 0.0050052,
+    "latency_p50": 1.7792331249947893,
+    "latency_p95": 4.3033418340055505
+  }
+]

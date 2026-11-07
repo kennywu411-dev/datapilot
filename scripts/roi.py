@@ -8,7 +8,7 @@ from __future__ import annotations
 # 注意：净节省 / API 费用的倍数没有意义（分母可忽略），只输出净节省与盈亏平衡点。
 
 # ---------- 实测 ----------
-COST_PER_Q = 0.0046  # Sonnet 问数服务全流程单次花费（cache-bench-20261022-183428 未命中均值）
+COST_PER_Q = 0.0046  # Sonnet 问数服务全流程单次花费（cache-bench-2f535c 未命中均值）
 LATENCY_S = 3.71  # 同上，未命中 P50
 EX_STRICT = 0.724  # Sonnet E4 3 次均值（严格 EX）
 EX_ADJUSTED = 0.899  # 人工判定外推（估计值，见 numbers.md 失败分析）

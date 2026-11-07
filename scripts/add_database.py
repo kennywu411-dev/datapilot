@@ -7,7 +7,7 @@
 - 系统会把这些说明放进增强 schema（取值说明对"取值写错"类错误最有用）
 
 用法：uv run python scripts/add_database.py <db_id> <源库路径>
-完整流程见 skills/chatbi-add-database/SKILL.md
+完整流程见 docs/接入新数据库.md
 """
 
 from __future__ import annotations

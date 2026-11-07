@@ -1,0 +1,21 @@
+{
+  "models": "qwen7b",
+  "pipeline": "e4_correct",
+  "effort": "medium",
+  "repeats": 1,
+  "sample": 5,
+  "seed": 0,
+  "ids": null,
+  "concurrency": 1,
+  "tag": "qwen-speed",
+  "resume": null,
+  "max_cost": null,
+  "yes": false,
+  "question_ids": [
+    85,
+    197,
+    724,
+    972,
+    1515
+  ]
+}

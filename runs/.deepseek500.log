@@ -501,7 +501,7 @@
 [500/500] deepseek r0 q189 ✗ no_sql
 本次实际花费 $0.6658
 
-run_id=deepseek500-20261023-204115-ddaa
+run_id=deepseek500-ae215c
 | 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | deepseek | e4_correct | medium | 500 | 66.8% | 62.6%–70.8% | 114/148 | 162/250 | 58/102 | $0.0013 | $0.666 | 3.2s / 28.5s | {'ok': 493, 'no_sql': 5, 'timeout': 2} |

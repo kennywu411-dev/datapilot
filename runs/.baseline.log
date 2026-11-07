@@ -1501,7 +1501,7 @@
 [1500/1500] opus r0 q194 ✓
 本次实际花费 $8.0613
 
-run_id=baseline-20261022-144835-8314
+run_id=baseline-93aca7
 | 模型 | 流程 | effort | 题次 | EX | 95% CI | simple | moderate | challenging | 单题成本 | 总成本 | P50 / P95 延迟 | 状态 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | haiku | baseline | medium | 500 | 63.0% | 58.7%–67.1% | 114/148 | 148/250 | 53/102 | $0.0003 | $0.171 | 2.0s / 4.2s | {'ok': 498, 'pred_timeout': 1, 'timeout': 1} |

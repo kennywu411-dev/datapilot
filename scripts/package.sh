@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 生成发布用的代码包：只打包 git 跟踪的文件（天然排除 .env、data/、node_modules、.next），
+# 生成代码包：只打包 git 跟踪的文件（天然排除 .env、data/、node_modules、.next），
 # 打包前扫描密钥与数据库文件，发现任何一项就中止。
 # 用法：bash scripts/package.sh   →  dist/datapilot-<版本>.tar.gz
 # 用 tar.gz 而不是 zip：macOS 自带的 unzip 6.00 解压中文文件名会失败（问题日志 P12）

@@ -1,0 +1,68 @@
+[
+  {
+    "model": "haiku",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 120,
+    "repeats": 3,
+    "ex": 0.6583333333333333,
+    "ci95": [
+      0.5697466444292892,
+      0.7370969364029997
+    ],
+    "by_difficulty": {
+      "simple": [
+        30,
+        30
+      ],
+      "moderate": [
+        39,
+        54
+      ],
+      "challenging": [
+        10,
+        36
+      ]
+    },
+    "status": {
+      "ok": 120
+    },
+    "cost_total": 0.026616,
+    "cost_per_q": 0.0002218,
+    "latency_p50": 2.356107083003735,
+    "latency_p95": 3.8178794590057805
+  },
+  {
+    "model": "sonnet",
+    "pipeline": "e4_correct",
+    "effort": "medium",
+    "n": 120,
+    "repeats": 3,
+    "ex": 0.6416666666666667,
+    "ci95": [
+      0.5527036937000394,
+      0.721840562834114
+    ],
+    "by_difficulty": {
+      "simple": [
+        30,
+        30
+      ],
+      "moderate": [
+        35,
+        54
+      ],
+      "challenging": [
+        12,
+        36
+      ]
+    },
+    "status": {
+      "ok": 120
+    },
+    "cost_total": 0.235644,
+    "cost_per_q": 0.0019637,
+    "latency_p50": 1.8757797919970471,
+    "latency_p95": 2.992761667002924
+  }
+]
