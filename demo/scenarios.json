@@ -1,0 +1,110 @@
+[
+ {
+  "id": "ok",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "turns": [
+   "售后工单最多的前 3 个品类是哪些？给出品类和工单数。",
+   {
+    "q": "售后工单最多的前 3 个品类是哪些？给出品类和工单数。",
+    "session": "b"
+   }
+  ]
+ },
+ {
+  "id": "metric",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "turns": [
+   "2025 年各品类的销售额分别是多少？"
+  ]
+ },
+ {
+  "id": "followup",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "turns": [
+   "2025 年每个月的销售额是多少？",
+   "只看数码品类呢？",
+   "换成订单数"
+  ]
+ },
+ {
+  "id": "fix-error",
+  "model": "qwen",
+  "db_id": "shop_ops",
+  "turns": [
+   "各品类商品标价的标准差是多少？保留两位小数。"
+  ]
+ },
+ {
+  "id": "fix-value",
+  "model": "qwen",
+  "db_id": "shop_ops",
+  "turns": [
+   "2026 年 618 活动的折扣率是多少？"
+  ]
+ },
+ {
+  "id": "rate",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "turns": [
+   "2026 年每个月数码品类的售后率是多少？用百分比表示，保留一位小数。"
+  ]
+ },
+ {
+  "id": "rls-col-analyst",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "analyst",
+  "turns": [
+   "2025 年毛利最高的品牌是哪个？"
+  ]
+ },
+ {
+  "id": "rls-row-analyst",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "analyst",
+  "turns": [
+   "北京的用户一共下了多少单？"
+  ]
+ },
+ {
+  "id": "rls-col-ops",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "ops",
+  "turns": [
+   "2025 年毛利最高的品牌是哪个？"
+  ]
+ },
+ {
+  "id": "rls-row-ops",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "ops",
+  "turns": [
+   "北京的用户一共下了多少单？"
+  ]
+ },
+ {
+  "id": "rls-col-sh_manager",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "sh_manager",
+  "turns": [
+   "2025 年毛利最高的品牌是哪个？"
+  ]
+ },
+ {
+  "id": "rls-row-sh_manager",
+  "model": "sonnet",
+  "db_id": "shop_ops",
+  "role": "sh_manager",
+  "turns": [
+   "北京的用户一共下了多少单？"
+  ]
+ }
+]

@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DataPilot 问数回放</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111826'/%3E%3Cpath d='M8 22V10h5a6 6 0 0 1 0 12z' fill='none' stroke='%23f6d548' stroke-width='3'/%3E%3Cpath d='M21 22V10' stroke='%23fbfcfd' stroke-width='3'/%3E%3C/svg%3E">
+<meta name="description" content="DataPilot 中文问数的真实运行记录回放：读表结构、匹配指标口径、生成 SQL、只读执行、出错纠错、回答和图表，每一步带耗时和花费。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
+<style>
+/* 版式沿用 UIPilot 展示页：冷色报告纸，正文墨蓝，唯一的强调色是荧光黄。 */
+:root {
+  --paper: #f3f5f8;
+  --surface: #fbfcfd;
+  --ink: #111826;
+  --ink-2: #566175;
+  --line: #d9dee6;
+  --mark: #f6d548;
+  --mark-ink: #2f2600;
+  --pass: #1d7f55;
+  --fail: #b8402c;
+  --shadow: 0 1px 0 rgba(17, 24, 38, .04), 0 12px 32px -18px rgba(17, 24, 38, .28);
+  --display: "Schibsted Grotesk", "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  --body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+  color-scheme: light;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0e131a; --surface: #141b24; --ink: #e5eaf1; --ink-2: #98a4b6; --line: #253041;
+    --mark: #e9c93c; --mark-ink: #221b00; --pass: #3fb984; --fail: #ef6b57;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 14px 36px -18px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.2; font-weight: 800; }
+h3 { font-size: 16px; font-weight: 700; line-height: 1.4; }
+p { margin: 0; }
+.lede { color: var(--ink-2); max-width: 64ch; }
+.num, code { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+code { font-size: .92em; }
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 .25em; border-radius: 3px; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+
+/* 顶栏 */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in oklab, var(--paper) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 19px; text-decoration: none; letter-spacing: -.02em; }
+.brand span { font-family: var(--mono); font-weight: 600; font-size: 12px; color: var(--ink-2); margin-left: 8px; letter-spacing: 0; }
+.nav { display: flex; gap: 22px; margin-left: auto; font-size: 14px; }
+.nav a { text-decoration: none; color: var(--ink-2); }
+.nav a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; font-size: 13.5px; font-weight: 500; text-decoration: none; border: 1px solid var(--ink); white-space: nowrap; }
+.btn:hover { background: var(--surface); }
+@media (max-width: 720px) { .nav { display: none; } .top .btn { margin-left: auto; } }
+
+/* 首屏 */
+.hero { padding-block: 56px 36px; }
+.hero h1 { font-size: clamp(30px, 4.4vw, 52px); line-height: 1.14; font-weight: 900; max-width: 20em; }
+.hero .lede { margin-top: 18px; font-size: 17px; }
+.notice { margin-top: 26px; display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--mark); background: color-mix(in oklab, var(--mark) 22%, var(--surface)); border-radius: var(--radius); padding: 14px 18px; max-width: 860px; }
+.notice b { flex: none; background: var(--mark); color: var(--mark-ink); border-radius: 4px; padding: 1px 9px; font-size: 13px; margin-top: 2px; }
+.notice p { font-size: 14.5px; }
+@media (max-width: 720px) { .hero { padding-block: 36px 24px; } .notice { flex-direction: column; gap: 8px; } }
+
+section.block { padding-block: 64px 0; }
+.head { display: grid; gap: 10px; margin-bottom: 26px; }
+
+/* 回放 */
+.replay { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 20px; align-items: start; }
+.cases { display: grid; gap: 8px; position: sticky; top: calc(76px + env(safe-area-inset-top, 0px)); }
+.case { font: inherit; text-align: left; display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.case:hover { border-color: var(--ink-2); }
+.case[aria-selected="true"] { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--mark); }
+.case .tag { font-size: 12px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; }
+.case .tag i { font-style: normal; font-family: var(--mono); }
+.case .q { font-size: 14px; line-height: 1.5; font-weight: 500; }
+.player { scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px)); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); min-width: 0; overflow: hidden; }
+.phead { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
+.phead .why { font-size: 14px; color: var(--ink-2); }
+.tracks { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 20px 0; }
+.track { font: inherit; font-size: 13.5px; padding: 5px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.track[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.controls { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.icon-btn { font: inherit; font-size: 13px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.icon-btn:active { transform: scale(.97); }
+.progress { flex: 1; min-width: 80px; height: 3px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .25s ease; }
+.count { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+
+.steps { list-style: none; margin: 0; padding: 4px 0 8px; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--line); animation: rise .28s ease both; }
+.step:last-child { border-bottom: 0; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .step { animation: none; } }
+.step .i { font-family: var(--mono); font-size: 12px; color: var(--ink-2); padding-top: 3px; }
+.step .row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.step .name { font-weight: 700; font-size: 14.5px; }
+.step .cost { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+.step .body { margin-top: 8px; display: grid; gap: 8px; min-width: 0; }
+.step .txt { font-size: 14px; color: var(--ink-2); }
+.step .txt b { color: var(--ink); font-weight: 500; }
+.step.pending .name { color: var(--ink-2); }
+.step.pending .name::after { content: " …"; }
+.chip { display: inline-block; font-size: 12px; font-weight: 500; padding: 0 9px; border-radius: 999px; border: 1px solid currentColor; line-height: 1.7; white-space: nowrap; }
+.chip.pass { color: var(--pass); }
+.chip.fail { color: var(--fail); }
+.chip.mark { color: var(--mark-ink); background: var(--mark); border-color: var(--mark); }
+.chip.plain { color: var(--ink-2); }
+pre.sql { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+pre.sql.bad { border-color: color-mix(in oklab, var(--fail) 55%, var(--line)); }
+pre.msg { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--ink-2); border-left: 2px solid var(--line); padding: 2px 0 2px 12px; max-height: 220px; overflow: auto; }
+.err { font-family: var(--mono); font-size: 12.5px; color: var(--fail); word-break: break-word; }
+details { font-size: 13.5px; }
+details summary { cursor: pointer; color: var(--ink-2); }
+details[open] summary { margin-bottom: 8px; }
+.schema { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.tbl { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper); min-width: 0; }
+.tbl h4 { margin: 0 0 4px; font-family: var(--mono); font-size: 13px; }
+.tbl ul { list-style: none; margin: 0; padding: 0; font-size: 12.5px; line-height: 1.6; }
+.tbl li { display: flex; gap: 8px; justify-content: space-between; }
+.tbl li span:first-child { font-family: var(--mono); }
+.tbl li span:last-child { color: var(--ink-2); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.tbl li.no span:first-child { text-decoration: line-through; color: var(--fail); }
+.tbl li.no span:last-child { color: var(--fail); }
+.metric { border-left: 3px solid var(--mark); padding: 2px 0 2px 12px; font-size: 13.5px; }
+.metric b { font-weight: 700; }
+.metric code { display: block; color: var(--ink-2); font-size: 12px; margin-top: 2px; word-break: break-word; }
+.result { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.result.solo { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 760px) { .result { grid-template-columns: minmax(0, 1fr); } }
+.grid-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
+.grid th, .grid td { padding: 6px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.grid th { font-family: var(--mono); font-weight: 600; font-size: 12px; color: var(--ink-2); background: var(--paper); }
+.grid td.n { font-family: var(--mono); text-align: right; }
+.grid tr:last-child td { border-bottom: 0; }
+.foot-note { font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+.chart { border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 6px; background: var(--paper); min-width: 0; }
+.chart svg { display: block; width: 100%; height: auto; }
+.chart text { fill: var(--ink-2); font-family: var(--mono); font-size: 11px; }
+.chart .cap { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
+.kpi { font-family: var(--mono); font-size: 40px; font-weight: 600; line-height: 1.2; }
+.answer { font-size: 15px; background: color-mix(in oklab, var(--mark) 16%, transparent); border-radius: 8px; padding: 12px 14px; }
+.total { display: flex; gap: 22px; flex-wrap: wrap; font-size: 13.5px; }
+.total span b { font-family: var(--mono); font-weight: 600; font-size: 15px; margin-left: 6px; }
+@media (max-width: 960px) {
+  .replay { grid-template-columns: minmax(0, 1fr); }
+  .cases { position: static; display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; scroll-snap-type: x proximity; }
+  .case { flex: 0 0 230px; scroll-snap-align: start; }
+  .phead, .controls, .step { padding-left: 14px; padding-right: 14px; }
+  .tracks { padding-left: 14px; padding-right: 14px; }
+  .step { grid-template-columns: 22px minmax(0, 1fr); gap: 6px; }
+}
+
+/* 数字 */
+.figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.fig { padding: 22px 22px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 8px; align-content: start; min-width: 0; }
+.fig .num { font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; line-height: 1.15; }
+.fig h3 { font-size: 15px; }
+.fig p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+.fig a { font-size: 13px; }
+@media (min-width: 861px) { .fig:nth-child(3n) { border-right: 0; } .fig:nth-last-child(-n+3) { border-bottom: 0; } }
+@media (max-width: 860px) { .figs { grid-template-columns: minmax(0, 1fr); } .fig { border-right: 0; } .fig:last-child { border-bottom: 0; } }
+
+/* 说明 */
+.about { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.about p { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+@media (max-width: 860px) { .about { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
+
+footer { margin-top: 84px; border-top: 1px solid var(--line); padding-block: 28px 40px; font-size: 13.5px; color: var(--ink-2); }
+footer .wrap { display: flex; gap: 16px 28px; flex-wrap: wrap; align-items: baseline; }
+footer nav { display: flex; gap: 20px; flex-wrap: wrap; margin-left: auto; }
+footer p { flex-basis: 100%; font-size: 12.5px; }
+@media (max-width: 720px) { footer nav { margin-left: 0; } }
+</style>
+</head>
+<body id="top">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">DataPilot<span>NL2SQL</span></a>
+    <nav class="nav" aria-label="页面导航">
+      <a href="#replay">回放</a><a href="#numbers">数字</a><a href="#about">说明</a>
+    </nav>
+    <a class="btn" href="https://github.com/kennywu411-dev/datapilot">GitHub</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>用中文提问，看它怎么读表、写 SQL、执行、纠错、回答</h1>
+      <p class="lede">DataPilot 是一个中文问数（NL2SQL）系统。下面 8 个问题各点一下，就能按步骤看到一次问数从提问到出图的全过程，每一步都带当时的耗时和花费。</p>
+      <div class="notice" role="note">
+        <b>回放</b>
+        <p><mark>这是真实运行记录的回放，不是在线服务。</mark>页面是纯静态的，不连后端、不调模型；SQL、结果、回答、耗时和花费都是录制时问数服务的原始输出，没有改写。想自己提问，按仓库 README 在本地启动。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="replay">
+    <div class="wrap">
+      <div class="head">
+        <h2>问数回放</h2>
+        <p class="lede">数据库是固定种子生成的模拟电商库 <code>shop_ops</code>（用户、商品、订单、活动、售后 5 张表）。左边选问题，右边逐步播放。</p>
+      </div>
+      <div class="replay">
+        <div class="cases" id="cases" role="tablist" aria-label="回放问题"></div>
+        <article class="player" aria-live="polite">
+          <div class="phead">
+            <h3 id="ptitle"></h3>
+            <p class="why" id="pwhy"></p>
+          </div>
+          <div class="tracks" id="tracks" role="tablist" aria-label="同一问题的不同运行"></div>
+          <div class="controls">
+            <button class="icon-btn" id="replayBtn" type="button">重播</button>
+            <button class="icon-btn" id="nextBtn" type="button">下一步</button>
+            <button class="icon-btn" id="allBtn" type="button">全部展开</button>
+            <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+            <span class="count" id="count"></span>
+          </div>
+          <ol class="steps" id="steps"></ol>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="numbers">
+    <div class="wrap">
+      <div class="head">
+        <h2>几个关键数字</h2>
+        <p class="lede">都来自仓库里的数字登记表，每个数字写明口径和出处。准确率指执行准确率（EX）。</p>
+      </div>
+      <div class="figs">
+        <div class="fig">
+          <span class="num">63.0% → 68.0%</span>
+          <h3>取值核对加执行纠错，对小模型有用</h3>
+          <p>BIRD Mini-Dev 500 题，Haiku。基线 63.0%（1 次运行），最终配置 E4 三次运行均值 68.0%（± 0.72）；基线对 E4 首次运行的配对检验 p = 0.008。同样的改进对 Sonnet 不显著。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#最终配置稳定性e4--3-次">numbers.md · 最终配置稳定性</a>
+        </div>
+        <div class="fig">
+          <span class="num">+56%</span>
+          <h3>Agent 更贵，准确率一样</h3>
+          <p>BIRD Mini-Dev 500 题，Sonnet。固定流程 E4 和让模型自己调工具的 Agent 都是 72.0%（配对检验 p = 1.00），Agent 成本高 56%，P50 延迟高 55%。所以线上用固定流程。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#e3--e4--agent">numbers.md · E3 / E4 / Agent</a>
+        </div>
+        <div class="fig">
+          <span class="num">0.9 ms / 3.71 s</span>
+          <h3>缓存命中与未命中的 P50 延迟</h3>
+          <p>问数服务全流程，Sonnet，Redis。200 次构造请求（140 道不重复问题加 60 次重复），重复请求命中率 98.3%。请求分布是构造的，不是真实用户数据。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#阶段-4-查询缓存实测">numbers.md · 查询缓存实测</a>
+        </div>
+        <div class="fig">
+          <span class="num">46 / 46</span>
+          <h3>行列级权限的绕过测试全部拦截</h3>
+          <p>46 个绕过测试（别名、子查询、JOIN、UNION、同名 CTE、元数据表等）全部通过。模型评测里越权 0 次：带权限说明 0 / 102（3 个角色），不带说明 0 / 68（2 个受限角色）。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v14-行列级权限模拟电商库">numbers.md · 行列级权限</a>
+        </div>
+        <div class="fig">
+          <span class="num">65.8% → 92.5%</span>
+          <h3>指标语义层把口径补回来</h3>
+          <p>模拟电商库 40 题，题目里不写口径，Haiku，各 3 次运行的均值。提问时自动匹配指标口径并注入后从 65.8% 到 92.5%（Sonnet 64.2% → 95.0%），配对检验 p ≤ 0.002。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v15-指标语义层去掉口径说明的-40-题--19-道留出题">numbers.md · 指标语义层</a>
+        </div>
+        <div class="fig">
+          <span class="num">69.6% · 14%</span>
+          <h3>路由：先用小模型，触发纠错再升级</h3>
+          <p>BIRD Mini-Dev 500 题实跑。Haiku 先答，触发纠错的题交给 Sonnet 重跑：准确率 69.6%（全用 Haiku 67.4%、全用 Sonnet 72.0%），成本约为全用 Sonnet 的 14%。单次运行，相对两者都不显著。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v13-智能路由实跑验证">numbers.md · 智能路由实跑</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="wrap">
+      <div class="head"><h2>回放是怎么来的</h2></div>
+      <div class="about">
+        <div>
+          <h3>录的是问数服务本身</h3>
+          <p>录制脚本 <code>scripts/record_replays.py</code> 直接调用问数服务（和 <code>/api/ask</code> 同一段代码），逐事件记下到达时间，并记下每次模型调用的 token 和花费。原始记录在 <code>demo/replays.json</code>，页面只做展示。</p>
+        </div>
+        <div>
+          <h3>耗时和花费的口径</h3>
+          <p>每一步的耗时是这一步的事件比上一步晚到多少；花费按该次模型调用的 token 用量和价目表计算，合计与服务返回的总花费一致。通义千问的花费按标价估算。表结构随生成请求一起发送，不单独计时。</p>
+        </div>
+        <div>
+          <h3>数据范围</h3>
+          <p>8 个问题、15 次提问全部在模拟电商库上完成，数据由固定种子脚本生成，不含真实用户信息，也不含 BIRD 的数据库内容。结果表最多展示前 8 行。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>DataPilot · 中文问数（NL2SQL）</span>
+    <nav>
+      <a href="https://github.com/kennywu411-dev/datapilot">GitHub 仓库</a>
+      <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md">数字登记表</a>
+      <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/%E9%97%AE%E9%A2%98%E6%97%A5%E5%BF%97.md">问题日志</a>
+    </nav>
+    <p>代码使用 MIT 许可。本页是运行记录的静态回放，不提供在线问数。</p>
+  </div>
+</footer>
+
+<script>
+// 每个回放例子对应 replays.json 里的哪几次运行。标题就是当时的提问原文，从记录里读。
+const EXAMPLES = [
+  { tag: "一次成功", why: "匹配到指标“售后工单数”，一次生成、执行通过。第二个标签是换一个会话再问同一句：命中查询缓存，不调用模型，花费为 0。",
+    tracks: [["ok", 0, "首次提问"], ["ok", 1, "再问一次（缓存命中）"]] },
+  { tag: "业务口径", why: "问题里只说“销售额”，没说怎么算。指标字典匹配到“销售额”，把“有效订单的实付金额之和”这条口径交给模型，生成的 SQL 带上了排除 cancelled、pending 订单的条件。",
+    tracks: [["metric", 0, "提问"]] },
+  { tag: "业务口径 · 比率", why: "“售后率”的分子和分母各有口径，都来自指标字典。结果按月返回，图表按规则选成折线图。",
+    tracks: [["rate", 0, "提问"]] },
+  { tag: "追问", why: "后两句都不是完整的问题。服务把同一会话前几轮的问题和 SQL 一并交给模型：“只看数码品类呢”沿用了 2025 年和销售额口径，“换成订单数”沿用了数码品类和按月。",
+    tracks: [["followup", 0, "第 1 问"], ["followup", 1, "追问 1"], ["followup", 2, "追问 2"]] },
+  { tag: "执行报错后纠错", why: "模型第一次用了 SQLite 没有的 STDEV 函数，执行报错。报错原文反馈给模型后，第二次改用 SQRT 和 AVG 自己算，执行通过。",
+    tracks: [["fix-error", 0, "提问"]] },
+  { tag: "取值核对后纠错", why: "第一次把活动名写成 '2026 618'，查不到数据。取值核对发现库里没有这个值，并给出相近的真实取值，模型据此改写。",
+    tracks: [["fix-value", 0, "提问"]] },
+  { tag: "列权限 · 三个角色", why: "同一个问题换三个角色。分析师得到品牌；运营和上海区域经理看不到成本价 products.cost，回答如实说明缺哪一列的权限，没有用别的数据代替。",
+    tracks: [["rls-col-analyst", 0, "分析师"], ["rls-col-ops", 0, "运营"], ["rls-col-sh_manager", 0, "上海区域经理"]] },
+  { tag: "行权限 · 三个角色", why: "分析师和运营得到 962 单。上海区域经理只能看到上海用户及其订单，查到的是 0，回答里说明这个 0 只代表有权限看到的范围。",
+    tracks: [["rls-row-analyst", 0, "分析师"], ["rls-row-ops", 0, "运营"], ["rls-row-sh_manager", 0, "上海区域经理"]] },
+];
+const SHOW_ROWS = 8;
+
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+}
+const svgEl = (tag, attrs, text) => {
+  const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  if (text != null) n.textContent = text;
+  return n;
+};
+// 耗时：1 秒以上用秒，以下用毫秒；花费：不到 0.001 美元时多留两位
+const fmtTime = (s) => (s >= 1 ? s.toFixed(2) + " s" : s * 1000 >= 10 ? Math.round(s * 1000) + " ms" : (s * 1000).toFixed(1) + " ms");
+const fmtCost = (c) => "$" + (c >= 0.001 ? c.toFixed(4) : c.toFixed(6));
+const fmtCell = (v) => (v === null ? "NULL" : typeof v === "number" && !Number.isInteger(v) ? String(Math.round(v * 100) / 100) : String(v));
+const tokens = (u) => (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+
+let DATA = null, cur = { ex: 0, track: 0, shown: 0, steps: [], timer: 0 };
+
+// 把一轮的事件流整理成页面上的步骤，耗时取相邻事件的时间差
+function buildSteps(scn, turn) {
+  const steps = [];
+  const done = turn.events[turn.events.length - 1].data;
+  const calls = turn.llm_calls.slice();
+  const sqlCalls = calls.filter((c) => c.kind === "sql");
+  const answerCall = calls.find((c) => c.kind === "answer");
+  const first = sqlCalls[0];
+  const context = first ? (first.user.match(/^-- Question: ((?:-- Previous[^\n]*\n)+)/) || [])[1] : null;
+  steps.push({ kind: "question", q: turn.question, scn, context });
+  const table = (turn.events.find((e) => e.event === "table") || {}).data;
+  const chart = (turn.events.find((e) => e.event === "chart") || {}).data;
+  const defs = ((turn.events.find((e) => e.event === "metrics") || {}).data || {}).items || [];
+  if (done.cached) {
+    steps.push({ kind: "cache", dt: turn.events[0].t });
+  } else {
+    steps.push({ kind: "schema", scn });
+  }
+  let prev = 0, sql = "", exec = 0, si = 0;
+  for (const e of turn.events) {
+    const dt = e.t - prev; prev = e.t;
+    const d = e.data;
+    if (e.event === "step") {
+      if (d.name === "semantic") steps.push({ kind: "semantic", dt, matched: d.matched, defs });
+      else if (d.name === "generate") { sql = d.sql; steps.push({ kind: "generate", dt, sql, call: sqlCalls[si++] }); }
+      else if (d.name === "execute") exec = dt;
+      else if (d.name === "check") steps.push({ kind: "exec", dt: exec + dt, exec, check: dt, issues: d.issues, sql });
+      else if (d.name === "correct") {
+        const call = sqlCalls[si++];
+        steps.push({ kind: "correct", dt, sql: d.sql, same: d.sql === sql, call, feedback: call ? call.user : "" });
+        sql = d.sql;
+      }
+    } else if (e.event === "table") steps.push({ kind: "result", table, chart });
+    else if (e.event === "answer") steps.push({ kind: "answer", dt: done.cached ? 0 : dt, text: d.text, call: done.cached ? null : answerCall });
+    else if (e.event === "error") steps.push({ kind: "error", message: d.message });
+    else if (e.event === "done") steps.push({ kind: "total", done, scn, calls: calls.length });
+  }
+  // 最后一次执行通过时，补上返回的行数
+  const execs = steps.filter((s) => s.kind === "exec");
+  if (execs.length && table && !execs[execs.length - 1].issues.length) execs[execs.length - 1].rows = table.total_rows;
+  return steps;
+}
+
+const NAMES = { question: "问题", schema: "读表结构", cache: "查询缓存命中", semantic: "匹配指标口径", generate: "生成 SQL", exec: "只读执行并检查", correct: "带着反馈重写 SQL", result: "结果和图表", answer: "回答", error: "出错", total: "合计" };
+
+function costLine(s) {
+  const parts = [];
+  if (s.dt != null && s.kind !== "answer" || (s.kind === "answer" && s.call)) parts.push(fmtTime(s.dt));
+  if (s.call) parts.push(fmtCost(s.call.cost_usd), tokens(s.call.usage) + " → " + s.call.usage.output_tokens + " tok");
+  else if (["semantic", "exec", "cache"].includes(s.kind)) parts.push("$0");
+  return parts.join(" · ");
+}
+
+function renderSchema(scn) {
+  const tables = DATA.schemas[scn.db_id + ":" + (scn.role || "-")];
+  const box = el("div", { class: "schema" });
+  for (const t of tables) {
+    const ul = el("ul");
+    for (const c of t.columns) {
+      ul.append(el("li", c.restricted ? { class: "no" } : {}, el("span", { text: c.name }), el("span", { text: c.restricted ? "无权访问" : c.note || c.type, title: c.note || "" })));
+    }
+    box.append(el("div", { class: "tbl" }, el("h4", { text: t.table }), ul));
+  }
+  return box;
+}
+
+function renderTable(table) {
+  const rows = table.rows.slice(0, SHOW_ROWS);
+  const thead = el("tr");
+  table.columns.forEach((c) => thead.append(el("th", { text: c })));
+  const tb = el("tbody");
+  for (const r of rows) {
+    const tr = el("tr");
+    r.forEach((v) => tr.append(el("td", typeof v === "number" ? { class: "n", text: fmtCell(v) } : { text: fmtCell(v) })));
+    tb.append(tr);
+  }
+  const wrap = el("div", {}, el("div", { class: "grid-wrap" }, el("table", { class: "grid" }, el("thead", {}, thead), tb)));
+  wrap.append(el("p", { class: "foot-note", text: table.total_rows > rows.length ? `共 ${table.total_rows} 行，显示前 ${rows.length} 行` : `共 ${table.total_rows} 行` }));
+  return wrap;
+}
+
+const CHART_NAMES = { bar: "柱状图", line: "折线图", pie: "饼图", kpi: "单个数值" };
+function renderChart(table, chart) {
+  if (!chart || chart.type === "table") return null;
+  const box = el("div", { class: "chart" });
+  if (chart.type === "kpi") {
+    box.append(el("div", { class: "cap", text: "规则选图：" + CHART_NAMES.kpi + "（" + chart.y[0] + "）" }), el("div", { class: "kpi", text: fmtCell(table.rows[0][0]) }));
+    return box;
+  }
+  const xi = table.columns.indexOf(chart.x), yi = table.columns.indexOf(chart.y[0]);
+  const pts = table.rows.map((r) => [String(r[xi]), Number(r[yi])]);
+  const max = Math.max(...pts.map((p) => p[1]), 0);
+  box.append(el("div", { class: "cap", text: `规则选图：${CHART_NAMES[chart.type] || chart.type}（${chart.x} × ${chart.y[0]}）` }));
+  const W = 420;
+  if (chart.type === "line") {
+    const H = 190, L = 8, R = 8, T = 16, B = 26;
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "折线图" });
+    const x = (i) => L + (pts.length === 1 ? 0 : (i * (W - L - R)) / (pts.length - 1));
+    const y = (v) => T + (H - T - B) * (1 - v / (max || 1));
+    svg.append(svgEl("line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--line)" }));
+    svg.append(svgEl("polyline", { points: pts.map((p, i) => `${x(i)},${y(p[1])}`).join(" "), fill: "none", stroke: "var(--ink)", "stroke-width": 2, "stroke-linejoin": "round" }));
+    const hi = pts.reduce((a, p, i) => (p[1] > pts[a][1] ? i : a), 0);
+    const every = Math.ceil(pts.length / 6);
+    pts.forEach((p, i) => {
+      svg.append(svgEl("circle", { cx: x(i), cy: y(p[1]), r: i === hi ? 4 : 2.5, fill: i === hi ? "var(--mark)" : "var(--ink)", stroke: "var(--ink)" }));
+      if (i % every === 0) svg.append(svgEl("text", { x: x(i), y: H - 8, "text-anchor": i === 0 ? "start" : i === pts.length - 1 ? "end" : "middle" }, p[0].replace(/^\d{4}-/, "")));
+    });
+    svg.append(svgEl("text", { x: Math.min(Math.max(x(hi), 30), W - 30), y: Math.max(y(pts[hi][1]) - 8, 10), "text-anchor": "middle" }, fmtCell(pts[hi][1])));
+    box.append(svg);
+  } else {
+    const rowH = 26, H = pts.length * rowH + 6, L = 84, R = 78;
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "柱状图" });
+    pts.forEach((p, i) => {
+      const w = Math.max(2, ((W - L - R) * p[1]) / (max || 1));
+      svg.append(svgEl("text", { x: L - 8, y: i * rowH + 19, "text-anchor": "end" }, p[0]));
+      svg.append(svgEl("rect", { x: L, y: i * rowH + 7, width: w, height: 16, rx: 3, fill: p[1] === max ? "var(--mark)" : "var(--ink)", stroke: "var(--ink)", "stroke-width": p[1] === max ? 1 : 0 }));
+      svg.append(svgEl("text", { x: L + w + 6, y: i * rowH + 19 }, fmtCell(p[1])));
+    });
+    box.append(svg);
+  }
+  return box;
+}
+
+function renderStep(s, i) {
+  const body = el("div", { class: "body" });
+  const row = el("div", { class: "row" }, el("span", { class: "name", text: NAMES[s.kind] }));
+  if (s.kind === "question") {
+    body.append(el("p", { class: "txt" }, el("b", { text: s.q })));
+    const meta = ["库 " + s.scn.db_id, "模型 " + s.scn.model_id];
+    if (s.scn.role_label) meta.push("角色 " + s.scn.role_label);
+    body.append(el("p", { class: "txt", text: meta.join(" · ") }));
+    if (s.context) body.append(el("details", {}, el("summary", { text: "同一会话的前几轮问题和 SQL 也一并交给了模型" }), el("pre", { class: "msg", text: s.context.trim() })));
+  } else if (s.kind === "schema") {
+    const hidden = DATA.schemas[s.scn.db_id + ":" + (s.scn.role || "-")].flatMap((t) => t.columns.filter((c) => c.restricted).map((c) => t.table + "." + c.name));
+    body.append(el("p", { class: "txt", text: `表结构放得下，${DATA.schemas[s.scn.db_id + ":" + (s.scn.role || "-")].length} 张表全部交给模型，不做检索。` + (hidden.length ? "当前角色看不到的列只给列名：" + hidden.join("、") + "。" : "") }));
+    if (s.scn.role_note) body.append(el("details", {}, el("summary", { text: "随表结构发给模型的权限说明（真正的限制由代码在执行前强制）" }), el("pre", { class: "msg", text: s.scn.role_note })));
+    body.append(el("details", {}, el("summary", { text: "展开看表和列" }), renderSchema(s.scn)));
+  } else if (s.kind === "cache") {
+    row.append(el("span", { class: "chip mark", text: "缓存命中" }));
+    body.append(el("p", { class: "txt", text: "同一个库、同一个问题已经算过：直接返回缓存里的 SQL、结果和回答，不调用模型，也不再执行。" }));
+  } else if (s.kind === "semantic") {
+    if (!s.matched.length) body.append(el("p", { class: "txt", text: "没有匹配到指标，只带通用约定去生成。" }));
+    for (const d of s.defs) {
+      const m = el("div", { class: "metric" }, el("b", { text: d.name }), document.createTextNode("　" + d.description));
+      const calc = [d.expr].concat(d.filters.map((f) => f.sql)).filter(Boolean).join("　WHERE ");
+      if (calc) m.append(el("code", { text: calc }));
+      if (d.restricted.length) m.append(el("code", { text: "当前角色无权访问：" + d.restricted.join("、") }));
+      body.append(m);
+    }
+  } else if (s.kind === "generate") {
+    body.append(el("pre", { class: "sql", text: s.sql }));
+  } else if (s.kind === "exec") {
+    const errs = s.issues.filter((x) => x.startsWith("error: "));
+    row.append(el("span", { class: "chip " + (s.issues.length ? "fail" : "pass"), text: errs.length ? "执行报错" : s.issues.length ? "结果可疑" : "通过" }));
+    if (!s.issues.length) body.append(el("p", { class: "txt", text: "只读连接上执行成功" + (s.rows != null ? "，返回 " + s.rows + " 行" : "") + "；没有报错、空结果或不存在的取值。" }));
+    for (const x of s.issues) body.append(el("p", { class: "err", text: x === "empty result" ? "empty result（执行成功但返回 0 行）" : x }));
+    body.append(el("p", { class: "txt", text: `执行 ${fmtTime(s.exec)}，检查 ${fmtTime(s.check)}` }));
+  } else if (s.kind === "correct") {
+    body.append(el("details", { open: "" }, el("summary", { text: "反馈给模型的原文" }), el("pre", { class: "msg", text: s.feedback })));
+    if (s.same) body.append(el("p", { class: "txt", text: "模型确认原 SQL 不用改，返回了同一条，流程到此结束，不再执行。" }));
+    else body.append(el("pre", { class: "sql", text: s.sql }));
+  } else if (s.kind === "result") {
+    const chart = renderChart(s.table, s.chart);
+    body.append(el("div", { class: "result" + (chart ? "" : " solo") }, renderTable(s.table), chart));
+  } else if (s.kind === "answer") {
+    body.append(el("p", { class: "answer", text: s.text }));
+  } else if (s.kind === "error") {
+    body.append(el("p", { class: "err", text: s.message }));
+  } else if (s.kind === "total") {
+    const d = s.done;
+    body.append(el("div", { class: "total" },
+      el("span", { text: "总耗时" }, el("b", { text: d.cached ? fmtTime(turnLast().t) : fmtTime(d.latency_s) })),
+      el("span", { text: "总花费" }, el("b", { text: d.cost_usd ? fmtCost(d.cost_usd) : "$0" })),
+      el("span", { text: "模型调用" }, el("b", { text: s.calls + " 次" })),
+      el("span", { text: "来源" }, el("b", { text: "replays.json · " + s.scn.id }))));
+  }
+  const c = costLine(s);
+  if (c) row.append(el("span", { class: "cost", text: c }));
+  return el("li", { class: "step" }, el("span", { class: "i", text: String(i + 1).padStart(2, "0") }), el("div", {}, row, body));
+}
+
+function trackOf(ex, t) {
+  const [id, ti] = EXAMPLES[ex].tracks[t];
+  const scn = DATA.scenarios.find((s) => s.id === id);
+  return { scn, turn: scn.turns[ti] };
+}
+const turnLast = () => { const t = trackOf(cur.ex, cur.track).turn; return t.events[t.events.length - 1]; };
+
+function paint() {
+  const list = $("steps");
+  list.querySelectorAll(".pending").forEach((n) => n.remove());
+  while (list.children.length > cur.shown) list.lastChild.remove();
+  for (let i = list.children.length; i < cur.shown; i++) list.append(renderStep(cur.steps[i], i));
+  if (cur.shown < cur.steps.length && cur.timer) {
+    list.append(el("li", { class: "step pending" }, el("span", { class: "i", text: String(cur.shown + 1).padStart(2, "0") }), el("div", {}, el("div", { class: "row" }, el("span", { class: "name", text: NAMES[cur.steps[cur.shown].kind] })))));
+  }
+  $("bar").style.width = (100 * cur.shown) / cur.steps.length + "%";
+  $("count").textContent = cur.shown + " / " + cur.steps.length;
+  $("nextBtn").disabled = cur.shown >= cur.steps.length;
+}
+function stop() { clearTimeout(cur.timer); cur.timer = 0; }
+function tick() {
+  if (cur.shown >= cur.steps.length) { stop(); paint(); return; }
+  // 按真实耗时等待，压在 0.35–2.2 秒之间，免得看的人干等
+  const wait = Math.min(2200, Math.max(350, (cur.steps[cur.shown].dt || 0) * 1000));
+  cur.timer = setTimeout(() => { cur.shown++; tick(); }, wait);
+  paint();
+}
+function play() {
+  stop();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { cur.shown = cur.steps.length; paint(); return; }
+  cur.shown = 1; tick();
+}
+function select(ex, track) {
+  stop();
+  cur.ex = ex; cur.track = track;
+  const { scn, turn } = trackOf(ex, track);
+  cur.steps = buildSteps(scn, turn);
+  $("ptitle").textContent = trackOf(ex, 0).turn.question;
+  $("pwhy").textContent = EXAMPLES[ex].why;
+  [...$("cases").children].forEach((b, i) => b.setAttribute("aria-selected", String(i === ex)));
+  const tr = $("tracks"); tr.replaceChildren(); tr.hidden = EXAMPLES[ex].tracks.length < 2;
+  EXAMPLES[ex].tracks.forEach(([, , label], i) => {
+    const b = el("button", { class: "track", type: "button", role: "tab", "aria-selected": String(i === track), text: label });
+    b.onclick = () => select(ex, i);
+    tr.append(b);
+  });
+  $("steps").replaceChildren();
+  play();
+}
+
+fetch("replays.json").then((r) => r.json()).then((data) => {
+  DATA = data;
+  EXAMPLES.forEach((ex, i) => {
+    const { scn, turn } = trackOf(i, 0);
+    const b = el("button", { class: "case", type: "button", role: "tab" },
+      el("span", { class: "tag" }, el("i", { text: String(i + 1).padStart(2, "0") }), document.createTextNode(ex.tag)),
+      el("span", { class: "q", text: turn.question }));
+    b.onclick = () => { select(i, 0); if (innerWidth <= 960) document.querySelector(".player").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    $("cases").append(b);
+  });
+  $("replayBtn").onclick = play;
+  $("nextBtn").onclick = () => { stop(); cur.shown = Math.min(cur.steps.length, cur.shown + 1); paint(); };
+  $("allBtn").onclick = () => { stop(); cur.shown = cur.steps.length; paint(); };
+  select(0, 0);
+}).catch((e) => {
+  $("steps").append(el("li", { class: "step" }, el("span", { class: "i", text: "!" }), el("p", { class: "err", text: "回放数据加载失败：" + e.message })));
+});
+</script>
+</body>
+</html>

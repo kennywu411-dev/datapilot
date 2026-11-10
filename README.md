@@ -6,6 +6,8 @@
 
 这个项目的重点不在功能多，而在每个选型都有对照实验：用固定流程还是 Agent、要不要 schema 检索、用哪个模型、要不要路由、要不要指标语义层，都在同一批题上做了配对检验。评测由 [evalkit](https://github.com/kennywu411-dev/evalkit) 运行和统计，所有数字和运行 ID 在 [docs/numbers.md](docs/numbers.md)。
 
+**[在线回放](https://kennywu411-dev.github.io/datapilot/)**：8 个问题的真实运行记录，逐步看生成的 SQL、纠错、行列级权限和每一步的耗时与花费，不用装环境。
+
 ![演示](docs/images/demo.gif)
 
 ## 主要结论

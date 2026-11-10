@@ -1,0 +1,3373 @@
+{
+ "schemas": {
+  "shop_ops:-": [
+   {
+    "table": "campaigns",
+    "columns": [
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "活动编号",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "活动名称（中文，如 2025双11大促）",
+      "restricted": false
+     },
+     {
+      "name": "start_date",
+      "type": "TEXT",
+      "note": "开始日期 YYYY-MM-DD",
+      "restricted": false
+     },
+     {
+      "name": "end_date",
+      "type": "TEXT",
+      "note": "结束日期 YYYY-MM-DD（含当天）",
+      "restricted": false
+     },
+     {
+      "name": "discount_rate",
+      "type": "REAL",
+      "note": "折扣率，0.2 表示减 20%",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "orders",
+    "columns": [
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "订单号，如 O000001",
+      "restricted": false
+     },
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "下单用户",
+      "restricted": false
+     },
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "购买商品（每单一种商品）",
+      "restricted": false
+     },
+     {
+      "name": "qty",
+      "type": "INTEGER",
+      "note": "件数",
+      "restricted": false
+     },
+     {
+      "name": "amount",
+      "type": "REAL",
+      "note": "实付金额，单位元（已扣折扣）",
+      "restricted": false
+     },
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "参与的活动，不参与为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "channel",
+      "type": "TEXT",
+      "note": "下单渠道 app: App; web: 网页; mini_program: 小程序",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "pending: 待支付; paid: 已支付待发货; shipped: 已发货; delivered: 已签收; cancelled: 已取消（未支付或支付前取消）; refunded: 已退款",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "下单时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "paid_at",
+      "type": "TEXT",
+      "note": "支付时间，未支付为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "delivered_at",
+      "type": "TEXT",
+      "note": "签收时间，未签收为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "products",
+    "columns": [
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "商品编号，如 P001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "商品名称（中文）",
+      "restricted": false
+     },
+     {
+      "name": "category",
+      "type": "TEXT",
+      "note": "品类 apparel: 服饰; digital: 数码; home: 家居; food: 食品; beauty: 美妆",
+      "restricted": false
+     },
+     {
+      "name": "brand",
+      "type": "TEXT",
+      "note": "品牌",
+      "restricted": false
+     },
+     {
+      "name": "price",
+      "type": "REAL",
+      "note": "标价，单位元",
+      "restricted": false
+     },
+     {
+      "name": "cost",
+      "type": "REAL",
+      "note": "进货成本，单位元",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "tickets",
+    "columns": [
+     {
+      "name": "ticket_id",
+      "type": "TEXT",
+      "note": "售后工单号，如 T00001",
+      "restricted": false
+     },
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "关联订单",
+      "restricted": false
+     },
+     {
+      "name": "type",
+      "type": "TEXT",
+      "note": "售后类型 refund: 仅退款; return: 退货退款; exchange: 换货",
+      "restricted": false
+     },
+     {
+      "name": "reason",
+      "type": "TEXT",
+      "note": "原因 quality: 质量问题; wrong_item: 发错货; size: 尺码不合适; late: 物流太慢; no_reason: 七天无理由",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "open: 处理中; approved: 已同意; rejected: 已拒绝; closed: 已完结",
+      "restricted": false
+     },
+     {
+      "name": "refund_amount",
+      "type": "REAL",
+      "note": "退款金额，单位元；换货或被拒为 0",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "申请时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "closed_at",
+      "type": "TEXT",
+      "note": "完结时间，未完结为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "users",
+    "columns": [
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "用户编号，如 U0001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "用户姓名",
+      "restricted": false
+     },
+     {
+      "name": "gender",
+      "type": "TEXT",
+      "note": "F: 女; M: 男",
+      "restricted": false
+     },
+     {
+      "name": "city",
+      "type": "TEXT",
+      "note": "所在城市（中文，如 上海、北京）",
+      "restricted": false
+     },
+     {
+      "name": "tier",
+      "type": "TEXT",
+      "note": "会员等级 normal: 普通会员; vip: VIP 会员; svip: 超级会员",
+      "restricted": false
+     },
+     {
+      "name": "register_date",
+      "type": "TEXT",
+      "note": "注册日期 YYYY-MM-DD",
+      "restricted": false
+     }
+    ]
+   }
+  ],
+  "shop_ops:analyst": [
+   {
+    "table": "campaigns",
+    "columns": [
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "活动编号",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "活动名称（中文，如 2025双11大促）",
+      "restricted": false
+     },
+     {
+      "name": "start_date",
+      "type": "TEXT",
+      "note": "开始日期 YYYY-MM-DD",
+      "restricted": false
+     },
+     {
+      "name": "end_date",
+      "type": "TEXT",
+      "note": "结束日期 YYYY-MM-DD（含当天）",
+      "restricted": false
+     },
+     {
+      "name": "discount_rate",
+      "type": "REAL",
+      "note": "折扣率，0.2 表示减 20%",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "orders",
+    "columns": [
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "订单号，如 O000001",
+      "restricted": false
+     },
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "下单用户",
+      "restricted": false
+     },
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "购买商品（每单一种商品）",
+      "restricted": false
+     },
+     {
+      "name": "qty",
+      "type": "INTEGER",
+      "note": "件数",
+      "restricted": false
+     },
+     {
+      "name": "amount",
+      "type": "REAL",
+      "note": "实付金额，单位元（已扣折扣）",
+      "restricted": false
+     },
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "参与的活动，不参与为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "channel",
+      "type": "TEXT",
+      "note": "下单渠道 app: App; web: 网页; mini_program: 小程序",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "pending: 待支付; paid: 已支付待发货; shipped: 已发货; delivered: 已签收; cancelled: 已取消（未支付或支付前取消）; refunded: 已退款",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "下单时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "paid_at",
+      "type": "TEXT",
+      "note": "支付时间，未支付为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "delivered_at",
+      "type": "TEXT",
+      "note": "签收时间，未签收为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "products",
+    "columns": [
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "商品编号，如 P001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "商品名称（中文）",
+      "restricted": false
+     },
+     {
+      "name": "category",
+      "type": "TEXT",
+      "note": "品类 apparel: 服饰; digital: 数码; home: 家居; food: 食品; beauty: 美妆",
+      "restricted": false
+     },
+     {
+      "name": "brand",
+      "type": "TEXT",
+      "note": "品牌",
+      "restricted": false
+     },
+     {
+      "name": "price",
+      "type": "REAL",
+      "note": "标价，单位元",
+      "restricted": false
+     },
+     {
+      "name": "cost",
+      "type": "REAL",
+      "note": "进货成本，单位元",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "tickets",
+    "columns": [
+     {
+      "name": "ticket_id",
+      "type": "TEXT",
+      "note": "售后工单号，如 T00001",
+      "restricted": false
+     },
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "关联订单",
+      "restricted": false
+     },
+     {
+      "name": "type",
+      "type": "TEXT",
+      "note": "售后类型 refund: 仅退款; return: 退货退款; exchange: 换货",
+      "restricted": false
+     },
+     {
+      "name": "reason",
+      "type": "TEXT",
+      "note": "原因 quality: 质量问题; wrong_item: 发错货; size: 尺码不合适; late: 物流太慢; no_reason: 七天无理由",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "open: 处理中; approved: 已同意; rejected: 已拒绝; closed: 已完结",
+      "restricted": false
+     },
+     {
+      "name": "refund_amount",
+      "type": "REAL",
+      "note": "退款金额，单位元；换货或被拒为 0",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "申请时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "closed_at",
+      "type": "TEXT",
+      "note": "完结时间，未完结为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "users",
+    "columns": [
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "用户编号，如 U0001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "用户姓名",
+      "restricted": false
+     },
+     {
+      "name": "gender",
+      "type": "TEXT",
+      "note": "F: 女; M: 男",
+      "restricted": false
+     },
+     {
+      "name": "city",
+      "type": "TEXT",
+      "note": "所在城市（中文，如 上海、北京）",
+      "restricted": false
+     },
+     {
+      "name": "tier",
+      "type": "TEXT",
+      "note": "会员等级 normal: 普通会员; vip: VIP 会员; svip: 超级会员",
+      "restricted": false
+     },
+     {
+      "name": "register_date",
+      "type": "TEXT",
+      "note": "注册日期 YYYY-MM-DD",
+      "restricted": false
+     }
+    ]
+   }
+  ],
+  "shop_ops:ops": [
+   {
+    "table": "campaigns",
+    "columns": [
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "活动编号",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "活动名称（中文，如 2025双11大促）",
+      "restricted": false
+     },
+     {
+      "name": "start_date",
+      "type": "TEXT",
+      "note": "开始日期 YYYY-MM-DD",
+      "restricted": false
+     },
+     {
+      "name": "end_date",
+      "type": "TEXT",
+      "note": "结束日期 YYYY-MM-DD（含当天）",
+      "restricted": false
+     },
+     {
+      "name": "discount_rate",
+      "type": "REAL",
+      "note": "折扣率，0.2 表示减 20%",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "orders",
+    "columns": [
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "订单号，如 O000001",
+      "restricted": false
+     },
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "下单用户",
+      "restricted": false
+     },
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "购买商品（每单一种商品）",
+      "restricted": false
+     },
+     {
+      "name": "qty",
+      "type": "INTEGER",
+      "note": "件数",
+      "restricted": false
+     },
+     {
+      "name": "amount",
+      "type": "REAL",
+      "note": "实付金额，单位元（已扣折扣）",
+      "restricted": false
+     },
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "参与的活动，不参与为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "channel",
+      "type": "TEXT",
+      "note": "下单渠道 app: App; web: 网页; mini_program: 小程序",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "pending: 待支付; paid: 已支付待发货; shipped: 已发货; delivered: 已签收; cancelled: 已取消（未支付或支付前取消）; refunded: 已退款",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "下单时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "paid_at",
+      "type": "TEXT",
+      "note": "支付时间，未支付为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "delivered_at",
+      "type": "TEXT",
+      "note": "签收时间，未签收为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "products",
+    "columns": [
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "商品编号，如 P001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "商品名称（中文）",
+      "restricted": false
+     },
+     {
+      "name": "category",
+      "type": "TEXT",
+      "note": "品类 apparel: 服饰; digital: 数码; home: 家居; food: 食品; beauty: 美妆",
+      "restricted": false
+     },
+     {
+      "name": "brand",
+      "type": "TEXT",
+      "note": "品牌",
+      "restricted": false
+     },
+     {
+      "name": "price",
+      "type": "REAL",
+      "note": "标价，单位元",
+      "restricted": false
+     },
+     {
+      "name": "cost",
+      "type": "REAL",
+      "note": "",
+      "restricted": true
+     }
+    ]
+   },
+   {
+    "table": "tickets",
+    "columns": [
+     {
+      "name": "ticket_id",
+      "type": "TEXT",
+      "note": "售后工单号，如 T00001",
+      "restricted": false
+     },
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "关联订单",
+      "restricted": false
+     },
+     {
+      "name": "type",
+      "type": "TEXT",
+      "note": "售后类型 refund: 仅退款; return: 退货退款; exchange: 换货",
+      "restricted": false
+     },
+     {
+      "name": "reason",
+      "type": "TEXT",
+      "note": "原因 quality: 质量问题; wrong_item: 发错货; size: 尺码不合适; late: 物流太慢; no_reason: 七天无理由",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "open: 处理中; approved: 已同意; rejected: 已拒绝; closed: 已完结",
+      "restricted": false
+     },
+     {
+      "name": "refund_amount",
+      "type": "REAL",
+      "note": "退款金额，单位元；换货或被拒为 0",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "申请时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "closed_at",
+      "type": "TEXT",
+      "note": "完结时间，未完结为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "users",
+    "columns": [
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "用户编号，如 U0001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "",
+      "restricted": true
+     },
+     {
+      "name": "gender",
+      "type": "TEXT",
+      "note": "F: 女; M: 男",
+      "restricted": false
+     },
+     {
+      "name": "city",
+      "type": "TEXT",
+      "note": "所在城市（中文，如 上海、北京）",
+      "restricted": false
+     },
+     {
+      "name": "tier",
+      "type": "TEXT",
+      "note": "会员等级 normal: 普通会员; vip: VIP 会员; svip: 超级会员",
+      "restricted": false
+     },
+     {
+      "name": "register_date",
+      "type": "TEXT",
+      "note": "注册日期 YYYY-MM-DD",
+      "restricted": false
+     }
+    ]
+   }
+  ],
+  "shop_ops:sh_manager": [
+   {
+    "table": "campaigns",
+    "columns": [
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "活动编号",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "活动名称（中文，如 2025双11大促）",
+      "restricted": false
+     },
+     {
+      "name": "start_date",
+      "type": "TEXT",
+      "note": "开始日期 YYYY-MM-DD",
+      "restricted": false
+     },
+     {
+      "name": "end_date",
+      "type": "TEXT",
+      "note": "结束日期 YYYY-MM-DD（含当天）",
+      "restricted": false
+     },
+     {
+      "name": "discount_rate",
+      "type": "REAL",
+      "note": "折扣率，0.2 表示减 20%",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "orders",
+    "columns": [
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "订单号，如 O000001",
+      "restricted": false
+     },
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "下单用户",
+      "restricted": false
+     },
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "购买商品（每单一种商品）",
+      "restricted": false
+     },
+     {
+      "name": "qty",
+      "type": "INTEGER",
+      "note": "件数",
+      "restricted": false
+     },
+     {
+      "name": "amount",
+      "type": "REAL",
+      "note": "实付金额，单位元（已扣折扣）",
+      "restricted": false
+     },
+     {
+      "name": "campaign_id",
+      "type": "INTEGER",
+      "note": "参与的活动，不参与为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "channel",
+      "type": "TEXT",
+      "note": "下单渠道 app: App; web: 网页; mini_program: 小程序",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "pending: 待支付; paid: 已支付待发货; shipped: 已发货; delivered: 已签收; cancelled: 已取消（未支付或支付前取消）; refunded: 已退款",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "下单时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "paid_at",
+      "type": "TEXT",
+      "note": "支付时间，未支付为 NULL",
+      "restricted": false
+     },
+     {
+      "name": "delivered_at",
+      "type": "TEXT",
+      "note": "签收时间，未签收为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "products",
+    "columns": [
+     {
+      "name": "sku",
+      "type": "TEXT",
+      "note": "商品编号，如 P001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "商品名称（中文）",
+      "restricted": false
+     },
+     {
+      "name": "category",
+      "type": "TEXT",
+      "note": "品类 apparel: 服饰; digital: 数码; home: 家居; food: 食品; beauty: 美妆",
+      "restricted": false
+     },
+     {
+      "name": "brand",
+      "type": "TEXT",
+      "note": "品牌",
+      "restricted": false
+     },
+     {
+      "name": "price",
+      "type": "REAL",
+      "note": "标价，单位元",
+      "restricted": false
+     },
+     {
+      "name": "cost",
+      "type": "REAL",
+      "note": "",
+      "restricted": true
+     }
+    ]
+   },
+   {
+    "table": "tickets",
+    "columns": [
+     {
+      "name": "ticket_id",
+      "type": "TEXT",
+      "note": "售后工单号，如 T00001",
+      "restricted": false
+     },
+     {
+      "name": "order_id",
+      "type": "TEXT",
+      "note": "关联订单",
+      "restricted": false
+     },
+     {
+      "name": "type",
+      "type": "TEXT",
+      "note": "售后类型 refund: 仅退款; return: 退货退款; exchange: 换货",
+      "restricted": false
+     },
+     {
+      "name": "reason",
+      "type": "TEXT",
+      "note": "原因 quality: 质量问题; wrong_item: 发错货; size: 尺码不合适; late: 物流太慢; no_reason: 七天无理由",
+      "restricted": false
+     },
+     {
+      "name": "status",
+      "type": "TEXT",
+      "note": "open: 处理中; approved: 已同意; rejected: 已拒绝; closed: 已完结",
+      "restricted": false
+     },
+     {
+      "name": "refund_amount",
+      "type": "REAL",
+      "note": "退款金额，单位元；换货或被拒为 0",
+      "restricted": false
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "note": "申请时间 YYYY-MM-DD HH:MM:SS",
+      "restricted": false
+     },
+     {
+      "name": "closed_at",
+      "type": "TEXT",
+      "note": "完结时间，未完结为 NULL",
+      "restricted": false
+     }
+    ]
+   },
+   {
+    "table": "users",
+    "columns": [
+     {
+      "name": "user_id",
+      "type": "TEXT",
+      "note": "用户编号，如 U0001",
+      "restricted": false
+     },
+     {
+      "name": "name",
+      "type": "TEXT",
+      "note": "",
+      "restricted": true
+     },
+     {
+      "name": "gender",
+      "type": "TEXT",
+      "note": "F: 女; M: 男",
+      "restricted": false
+     },
+     {
+      "name": "city",
+      "type": "TEXT",
+      "note": "所在城市（中文，如 上海、北京）",
+      "restricted": false
+     },
+     {
+      "name": "tier",
+      "type": "TEXT",
+      "note": "会员等级 normal: 普通会员; vip: VIP 会员; svip: 超级会员",
+      "restricted": false
+     },
+     {
+      "name": "register_date",
+      "type": "TEXT",
+      "note": "注册日期 YYYY-MM-DD",
+      "restricted": false
+     }
+    ]
+   }
+  ]
+ },
+ "scenarios": [
+  {
+   "id": "ok",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "售后工单最多的前 3 个品类是哪些？给出品类和工单数。",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.023,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "售后工单数"
+        ]
+       }
+      },
+      {
+       "t": 2.0722,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT p.category AS category, COUNT(*) AS ticket_count FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN products p ON o.sku = p.sku GROUP BY p.category ORDER BY ticket_count DESC LIMIT 3"
+       }
+      },
+      {
+       "t": 2.0737,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.0745,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 2.0746,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "售后工单数",
+          "description": "售后工单张数，按申请时间归属",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "工单数",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 2.0746,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT p.category AS category, COUNT(*) AS ticket_count FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN products p ON o.sku = p.sku GROUP BY p.category ORDER BY ticket_count DESC LIMIT 3"
+       }
+      },
+      {
+       "t": 2.0746,
+       "event": "table",
+       "data": {
+        "columns": [
+         "category",
+         "ticket_count"
+        ],
+        "rows": [
+         [
+          "apparel",
+          259
+         ],
+         [
+          "digital",
+          160
+         ],
+         [
+          "home",
+          105
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 3
+       }
+      },
+      {
+       "t": 2.0746,
+       "event": "chart",
+       "data": {
+        "type": "bar",
+        "x": "category",
+        "y": [
+         "ticket_count"
+        ]
+       }
+      },
+      {
+       "t": 3.1158,
+       "event": "answer",
+       "data": {
+        "text": "售后工单最多的前 3 个品类依次是：apparel（服饰）259 单、digital（数码）160 单、home（家居）105 单。"
+       }
+      },
+      {
+       "t": 3.1159,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 3.116,
+        "cost_usd": 0.003468,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.04,
+       "cost_usd": 0.002332,
+       "usage": {
+        "input_tokens": 367,
+        "output_tokens": 109,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 售后工单最多的前 3 个品类是哪些？给出品类和工单数。\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 售后工单数（公司口径）：售后工单张数，按申请时间归属。计算：COUNT(*)\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.041,
+       "cost_usd": 0.001136,
+       "usage": {
+        "input_tokens": 313,
+        "output_tokens": 51,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：售后工单最多的前 3 个品类是哪些？给出品类和工单数。\nSQL：SELECT p.category AS category, COUNT(*) AS ticket_count FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN products p ON o.sku = p.sku GROUP BY p.category ORDER BY ticket_count DESC LIMIT 3\n列：['category', 'ticket_count']\n结果（共 3 行，以下是全部结果）：[['apparel', 259], ['digital', 160], ['home', 105]]"
+      }
+     ]
+    },
+    {
+     "question": "售后工单最多的前 3 个品类是哪些？给出品类和工单数。",
+     "session": "b",
+     "events": [
+      {
+       "t": 0.0002,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "售后工单数",
+          "description": "售后工单张数，按申请时间归属",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "工单数",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 0.0002,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT p.category AS category, COUNT(*) AS ticket_count FROM tickets t JOIN orders o ON t.order_id = o.order_id JOIN products p ON o.sku = p.sku GROUP BY p.category ORDER BY ticket_count DESC LIMIT 3"
+       }
+      },
+      {
+       "t": 0.0002,
+       "event": "table",
+       "data": {
+        "columns": [
+         "category",
+         "ticket_count"
+        ],
+        "rows": [
+         [
+          "apparel",
+          259
+         ],
+         [
+          "digital",
+          160
+         ],
+         [
+          "home",
+          105
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 3
+       }
+      },
+      {
+       "t": 0.0002,
+       "event": "chart",
+       "data": {
+        "type": "bar",
+        "x": "category",
+        "y": [
+         "ticket_count"
+        ]
+       }
+      },
+      {
+       "t": 0.0002,
+       "event": "answer",
+       "data": {
+        "text": "售后工单最多的前 3 个品类依次是：apparel（服饰）259 单、digital（数码）160 单、home（家居）105 单。"
+       }
+      },
+      {
+       "t": 0.0002,
+       "event": "done",
+       "data": {
+        "cached": true,
+        "latency_s": 0.0,
+        "cost_usd": 0.0,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": []
+    }
+   ]
+  },
+  {
+   "id": "metric",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "2025 年各品类的销售额分别是多少？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0018,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "销售额"
+        ]
+       }
+      },
+      {
+       "t": 1.2853,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT p.category, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' GROUP BY p.category"
+       }
+      },
+      {
+       "t": 1.2878,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.2911,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.2911,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "销售额",
+          "description": "有效订单的实付金额 amount 之和（包含已退款订单，不扣退款）",
+          "expr": "SUM(orders.amount)",
+          "filters": [
+           {
+            "name": "有效订单",
+            "sql": "orders.status NOT IN ('cancelled', 'pending')"
+           }
+          ],
+          "matched_text": "销售额",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.2911,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT p.category, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' GROUP BY p.category"
+       }
+      },
+      {
+       "t": 1.2912,
+       "event": "table",
+       "data": {
+        "columns": [
+         "category",
+         "sales"
+        ],
+        "rows": [
+         [
+          "apparel",
+          449843.0
+         ],
+         [
+          "beauty",
+          154099.1
+         ],
+         [
+          "digital",
+          875610.9
+         ],
+         [
+          "food",
+          82139.8
+         ],
+         [
+          "home",
+          418636.5
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 5
+       }
+      },
+      {
+       "t": 1.2912,
+       "event": "chart",
+       "data": {
+        "type": "bar",
+        "x": "category",
+        "y": [
+         "sales"
+        ]
+       }
+      },
+      {
+       "t": 2.475,
+       "event": "answer",
+       "data": {
+        "text": "2025 年（已排除取消和待处理订单）各品类销售额为：数码 875,610.9，服饰 449,843.0，家居 418,636.5，美妆 154,099.1，食品 82,139.8。其中数码品类最高。"
+       }
+      },
+      {
+       "t": 2.475,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.475,
+        "cost_usd": 0.003848,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.282,
+       "cost_usd": 0.002364,
+       "usage": {
+        "input_tokens": 398,
+        "output_tokens": 106,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 2025 年各品类的销售额分别是多少？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 销售额（公司口径）：有效订单的实付金额 amount 之和（包含已退款订单，不扣退款）。计算：SUM(orders.amount)，条件：orders.status NOT IN ('cancelled', 'pending')\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.184,
+       "cost_usd": 0.001484,
+       "usage": {
+        "input_tokens": 327,
+        "output_tokens": 83,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2025 年各品类的销售额分别是多少？\nSQL：SELECT p.category, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' GROUP BY p.category\n列：['category', 'sales']\n结果（共 5 行，以下是全部结果）：[['apparel', 449843.0], ['beauty', 154099.1], ['digital', 875610.9], ['food', 82139.8], ['home', 418636.5]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "followup",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "2025 年每个月的销售额是多少？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.001,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "销售额"
+        ]
+       }
+      },
+      {
+       "t": 1.2891,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT strftime('%Y-%m', created_at) AS month, SUM(amount) AS sales FROM orders WHERE status NOT IN ('cancelled','pending') AND strftime('%Y', created_at) = '2025' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.2965,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.3047,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.3048,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "销售额",
+          "description": "有效订单的实付金额 amount 之和（包含已退款订单，不扣退款）",
+          "expr": "SUM(orders.amount)",
+          "filters": [
+           {
+            "name": "有效订单",
+            "sql": "orders.status NOT IN ('cancelled', 'pending')"
+           }
+          ],
+          "matched_text": "销售额",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.3048,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT strftime('%Y-%m', created_at) AS month, SUM(amount) AS sales FROM orders WHERE status NOT IN ('cancelled','pending') AND strftime('%Y', created_at) = '2025' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.3048,
+       "event": "table",
+       "data": {
+        "columns": [
+         "month",
+         "sales"
+        ],
+        "rows": [
+         [
+          "2025-01",
+          123330.8
+         ],
+         [
+          "2025-02",
+          83259.5
+         ],
+         [
+          "2025-03",
+          145116.3
+         ],
+         [
+          "2025-04",
+          163293.75
+         ],
+         [
+          "2025-05",
+          163466.55
+         ],
+         [
+          "2025-06",
+          189026.3
+         ],
+         [
+          "2025-07",
+          173933.8
+         ],
+         [
+          "2025-08",
+          167694.45
+         ],
+         [
+          "2025-09",
+          174606.35
+         ],
+         [
+          "2025-10",
+          190208.65
+         ],
+         [
+          "2025-11",
+          203944.3
+         ],
+         [
+          "2025-12",
+          202448.55
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 12
+       }
+      },
+      {
+       "t": 1.3048,
+       "event": "chart",
+       "data": {
+        "type": "line",
+        "x": "month",
+        "y": [
+         "sales"
+        ]
+       }
+      },
+      {
+       "t": 2.6898,
+       "event": "answer",
+       "data": {
+        "text": "2025 年各月销售额（已排除已取消和待处理订单）依次为：1月 123,330.80，2月 83,259.50，3月 145,116.30，4月 163,293.75，5月 163,466.55，6月 189,026.30，7月 173,933.80，8月 167,694.45，9月 174,606.35，10月 190,208.65，11月 203,944.30，12月 202,448.55。整体呈上升趋势，2月最低，11月最高。"
+       }
+      },
+      {
+       "t": 2.6899,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.69,
+        "cost_usd": 0.004734,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.286,
+       "cost_usd": 0.00232,
+       "usage": {
+        "input_tokens": 396,
+        "output_tokens": 102,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 2025 年每个月的销售额是多少？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 销售额（公司口径）：有效订单的实付金额 amount 之和（包含已退款订单，不扣退款）。计算：SUM(orders.amount)，条件：orders.status NOT IN ('cancelled', 'pending')\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.385,
+       "cost_usd": 0.002414,
+       "usage": {
+        "input_tokens": 422,
+        "output_tokens": 157,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2025 年每个月的销售额是多少？\nSQL：SELECT strftime('%Y-%m', created_at) AS month, SUM(amount) AS sales FROM orders WHERE status NOT IN ('cancelled','pending') AND strftime('%Y', created_at) = '2025' GROUP BY month ORDER BY month\n列：['month', 'sales']\n结果（共 12 行，以下是全部结果）：[['2025-01', 123330.8], ['2025-02', 83259.5], ['2025-03', 145116.3], ['2025-04', 163293.75], ['2025-05', 163466.55], ['2025-06', 189026.3], ['2025-07', 173933.8], ['2025-08', 167694.45], ['2025-09', 174606.35], ['2025-10', 190208.65], ['2025-11', 203944.3], ['2025-12', 202448.55]]"
+      }
+     ]
+    },
+    {
+     "question": "只看数码品类呢？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0027,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": []
+       }
+      },
+      {
+       "t": 1.4978,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT strftime('%Y-%m', o.created_at) AS month, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.5018,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.5073,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.5073,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT strftime('%Y-%m', o.created_at) AS month, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.5074,
+       "event": "table",
+       "data": {
+        "columns": [
+         "month",
+         "sales"
+        ],
+        "rows": [
+         [
+          "2025-01",
+          47695.2
+         ],
+         [
+          "2025-02",
+          34498.1
+         ],
+         [
+          "2025-03",
+          71256.75
+         ],
+         [
+          "2025-04",
+          54831.25
+         ],
+         [
+          "2025-05",
+          67462.45
+         ],
+         [
+          "2025-06",
+          87765.5
+         ],
+         [
+          "2025-07",
+          62797.8
+         ],
+         [
+          "2025-08",
+          78135.85
+         ],
+         [
+          "2025-09",
+          97742.3
+         ],
+         [
+          "2025-10",
+          107860.1
+         ],
+         [
+          "2025-11",
+          80239.3
+         ],
+         [
+          "2025-12",
+          85326.3
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 12
+       }
+      },
+      {
+       "t": 1.5074,
+       "event": "chart",
+       "data": {
+        "type": "line",
+        "x": "month",
+        "y": [
+         "sales"
+        ]
+       }
+      },
+      {
+       "t": 2.816,
+       "event": "answer",
+       "data": {
+        "text": "2025 年数码品类（已排除取消和待处理订单）各月销售额都有数据，10 月最高，为 107,860.1；2 月最低，为 34,498.1。全年合计约 875,611.0，整体呈上升趋势，11 月起有所回落。"
+       }
+      },
+      {
+       "t": 2.8161,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.816,
+        "cost_usd": 0.004566,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.493,
+       "cost_usd": 0.00274,
+       "usage": {
+        "input_tokens": 421,
+        "output_tokens": 139,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: -- Previous question: 2025 年每个月的销售额是多少？\n-- Previous SQL: SELECT strftime('%Y-%m', created_at) AS month, SUM(amount) AS sales FROM orders WHERE status NOT IN ('cancelled','pending') AND strftime('%Y', created_at) = '2025' GROUP BY month ORDER BY month\n-- Current question (may refer to the previous ones): 只看数码品类呢？\n-- External Knowledge: 通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.309,
+       "cost_usd": 0.001826,
+       "usage": {
+        "input_tokens": 453,
+        "output_tokens": 92,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：只看数码品类呢？\nSQL：SELECT strftime('%Y-%m', o.created_at) AS month, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month\n列：['month', 'sales']\n结果（共 12 行，以下是全部结果）：[['2025-01', 47695.2], ['2025-02', 34498.1], ['2025-03', 71256.75], ['2025-04', 54831.25], ['2025-05', 67462.45], ['2025-06', 87765.5], ['2025-07', 62797.8], ['2025-08', 78135.85], ['2025-09', 97742.3], ['2025-10', 107860.1], ['2025-11', 80239.3], ['2025-12', 85326.3]]"
+      }
+     ]
+    },
+    {
+     "question": "换成订单数",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0029,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "订单数"
+        ]
+       }
+      },
+      {
+       "t": 1.314,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT strftime('%Y-%m', o.created_at) AS month, COUNT(*) AS order_count FROM orders o JOIN products p ON o.sku = p.sku WHERE strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.3168,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.3198,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.3198,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "订单数",
+          "description": "下单笔数，包含所有状态（含已取消、待支付）",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "订单数",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.3198,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT strftime('%Y-%m', o.created_at) AS month, COUNT(*) AS order_count FROM orders o JOIN products p ON o.sku = p.sku WHERE strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month"
+       }
+      },
+      {
+       "t": 1.3199,
+       "event": "table",
+       "data": {
+        "columns": [
+         "month",
+         "order_count"
+        ],
+        "rows": [
+         [
+          "2025-01",
+          44
+         ],
+         [
+          "2025-02",
+          22
+         ],
+         [
+          "2025-03",
+          49
+         ],
+         [
+          "2025-04",
+          38
+         ],
+         [
+          "2025-05",
+          49
+         ],
+         [
+          "2025-06",
+          64
+         ],
+         [
+          "2025-07",
+          44
+         ],
+         [
+          "2025-08",
+          48
+         ],
+         [
+          "2025-09",
+          62
+         ],
+         [
+          "2025-10",
+          62
+         ],
+         [
+          "2025-11",
+          78
+         ],
+         [
+          "2025-12",
+          59
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 12
+       }
+      },
+      {
+       "t": 1.3199,
+       "event": "chart",
+       "data": {
+        "type": "line",
+        "x": "month",
+        "y": [
+         "order_count"
+        ]
+       }
+      },
+      {
+       "t": 2.6038,
+       "event": "answer",
+       "data": {
+        "text": "2025 年数字类（digital）商品每月订单数在 22 到 78 单之间，11 月最高（78 单），2 月最低（22 单）。全年合计 619 单，下半年明显高于上半年。"
+       }
+      },
+      {
+       "t": 2.6039,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.604,
+        "cost_usd": 0.004502,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.31,
+       "cost_usd": 0.002986,
+       "usage": {
+        "input_tokens": 649,
+        "output_tokens": 118,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: -- Previous question: 2025 年每个月的销售额是多少？\n-- Previous SQL: SELECT strftime('%Y-%m', created_at) AS month, SUM(amount) AS sales FROM orders WHERE status NOT IN ('cancelled','pending') AND strftime('%Y', created_at) = '2025' GROUP BY month ORDER BY month\n-- Previous question: 只看数码品类呢？\n-- Previous SQL: SELECT strftime('%Y-%m', o.created_at) AS month, SUM(o.amount) AS sales FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status NOT IN ('cancelled','pending') AND strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month\n-- Current question (may refer to the previous ones): 换成订单数\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 订单数（公司口径）：下单笔数，包含所有状态（含已取消、待支付）。计算：COUNT(*)\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.284,
+       "cost_usd": 0.001516,
+       "usage": {
+        "input_tokens": 393,
+        "output_tokens": 73,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：换成订单数\nSQL：SELECT strftime('%Y-%m', o.created_at) AS month, COUNT(*) AS order_count FROM orders o JOIN products p ON o.sku = p.sku WHERE strftime('%Y', o.created_at) = '2025' AND p.category = 'digital' GROUP BY month ORDER BY month\n列：['month', 'order_count']\n结果（共 12 行，以下是全部结果）：[['2025-01', 44], ['2025-02', 22], ['2025-03', 49], ['2025-04', 38], ['2025-05', 49], ['2025-06', 64], ['2025-07', 44], ['2025-08', 48], ['2025-09', 62], ['2025-10', 62], ['2025-11', 78], ['2025-12', 59]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fix-error",
+   "model": "qwen",
+   "model_id": "qwen3.7-plus",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "各品类商品标价的标准差是多少？保留两位小数。",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0006,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": []
+       }
+      },
+      {
+       "t": 2.5021,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT category, ROUND(STDEV(price), 2) AS std_dev_price FROM products GROUP BY category"
+       }
+      },
+      {
+       "t": 2.5042,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.5051,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": [
+         "error: no such function: STDEV"
+        ]
+       }
+      },
+      {
+       "t": 5.2181,
+       "event": "step",
+       "data": {
+        "name": "correct",
+        "label": "根据反馈修正 SQL",
+        "sql": "SELECT category, ROUND(SQRT(AVG(price * price) - AVG(price) * AVG(price)), 2) AS std_dev_price FROM products GROUP BY category"
+       }
+      },
+      {
+       "t": 5.2189,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 5.2197,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 5.2198,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT category, ROUND(SQRT(AVG(price * price) - AVG(price) * AVG(price)), 2) AS std_dev_price FROM products GROUP BY category"
+       }
+      },
+      {
+       "t": 5.2198,
+       "event": "table",
+       "data": {
+        "columns": [
+         "category",
+         "std_dev_price"
+        ],
+        "rows": [
+         [
+          "apparel",
+          250.23
+         ],
+         [
+          "beauty",
+          309.83
+         ],
+         [
+          "digital",
+          861.08
+         ],
+         [
+          "food",
+          59.58
+         ],
+         [
+          "home",
+          682.27
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 5
+       }
+      },
+      {
+       "t": 5.2198,
+       "event": "chart",
+       "data": {
+        "type": "bar",
+        "x": "category",
+        "y": [
+         "std_dev_price"
+        ]
+       }
+      },
+      {
+       "t": 7.5582,
+       "event": "answer",
+       "data": {
+        "text": "各品类商品标价的标准差分别为：apparel 250.23，beauty 309.83，digital 861.08，food 59.58，home 682.27。"
+       }
+      },
+      {
+       "t": 7.5583,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 7.558,
+        "cost_usd": 0.000979,
+        "model": "qwen"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.5,
+       "cost_usd": 0.000225,
+       "usage": {
+        "input_tokens": 367,
+        "output_tokens": 25,
+        "cache_read_input_tokens": 1664
+       },
+       "user": "-- Question: 各品类商品标价的标准差是多少？保留两位小数。\n-- External Knowledge: 通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "sql",
+       "latency_s": 2.712,
+       "cost_usd": 0.000633,
+       "usage": {
+        "input_tokens": 2090,
+        "output_tokens": 39,
+        "cache_read_input_tokens": 0
+       },
+       "user": "The SQL failed to execute: no such function: STDEV\nReturn the corrected SQL in the `sql` field."
+      },
+      {
+       "kind": "answer",
+       "latency_s": 2.338,
+       "cost_usd": 0.00012,
+       "usage": {
+        "input_tokens": 207,
+        "output_tokens": 55,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：各品类商品标价的标准差是多少？保留两位小数。\nSQL：SELECT category, ROUND(SQRT(AVG(price * price) - AVG(price) * AVG(price)), 2) AS std_dev_price FROM products GROUP BY category\n列：['category', 'std_dev_price']\n结果（共 5 行，以下是全部结果）：[['apparel', 250.23], ['beauty', 309.83], ['digital', 861.08], ['food', 59.58], ['home', 682.27]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fix-value",
+   "model": "qwen",
+   "model_id": "qwen3.7-plus",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "2026 年 618 活动的折扣率是多少？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0019,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": []
+       }
+      },
+      {
+       "t": 2.8286,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT discount_rate FROM campaigns WHERE name = '2026 618'"
+       }
+      },
+      {
+       "t": 2.8308,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.8389,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": [
+         "empty result",
+         "Column campaigns.name has no value '2026 618'; similar existing values: '2026年货节', '2026年618'."
+        ]
+       }
+      },
+      {
+       "t": 4.6842,
+       "event": "step",
+       "data": {
+        "name": "correct",
+        "label": "根据反馈修正 SQL",
+        "sql": "SELECT discount_rate FROM campaigns WHERE name = '2026年618'"
+       }
+      },
+      {
+       "t": 4.6851,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 4.688,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 4.6881,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT discount_rate FROM campaigns WHERE name = '2026年618'"
+       }
+      },
+      {
+       "t": 4.6881,
+       "event": "table",
+       "data": {
+        "columns": [
+         "discount_rate"
+        ],
+        "rows": [
+         [
+          0.15
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 4.6881,
+       "event": "chart",
+       "data": {
+        "type": "kpi",
+        "y": [
+         "discount_rate"
+        ]
+       }
+      },
+      {
+       "t": 6.4188,
+       "event": "answer",
+       "data": {
+        "text": "2026 年 618 活动的折扣率是 0.15。"
+       }
+      },
+      {
+       "t": 6.4188,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 6.419,
+        "cost_usd": 0.001306,
+        "model": "qwen"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.824,
+       "cost_usd": 0.000601,
+       "usage": {
+        "input_tokens": 2035,
+        "output_tokens": 24,
+        "cache_read_input_tokens": 0
+       },
+       "user": "-- Question: 2026 年 618 活动的折扣率是多少？\n-- External Knowledge: 通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "sql",
+       "latency_s": 1.845,
+       "cost_usd": 0.000641,
+       "usage": {
+        "input_tokens": 2177,
+        "output_tokens": 24,
+        "cache_read_input_tokens": 0
+       },
+       "user": "The SQL executed successfully but returned 0 rows. If the question expects results, re-check joins, filters and literal values. If an empty result is genuinely correct, return the same SQL.\nValue check: Column campaigns.name has no value '2026 618'; similar existing values: '2026年货节', '2026年618'. Use the exact stored values. If your SQL is already correct, return it unchanged.\nReturn the corrected SQL in the `sql` field."
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.731,
+       "cost_usd": 6.4e-05,
+       "usage": {
+        "input_tokens": 142,
+        "output_tokens": 21,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2026 年 618 活动的折扣率是多少？\nSQL：SELECT discount_rate FROM campaigns WHERE name = '2026年618'\n列：['discount_rate']\n结果（共 1 行，以下是全部结果）：[[0.15]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rate",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": null,
+   "role_label": null,
+   "role_note": "",
+   "turns": [
+    {
+     "question": "2026 年每个月数码品类的售后率是多少？用百分比表示，保留一位小数。",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0015,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "售后率"
+        ]
+       }
+      },
+      {
+       "t": 2.052,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT substr(o.created_at,1,7) AS month, ROUND(100.0 * COUNT(DISTINCT t.order_id) / COUNT(DISTINCT o.order_id), 1) AS after_sales_rate FROM orders o JOIN products p ON p.sku = o.sku LEFT JOIN tickets t ON t.order_id = o.order_id WHERE o.status IN ('delivered','refunded') AND p.category = 'digital' AND substr(o.created_at,1,4) = '2026' GROUP BY substr(o.created_at,1,7) ORDER BY month"
+       }
+      },
+      {
+       "t": 2.0542,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.0576,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 2.0577,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "售后率",
+          "description": "申请过售后的已签收订单数 ÷ 已签收订单数 × 100；已签收订单指 status 为 delivered 或 refunded",
+          "expr": "",
+          "filters": [],
+          "matched_text": "售后率",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 2.0577,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT substr(o.created_at,1,7) AS month, ROUND(100.0 * COUNT(DISTINCT t.order_id) / COUNT(DISTINCT o.order_id), 1) AS after_sales_rate FROM orders o JOIN products p ON p.sku = o.sku LEFT JOIN tickets t ON t.order_id = o.order_id WHERE o.status IN ('delivered','refunded') AND p.category = 'digital' AND substr(o.created_at,1,4) = '2026' GROUP BY substr(o.created_at,1,7) ORDER BY month"
+       }
+      },
+      {
+       "t": 2.0577,
+       "event": "table",
+       "data": {
+        "columns": [
+         "month",
+         "after_sales_rate"
+        ],
+        "rows": [
+         [
+          "2026-01",
+          6.3
+         ],
+         [
+          "2026-02",
+          9.3
+         ],
+         [
+          "2026-03",
+          14.9
+         ],
+         [
+          "2026-04",
+          24.0
+         ],
+         [
+          "2026-05",
+          14.5
+         ],
+         [
+          "2026-06",
+          21.3
+         ],
+         [
+          "2026-07",
+          26.6
+         ],
+         [
+          "2026-08",
+          19.7
+         ],
+         [
+          "2026-09",
+          22.0
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 9
+       }
+      },
+      {
+       "t": 2.0577,
+       "event": "chart",
+       "data": {
+        "type": "line",
+        "x": "month",
+        "y": [
+         "after_sales_rate"
+        ]
+       }
+      },
+      {
+       "t": 3.4445,
+       "event": "answer",
+       "data": {
+        "text": "2026 年 1–9 月数码品类的售后率依次为：1月 6.3%、2月 9.3%、3月 14.9%、4月 24.0%、5月 14.5%、6月 21.3%、7月 26.6%、8月 19.7%、9月 22.0%。整体呈上升趋势，7 月最高（26.6%），1 月最低（6.3%）。10–12 月没有查到数据。"
+       }
+      },
+      {
+       "t": 3.4447,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 3.445,
+        "cost_usd": 0.00606,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.05,
+       "cost_usd": 0.003636,
+       "usage": {
+        "input_tokens": 504,
+        "output_tokens": 212,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 2026 年每个月数码品类的售后率是多少？用百分比表示，保留一位小数。\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 售后率（公司口径）：申请过售后的已签收订单数 ÷ 已签收订单数 × 100；已签收订单指 status 为 delivered 或 refunded。参考 SQL：SELECT 100.0 * COUNT(DISTINCT tickets.order_id) / COUNT(DISTINCT orders.order_id) FROM orders LEFT JOIN tickets ON tickets.order_id = orders.order_id WHERE orders.status IN ('delivered', 'refunded')\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.387,
+       "cost_usd": 0.002424,
+       "usage": {
+        "input_tokens": 507,
+        "output_tokens": 141,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2026 年每个月数码品类的售后率是多少？用百分比表示，保留一位小数。\nSQL：SELECT substr(o.created_at,1,7) AS month, ROUND(100.0 * COUNT(DISTINCT t.order_id) / COUNT(DISTINCT o.order_id), 1) AS after_sales_rate FROM orders o JOIN products p ON p.sku = o.sku LEFT JOIN tickets t ON t.order_id = o.order_id WHERE o.status IN ('delivered','refunded') AND p.category = 'digital' AND substr(o.created_at,1,4) = '2026' GROUP BY substr(o.created_at,1,7) ORDER BY month\n列：['month', 'after_sales_rate']\n结果（共 9 行，以下是全部结果）：[['2026-01', 6.3], ['2026-02', 9.3], ['2026-03', 14.9], ['2026-04', 24.0], ['2026-05', 14.5], ['2026-06', 21.3], ['2026-07', 26.6], ['2026-08', 19.7], ['2026-09', 22.0]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-col-analyst",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "analyst",
+   "role_label": "分析师",
+   "role_note": "",
+   "turns": [
+    {
+     "question": "2025 年毛利最高的品牌是哪个？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0052,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "毛利"
+        ]
+       }
+      },
+      {
+       "t": 2.0609,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT p.brand FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status IN ('paid','shipped','delivered') AND o.created_at >= '2025-01-01' AND o.created_at < '2026-01-01' GROUP BY p.brand ORDER BY SUM(o.amount - p.cost * o.qty) DESC LIMIT 1"
+       }
+      },
+      {
+       "t": 2.0675,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.0771,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 2.0772,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "毛利",
+          "description": "实付金额 − 进货成本 × 件数；只算 status 为 paid、shipped、delivered 的订单（已退款不算）",
+          "expr": "SUM(orders.amount - products.cost * orders.qty)",
+          "filters": [
+           {
+            "name": "指标自带条件",
+            "sql": "orders.status IN ('paid', 'shipped', 'delivered')"
+           }
+          ],
+          "matched_text": "毛利",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 2.0772,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT p.brand FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status IN ('paid','shipped','delivered') AND o.created_at >= '2025-01-01' AND o.created_at < '2026-01-01' GROUP BY p.brand ORDER BY SUM(o.amount - p.cost * o.qty) DESC LIMIT 1"
+       }
+      },
+      {
+       "t": 2.0772,
+       "event": "table",
+       "data": {
+        "columns": [
+         "brand"
+        ],
+        "rows": [
+         [
+          "科沃斯"
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 2.0772,
+       "event": "chart",
+       "data": {
+        "type": "table"
+       }
+      },
+      {
+       "t": 3.1303,
+       "event": "answer",
+       "data": {
+        "text": "2025 年毛利最高的品牌是科沃斯。（查询只返回了品牌名称，没有包含具体的毛利金额。）"
+       }
+      },
+      {
+       "t": 3.1305,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 3.13,
+        "cost_usd": 0.003886,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.053,
+       "cost_usd": 0.002772,
+       "usage": {
+        "input_tokens": 427,
+        "output_tokens": 141,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 2025 年毛利最高的品牌是哪个？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 毛利（公司口径）：实付金额 − 进货成本 × 件数；只算 status 为 paid、shipped、delivered 的订单（已退款不算）。计算：SUM(orders.amount - products.cost * orders.qty)，条件：orders.status IN ('paid', 'shipped', 'delivered')\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.053,
+       "cost_usd": 0.001114,
+       "usage": {
+        "input_tokens": 312,
+        "output_tokens": 49,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2025 年毛利最高的品牌是哪个？\nSQL：SELECT p.brand FROM orders o JOIN products p ON o.sku = p.sku WHERE o.status IN ('paid','shipped','delivered') AND o.created_at >= '2025-01-01' AND o.created_at < '2026-01-01' GROUP BY p.brand ORDER BY SUM(o.amount - p.cost * o.qty) DESC LIMIT 1\n列：['brand']\n结果（共 1 行，以下是全部结果）：[['科沃斯']]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-row-analyst",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "analyst",
+   "role_label": "分析师",
+   "role_note": "",
+   "turns": [
+    {
+     "question": "北京的用户一共下了多少单？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0018,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "订单数"
+        ]
+       }
+      },
+      {
+       "t": 1.1855,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT COUNT(*) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 1.1924,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.2004,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.2005,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "订单数",
+          "description": "下单笔数，包含所有状态（含已取消、待支付）",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "多少单",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.2005,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT COUNT(*) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 1.2005,
+       "event": "table",
+       "data": {
+        "columns": [
+         "COUNT(*)"
+        ],
+        "rows": [
+         [
+          962
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 1.2005,
+       "event": "chart",
+       "data": {
+        "type": "kpi",
+        "y": [
+         "COUNT(*)"
+        ]
+       }
+      },
+      {
+       "t": 2.0467,
+       "event": "answer",
+       "data": {
+        "text": "北京的用户一共下了 962 单。"
+       }
+      },
+      {
+       "t": 2.0468,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.047,
+        "cost_usd": 0.002414,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.181,
+       "cost_usd": 0.001804,
+       "usage": {
+        "input_tokens": 358,
+        "output_tokens": 58,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2540
+       },
+       "user": "-- Question: 北京的用户一共下了多少单？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 订单数（公司口径）：下单笔数，包含所有状态（含已取消、待支付）。计算：COUNT(*)\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 0.846,
+       "cost_usd": 0.00061,
+       "usage": {
+        "input_tokens": 225,
+        "output_tokens": 16,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：北京的用户一共下了多少单？\nSQL：SELECT COUNT(*) FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'\n列：['COUNT(*)']\n结果（共 1 行，以下是全部结果）：[[962]]"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-col-ops",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "ops",
+   "role_label": "运营",
+   "role_note": "Current user role: 运营. Columns this role cannot access: products.cost, users.name. If answering requires inaccessible columns, do NOT substitute other columns or guess; return exactly: SELECT 'NO_PERMISSION: <column>' AS message",
+   "turns": [
+    {
+     "question": "2025 年毛利最高的品牌是哪个？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0014,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "毛利"
+        ]
+       }
+      },
+      {
+       "t": 2.3796,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT 'NO_PERMISSION: products.cost' AS message"
+       }
+      },
+      {
+       "t": 2.3809,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.3815,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 2.3816,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "毛利",
+          "description": "实付金额 − 进货成本 × 件数；只算 status 为 paid、shipped、delivered 的订单（已退款不算）",
+          "expr": "SUM(orders.amount - products.cost * orders.qty)",
+          "filters": [
+           {
+            "name": "指标自带条件",
+            "sql": "orders.status IN ('paid', 'shipped', 'delivered')"
+           }
+          ],
+          "matched_text": "毛利",
+          "restricted": [
+           "products.cost"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "t": 2.3816,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT 'NO_PERMISSION: products.cost' AS message"
+       }
+      },
+      {
+       "t": 2.3816,
+       "event": "table",
+       "data": {
+        "columns": [
+         "message"
+        ],
+        "rows": [
+         [
+          "NO_PERMISSION: products.cost"
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 2.3816,
+       "event": "chart",
+       "data": {
+        "type": "table"
+       }
+      },
+      {
+       "t": 3.9026,
+       "event": "answer",
+       "data": {
+        "text": "抱歉，无法回答这个问题。计算毛利需要用到 products.cost（商品成本）这一列，而当前的「运营」角色无权访问该数据，所以查询没有返回结果。如需查看毛利最高的品牌，请联系有权限的同事，或申请相应的数据访问权限。"
+       }
+      },
+      {
+       "t": 3.9028,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 3.903,
+        "cost_usd": 0.009234,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.367,
+       "cost_usd": 0.007555,
+       "usage": {
+        "input_tokens": 349,
+        "output_tokens": 34,
+        "cache_creation_input_tokens": 2607,
+        "cache_read_input_tokens": 0
+       },
+       "user": "-- Question: 2025 年毛利最高的品牌是哪个？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 毛利：当前角色无权访问该指标依赖的 products.cost，不能计算\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.521,
+       "cost_usd": 0.001678,
+       "usage": {
+        "input_tokens": 309,
+        "output_tokens": 106,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2025 年毛利最高的品牌是哪个？\nSQL：SELECT 'NO_PERMISSION: products.cost' AS message\n列：['message']\n结果（共 1 行，以下是全部结果）：[['NO_PERMISSION: products.cost']]\n\n当前用户角色：运营。无权访问的列：products.cost、users.name。如果结果是 NO_PERMISSION 说明，或问题需要无权访问的数据，明确告诉用户当前角色无权查看哪些数据，不要用其他数据代替，也不要编造。"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-row-ops",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "ops",
+   "role_label": "运营",
+   "role_note": "Current user role: 运营. Columns this role cannot access: products.cost, users.name. If answering requires inaccessible columns, do NOT substitute other columns or guess; return exactly: SELECT 'NO_PERMISSION: <column>' AS message",
+   "turns": [
+    {
+     "question": "北京的用户一共下了多少单？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0021,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "订单数"
+        ]
+       }
+      },
+      {
+       "t": 1.6268,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 1.6305,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.6343,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.6343,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "订单数",
+          "description": "下单笔数，包含所有状态（含已取消、待支付）",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "多少单",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.6343,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 1.6343,
+       "event": "table",
+       "data": {
+        "columns": [
+         "order_count"
+        ],
+        "rows": [
+         [
+          962
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 1.6343,
+       "event": "chart",
+       "data": {
+        "type": "kpi",
+        "y": [
+         "order_count"
+        ]
+       }
+      },
+      {
+       "t": 2.5146,
+       "event": "answer",
+       "data": {
+        "text": "北京的用户一共下了 962 单。"
+       }
+      },
+      {
+       "t": 2.5146,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 2.515,
+        "cost_usd": 0.002671,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.623,
+       "cost_usd": 0.001867,
+       "usage": {
+        "input_tokens": 358,
+        "output_tokens": 63,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2607
+       },
+       "user": "-- Question: 北京的用户一共下了多少单？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 订单数（公司口径）：下单笔数，包含所有状态（含已取消、待支付）。计算：COUNT(*)\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 0.88,
+       "cost_usd": 0.000804,
+       "usage": {
+        "input_tokens": 322,
+        "output_tokens": 16,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：北京的用户一共下了多少单？\nSQL：SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'\n列：['order_count']\n结果（共 1 行，以下是全部结果）：[[962]]\n\n当前用户角色：运营。无权访问的列：products.cost、users.name。如果结果是 NO_PERMISSION 说明，或问题需要无权访问的数据，明确告诉用户当前角色无权查看哪些数据，不要用其他数据代替，也不要编造。"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-col-sh_manager",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "sh_manager",
+   "role_label": "上海区域经理",
+   "role_note": "Current user role: 上海区域经理. Columns this role cannot access: products.cost, users.name. Row-level filter (applied automatically): only users in 上海 and their orders and tickets are visible. If answering requires inaccessible columns, do NOT substitute other columns or guess; return exactly: SELECT 'NO_PERMISSION: <column>' AS message",
+   "turns": [
+    {
+     "question": "2025 年毛利最高的品牌是哪个？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.001,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "毛利"
+        ]
+       }
+      },
+      {
+       "t": 1.3925,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT 'NO_PERMISSION: products.cost' AS message"
+       }
+      },
+      {
+       "t": 1.3949,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 1.396,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": []
+       }
+      },
+      {
+       "t": 1.3961,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "毛利",
+          "description": "实付金额 − 进货成本 × 件数；只算 status 为 paid、shipped、delivered 的订单（已退款不算）",
+          "expr": "SUM(orders.amount - products.cost * orders.qty)",
+          "filters": [
+           {
+            "name": "指标自带条件",
+            "sql": "orders.status IN ('paid', 'shipped', 'delivered')"
+           }
+          ],
+          "matched_text": "毛利",
+          "restricted": [
+           "products.cost"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "t": 1.3961,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT 'NO_PERMISSION: products.cost' AS message"
+       }
+      },
+      {
+       "t": 1.3961,
+       "event": "table",
+       "data": {
+        "columns": [
+         "message"
+        ],
+        "rows": [
+         [
+          "NO_PERMISSION: products.cost"
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 1.3961,
+       "event": "chart",
+       "data": {
+        "type": "table"
+       }
+      },
+      {
+       "t": 3.6325,
+       "event": "answer",
+       "data": {
+        "text": "无法回答这个问题：计算毛利需要用到成本字段 products.cost，而当前角色（上海区域经理）无权查看该列，所以查询没有返回品牌毛利数据。我也不会用其他数据来替代。另外，你的可见范围仅限上海用户及其订单和工单，即使有权限，结果也只会包含这部分数据。如需查看，请联系管理员申请权限。"
+       }
+      },
+      {
+       "t": 3.6326,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 3.633,
+        "cost_usd": 0.00973,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 1.372,
+       "cost_usd": 0.007628,
+       "usage": {
+        "input_tokens": 349,
+        "output_tokens": 34,
+        "cache_creation_input_tokens": 2636,
+        "cache_read_input_tokens": 0
+       },
+       "user": "-- Question: 2025 年毛利最高的品牌是哪个？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 毛利：当前角色无权访问该指标依赖的 products.cost，不能计算\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "answer",
+       "latency_s": 2.236,
+       "cost_usd": 0.002102,
+       "usage": {
+        "input_tokens": 356,
+        "output_tokens": 139,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：2025 年毛利最高的品牌是哪个？\nSQL：SELECT 'NO_PERMISSION: products.cost' AS message\n列：['message']\n结果（共 1 行，以下是全部结果）：[['NO_PERMISSION: products.cost']]\n\n当前用户角色：上海区域经理。无权访问的列：products.cost、users.name。行权限：only users in 上海 and their orders and tickets are visible。如果结果是 NO_PERMISSION 说明，或问题需要无权访问的数据，明确告诉用户当前角色无权查看哪些数据，不要用其他数据代替，也不要编造。回答时说明结果只包含你有权限看到的范围。"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rls-row-sh_manager",
+   "model": "sonnet",
+   "model_id": "claude-sonnet-5-5",
+   "db_id": "shop_ops",
+   "role": "sh_manager",
+   "role_label": "上海区域经理",
+   "role_note": "Current user role: 上海区域经理. Columns this role cannot access: products.cost, users.name. Row-level filter (applied automatically): only users in 上海 and their orders and tickets are visible. If answering requires inaccessible columns, do NOT substitute other columns or guess; return exactly: SELECT 'NO_PERMISSION: <column>' AS message",
+   "turns": [
+    {
+     "question": "北京的用户一共下了多少单？",
+     "session": "a",
+     "events": [
+      {
+       "t": 0.0014,
+       "event": "step",
+       "data": {
+        "name": "semantic",
+        "label": "匹配指标口径",
+        "matched": [
+         "订单数"
+        ]
+       }
+      },
+      {
+       "t": 2.5899,
+       "event": "step",
+       "data": {
+        "name": "generate",
+        "label": "生成 SQL",
+        "sql": "SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 2.5946,
+       "event": "step",
+       "data": {
+        "name": "execute",
+        "label": "执行查询"
+       }
+      },
+      {
+       "t": 2.6045,
+       "event": "step",
+       "data": {
+        "name": "check",
+        "label": "检查结果",
+        "issues": [
+         "Column users.city has no value '北京'; similar existing values: '上海'."
+        ]
+       }
+      },
+      {
+       "t": 5.0021,
+       "event": "step",
+       "data": {
+        "name": "correct",
+        "label": "根据反馈修正 SQL",
+        "sql": "SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 5.0023,
+       "event": "metrics",
+       "data": {
+        "items": [
+         {
+          "name": "订单数",
+          "description": "下单笔数，包含所有状态（含已取消、待支付）",
+          "expr": "COUNT(*)",
+          "filters": [],
+          "matched_text": "多少单",
+          "restricted": []
+         }
+        ]
+       }
+      },
+      {
+       "t": 5.0023,
+       "event": "sql",
+       "data": {
+        "sql": "SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'"
+       }
+      },
+      {
+       "t": 5.0023,
+       "event": "table",
+       "data": {
+        "columns": [
+         "order_count"
+        ],
+        "rows": [
+         [
+          0
+         ]
+        ],
+        "truncated": false,
+        "total_rows": 1
+       }
+      },
+      {
+       "t": 5.0023,
+       "event": "chart",
+       "data": {
+        "type": "kpi",
+        "y": [
+         "order_count"
+        ]
+       }
+      },
+      {
+       "t": 6.8437,
+       "event": "answer",
+       "data": {
+        "text": "查询结果显示北京用户的订单数为 0。不过需要说明：当前角色（上海区域经理）只能看到上海用户及其订单，北京的数据不在你的可见范围内，所以这个 0 只代表你有权限看到的范围，并不代表北京用户实际没有下单。如需了解北京的真实订单量，请联系有相应权限的人员查询。"
+       }
+      },
+      {
+       "t": 6.8439,
+       "event": "done",
+       "data": {
+        "cached": false,
+        "latency_s": 6.844,
+        "cost_usd": 0.008732,
+        "model": "sonnet"
+       }
+      }
+     ],
+     "llm_calls": [
+      {
+       "kind": "sql",
+       "latency_s": 2.587,
+       "cost_usd": 0.003323,
+       "usage": {
+        "input_tokens": 358,
+        "output_tokens": 208,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2636
+       },
+       "user": "-- Question: 北京的用户一共下了多少单？\n-- External Knowledge: 指标与术语口径（按公司口径计算，不要自行换成其他定义）：\n- 订单数（公司口径）：下单笔数，包含所有状态（含已取消、待支付）。计算：COUNT(*)\n通用约定：\n- 订单类指标按下单时间 orders.created_at 归属年份、季度、月份；售后工单数、售后用户按申请时间 tickets.created_at 归属；用户注册按 users.register_date\n- 时间差用 julianday 相减，单位是天，可以带小数；\"超过 N 天\"指大于 N 天\n- 金额分档一律左闭右开，如 200–500 元指 200 ≤ 金额 < 500\n- 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND\n- 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数"
+      },
+      {
+       "kind": "sql",
+       "latency_s": 2.396,
+       "cost_usd": 0.003381,
+       "usage": {
+        "input_tokens": 642,
+        "output_tokens": 157,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2636
+       },
+       "user": "Value check: Column users.city has no value '北京'; similar existing values: '上海'. Use the exact stored values. If your SQL is already correct, return it unchanged.\nReturn the corrected SQL in the `sql` field."
+      },
+      {
+       "kind": "answer",
+       "latency_s": 1.841,
+       "cost_usd": 0.002028,
+       "usage": {
+        "input_tokens": 369,
+        "output_tokens": 129,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0
+       },
+       "user": "问题：北京的用户一共下了多少单？\nSQL：SELECT COUNT(*) AS order_count FROM orders o JOIN users u ON o.user_id = u.user_id WHERE u.city = '北京'\n列：['order_count']\n结果（共 1 行，以下是全部结果）：[[0]]\n\n当前用户角色：上海区域经理。无权访问的列：products.cost、users.name。行权限：only users in 上海 and their orders and tickets are visible。如果结果是 NO_PERMISSION 说明，或问题需要无权访问的数据，明确告诉用户当前角色无权查看哪些数据，不要用其他数据代替，也不要编造。回答时说明结果只包含你有权限看到的范围。"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
