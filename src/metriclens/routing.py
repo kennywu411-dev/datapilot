@@ -15,8 +15,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from datapilot.baseline import GenerationResult
-from datapilot.llm import LLM
+from metriclens.baseline import GenerationResult
+from metriclens.llm import LLM
 
 JOIN_RE = re.compile(r"\bJOIN\b", re.IGNORECASE)
 

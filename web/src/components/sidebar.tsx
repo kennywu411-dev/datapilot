@@ -93,7 +93,7 @@ export function Sidebar({
     <aside className="flex h-full w-72 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="flex h-14 items-center gap-2 px-4">
         <Database size={18} weight="duotone" className="text-primary" />
-        <span className="font-medium tracking-tight">DataPilot</span>
+        <span className="font-medium tracking-tight">MetricLens</span>
       </div>
 
       <div className="px-3 pb-3">

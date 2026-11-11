@@ -40,15 +40,15 @@ from evalkit import store  # noqa: E402
 from evalkit.stats import mcnemar_exact, percentile, wilson  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
-from datapilot import attribution as at  # noqa: E402
-from datapilot import config  # noqa: E402
-from datapilot.attr_agent import AttributionAgent  # noqa: E402
-from datapilot.llm import ClaudeLLM  # noqa: E402
-from datapilot.numcheck import check_numbers  # noqa: E402
-from datapilot.semantic import load_layer  # noqa: E402
-from datapilot.service import ChatService  # noqa: E402
-from datapilot.store import MemoryStore  # noqa: E402
 from evals.attribution.inject import apply, metric_value  # noqa: E402
+from metriclens import attribution as at  # noqa: E402
+from metriclens import config  # noqa: E402
+from metriclens.attr_agent import AttributionAgent  # noqa: E402
+from metriclens.llm import ClaudeLLM  # noqa: E402
+from metriclens.numcheck import check_numbers  # noqa: E402
+from metriclens.semantic import load_layer  # noqa: E402
+from metriclens.service import ChatService  # noqa: E402
+from metriclens.store import MemoryStore  # noqa: E402
 
 DB = "retail_ops"
 CASES = ROOT / "evals" / "attribution" / "cases.json"

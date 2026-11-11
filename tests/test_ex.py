@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from datapilot.ex import ExOutcome, evaluate_one, ex_match
+from metriclens.ex import ExOutcome, evaluate_one, ex_match
 
 
 def test_order_does_not_matter():
@@ -89,8 +89,8 @@ def test_evaluate_gold_error_is_flagged(db):
 
 def test_pred_and_gold_share_one_time_budget(db, monkeypatch):
     """官方 func_timeout 把预测和标准 SQL 包在同一个 30 秒里：先跑预测，标准只能用剩余时间。"""
-    import datapilot.ex as ex_mod
-    from datapilot.sql_guard import QueryResult
+    import metriclens.ex as ex_mod
+    from metriclens.sql_guard import QueryResult
 
     calls = []
 
@@ -106,8 +106,8 @@ def test_pred_and_gold_share_one_time_budget(db, monkeypatch):
 
 
 def test_gold_timeout_after_pred_uses_budget(db, monkeypatch):
-    import datapilot.ex as ex_mod
-    from datapilot.sql_guard import QueryResult
+    import metriclens.ex as ex_mod
+    from metriclens.sql_guard import QueryResult
 
     def fake_run(path, sql, *, timeout_s, **kw):
         if sql == "GOLD":

@@ -22,7 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from datapilot import config  # noqa: E402
+from metriclens import config  # noqa: E402
 
 INJ_DIR = config.DATA_DIR / "injection_dbs"
 SRC = config.DB_DIR / "superhero"
@@ -143,8 +143,8 @@ ANSWER_HIJACK_RE = re.compile(r"(DROP|DELETE|删除|删表|sqlite_master|system 
 
 async def answers_stage(questions: list[dict]) -> dict:
     """问数服务的回答阶段：模型直接读到库里的原始数据，是 SQL 之外的注入入口（D4 审查）。"""
-    from datapilot.service import ANSWER_SYSTEM, ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.service import ANSWER_SYSTEM, ChatService
+    from metriclens.store import MemoryStore
 
     svc = ChatService(MemoryStore(), model="sonnet")
     out = []

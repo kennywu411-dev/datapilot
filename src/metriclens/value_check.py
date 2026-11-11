@@ -13,8 +13,8 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import SqlglotError
 
-from datapilot import config, rls, tools
-from datapilot.sql_guard import connect_readonly
+from metriclens import config, rls, tools
+from metriclens.sql_guard import connect_readonly
 
 MAX_CANDIDATES = 5
 ENUM_MAX_VALUES = 20

@@ -1,13 +1,24 @@
 # CHANGELOG
 
+## 项目改名：DataPilot → MetricLens
+
+功能、评测数字和运行记录都没有变，只改名字。
+
+### 变更
+- 显示名 DataPilot → MetricLens；Python 包和导入名 `datapilot` → `metriclens`（`src/datapilot/` → `src/metriclens/`）
+- 环境变量前缀 `DATAPILOT_` → `METRICLENS_`（`METRICLENS_MODEL`、`METRICLENS_ROLE`、`METRICLENS_CORS_ORIGINS` 等），旧前缀不再读取，本地 `.env` 和启动脚本需要同步改
+- MCP 服务名 `datapilot` → `metriclens`（`.mcp.json` 的键和 `python -m metriclens.mcp_server`）
+- 代码包文件名 `dist/metriclens-<版本>.tar.gz`；macOS 启动器 `MetricLens.app`
+- 本文件旧条目里的包路径和环境变量名已按新名字改写；`runs/` 下的历史运行记录保持原样
+
 ## v1.6：指标异动归因（真实交易数据）
 
 对外定位改为"经营问数与指标异动归因"：能问"是多少"，也能问"为什么变了"。
 
 ### 新增
 - 真实交易库 retail_ops：`scripts/build_retail_ops.py` 用 UCI Online Retail II（CC BY 4.0）构建，清洗口径与看板项目一致；指标字典 `metrics/retail_ops.yaml`（13 个指标，derived 指标可写 `formula`）；新增"海外市场经理"角色
-- 归因流程 `src/datapilot/attribution.py`：识别"为什么"类问题 → 计划（模型）→ 代码校验 → 总变化 → 9 个维度分解 → 按"超额贡献 − 正常波动"排序 → 对第一原因再拆一层 → 逐个剥离 → 结论（模型）；与问数共用限流、排队、缓存、行列级权限
-- 数字核对 `src/datapilot/numcheck.py`：回答里的每个数字都要在 SQL 结果或事实表里找到，对不上重写一次，再不行改用模板
+- 归因流程 `src/metriclens/attribution.py`：识别"为什么"类问题 → 计划（模型）→ 代码校验 → 总变化 → 9 个维度分解 → 按"超额贡献 − 正常波动"排序 → 对第一原因再拆一层 → 逐个剥离 → 结论（模型）；与问数共用限流、排队、缓存、行列级权限
+- 数字核对 `src/metriclens/numcheck.py`：回答里的每个数字都要在 SQL 结果或事实表里找到，对不上重写一次，再不行改用模板
 - 问数事件流新增 `attribution`，`answer` 带 `number_check`；前端归因视图（总变化、原因、各维度贡献图和分解表、第二层、全部 SQL、核对结果）；指标字典可带示例问题
 - 归因评测 `evals/attribution/`（评测方案、49 例评测集、注入工具）和 `evals/attribution_eval.py`（三种做法对照、不花钱的方案消融）；对照用的自主下钻 Agent `attr_agent.py`
 - ADR 007；问题日志 P23–P27
@@ -25,11 +36,11 @@
 ## v1.5：指标语义层与数据质量
 
 ### 新增
-- 指标语义层 `src/datapilot/semantic.py` + 指标字典 `metrics/shop_ops.yaml`：指标、业务术语、维度、全局约定、表关联；加载时校验列存在、计算片段可执行
+- 指标语义层 `src/metriclens/semantic.py` + 指标字典 `metrics/shop_ops.yaml`：指标、业务术语、维度、全局约定、表关联；加载时校验列存在、计算片段可执行
 - 指标匹配：同义词最长匹配 + 字二元组模糊检索兜底；`evals/metric_match.py` 离线评测匹配准确率
 - 两种接入流程：口径注入 `sem_context`（问数服务默认）、语义层直出 `sem_compile`（映射不了退回注入）
 - 与行列级权限兼容：受限列的指标不给计算片段 / 直出拒绝，最终 SQL 照常经过改写和授权回调
-- 数据质量检查 `src/datapilot/quality.py` + `quality_rules/shop_ops.yaml`：主键、业务键重复、空值、枚举、数值范围、外键、行级业务规则、新鲜度；命令行 `python -m datapilot.quality`；`evals/quality_eval.py` 缺陷注入评测
+- 数据质量检查 `src/metriclens/quality.py` + `quality_rules/shop_ops.yaml`：主键、业务键重复、空值、枚举、数值范围、外键、行级业务规则、新鲜度；命令行 `python -m metriclens.quality`；`evals/quality_eval.py` 缺陷注入评测
 - 接口 `/api/databases/{db}/metrics`、`/api/databases/{db}/quality`；问数事件流新增 `metrics`
 - 前端：指标目录页（口径、计算 SQL、维度、同义词、血缘、按角色标出不可用指标）、数据质量页、问数回答下方可点开"本题用到的指标口径"
 - 19 道留出题 `evals/shop_ops/questions_holdout.json`（字典定稿后编写）；ADR 006
@@ -47,7 +58,7 @@
 ## v1.4：行列级权限
 
 ### 新增
-- `src/datapilot/rls.py`：按角色限制列和行；sqlglot 语法树改写（主防线）+ 按列拒绝的 SQLite 授权回调（兜底）；未知角色、元数据表、无法解析的 SQL 一律拒绝
+- `src/metriclens/rls.py`：按角色限制列和行；sqlglot 语法树改写（主防线）+ 按列拒绝的 SQLite 授权回调（兜底）；未知角色、元数据表、无法解析的 SQL 一律拒绝
 - 电商库 3 个角色：分析师、运营（看不到成本价、客户姓名）、上海区域经理（另加行过滤）
 - 表结构、`describe_table`、`search_values`、值核对、样例、查询缓存、问数服务、API（`X-Role`、`/roles`）、MCP（环境变量固定角色）、前端角色切换全部按角色过滤
 - 评测判分按角色执行（`ex.evaluate_one(policy=...)`、`runner --role`）；`scripts/rls_eval.py`
@@ -70,14 +81,14 @@
 - `scripts/model_compare.py`：模型对比、配对检验与污染信号（P7 方法）
 - 演示视频：`scripts/record_demo.py`（无头 Chrome + CDP 录屏 + ffmpeg），README 首屏放 GIF
 - 看板新增：国产模型、智能路由、中文提问、电商经营分析（有口径 vs 去掉口径）
-- macOS 双击启动器 `DataPilot.app`（`scripts/app/`）
+- macOS 双击启动器 `MetricLens.app`（`scripts/app/`）
 
 ### 修复
 - 额度用完的 403 被当成单题失败，qwen 首次全量作废（P15）
 - DeepSeek 偶发输出失控（P16，计为失败并记录）
 - 提示里附完整 JSON schema 被模型原样抄回（P17）：改为字段示例；JSON 宽松解析；no_sql 时记录模型原话
 - 中文译文 3 条偏离英文原意（P18）：修正后重跑
-- 后端 CORS 白名单改为环境变量 `DATAPILOT_CORS_ORIGINS`
+- 后端 CORS 白名单改为环境变量 `METRICLENS_CORS_ORIGINS`
 
 ### 数字
 - 国产模型 500 题：qwen3.7-plus 68.0%、deepseek-flash 66.8%，均与 Haiku 打平（p≈0.8）、低于 Sonnet
@@ -92,7 +103,7 @@
 - 按用户限流：`X-User-Id` 识别用户（没有时按客户端 IP），每用户每分钟固定窗口计数（Redis INCR + EXPIRE NX 事务，退回内存时同样生效），超限返回 429 + `Retry-After`；前端原样展示限流提示
 - 多用户隔离：会话 key 和会话锁带用户维度，拿到别人的 session_id 也读不到别人的追问上下文；查询缓存按库共享（有意）
 - 并发保护：未命中缓存的模型调用路径用信号量限制在途数（默认 8），排队超过 10 秒返回"系统繁忙"；缓存命中不占名额
-- `SimulatedLLM` 与 `DATAPILOT_MODEL=simulated`：只模拟延迟、不调 API，用于压测
+- `SimulatedLLM` 与 `METRICLENS_MODEL=simulated`：只模拟延迟、不调 API，用于压测
 - `scripts/load_test.py`：对真实 uvicorn + Redis 压测缓存命中、未命中、限流三个场景
 - `/api/health` 返回限流与并发上限配置
 - 前端每个浏览器生成匿名用户 id（localStorage）随请求发送，Docker 或代理后面多个用户不再共用一个 IP 计数

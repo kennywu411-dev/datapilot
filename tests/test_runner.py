@@ -4,10 +4,10 @@ import sqlite3
 
 import pytest
 
-from datapilot.baseline import SQLAnswer
-from datapilot.llm import ScriptedLLM
 from evals.report import summarize, wilson
 from evals.runner import Config, load_done, run, stratified_sample
+from metriclens.baseline import SQLAnswer
+from metriclens.llm import ScriptedLLM
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def setup(tmp_path, monkeypatch):
     conn.executemany("INSERT INTO t VALUES (?)", [(i,) for i in range(10)])
     conn.commit()
     conn.close()
-    monkeypatch.setattr("datapilot.config.DB_DIR", db_dir)
+    monkeypatch.setattr("metriclens.config.DB_DIR", db_dir)
     questions = [
         {
             "question_id": i,
@@ -89,7 +89,7 @@ def test_llm_exception_is_recorded_not_crash(setup):
 
 def test_max_cost_stops_new_calls(setup):
     questions, run_dir = setup
-    from datapilot.llm import LLMResult
+    from metriclens.llm import LLMResult
 
     class PricedLLM:
         model = "claude-opus-5-5"
@@ -203,8 +203,8 @@ def test_compare_counts_corrections():
 
 def test_factory_routes_local_and_claude_and_shares_clients(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
-    from datapilot.llm import ClaudeLLM, LocalLLM
     from evals.runner import make_factory
+    from metriclens.llm import ClaudeLLM, LocalLLM
 
     f = make_factory(False)
     q = {"question_id": 1}
@@ -259,7 +259,7 @@ def test_main_accepts_custom_question_file(tmp_path, monkeypatch, shop_db_dir):
             ]
         )
     )
-    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path / "runs")
+    monkeypatch.setattr("metriclens.config.RUNS_DIR", tmp_path / "runs")
     runner_mod.main(
         [
             "--models",
@@ -303,7 +303,7 @@ def test_resume_with_different_question_set_is_refused(tmp_path, monkeypatch, sh
         )
         return str(p)
 
-    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path / "runs")
+    monkeypatch.setattr("metriclens.config.RUNS_DIR", tmp_path / "runs")
     runner_mod.main(["--models", "gold", "--questions", qfile("a.json", [1, 2]), "--tag", "t"])
     run_id = next((tmp_path / "runs").iterdir()).name
     with pytest.raises(SystemExit, match="题集"):
@@ -316,8 +316,8 @@ def test_api_models_validate_factory_and_keys(monkeypatch):
     """国产 API 模型：只跑固定流程；必须有价格；调用前必须有密钥；工厂返回 OpenAICompatLLM。"""
     import pytest
 
-    from datapilot.llm import OpenAICompatLLM
     from evals.runner import Config, check_keys, make_factory, validate
+    from metriclens.llm import OpenAICompatLLM
 
     validate(["deepseek", "qwen"], "e4_correct")
     with pytest.raises(SystemExit, match="固定流程"):
@@ -340,8 +340,8 @@ def test_api_models_validate_factory_and_keys(monkeypatch):
 
 
 def test_estimate_prices_api_models():
-    from datapilot import config
     from evals.runner import Config, estimate
+    from metriclens import config
 
     q = [{"question_id": 1, "db_id": "superhero", "question": "x", "evidence": ""}]
     if not config.db_path("superhero").exists():
@@ -358,8 +358,8 @@ def test_run_one_reraises_fatal_api_error(shop_db_dir):
 
     import pytest
 
-    from datapilot.llm import FatalAPIError
     from evals.runner import Config, run_one
+    from metriclens.llm import FatalAPIError
 
     class Boom:
         model = "x"
@@ -447,6 +447,6 @@ def test_evalkit_rows_converts_legacy_and_gate(tmp_path, monkeypatch):
     legacy("b", [True] * 20 + [False] * 10)
     rows = evalkit_rows(tmp_path / "a")
     assert rows[0]["item_id"] == 0 and rows[0]["variant"] == "haiku" and rows[0]["passed"]
-    monkeypatch.setattr("datapilot.config.RUNS_DIR", tmp_path)
+    monkeypatch.setattr("metriclens.config.RUNS_DIR", tmp_path)
     assert gate_mod.compare_gate("a", "b", "haiku", 0.1, 0.05) == 1
     assert gate_mod.compare_gate("b", "a", "haiku", 0.1, 0.05) == 0

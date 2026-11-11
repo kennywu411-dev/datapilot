@@ -26,11 +26,11 @@ import yaml
 from pydantic import BaseModel, Field
 from sqlglot import exp
 
-from datapilot import rls
-from datapilot.baseline import GenerationResult
-from datapilot.llm import LLM
-from datapilot.schema import _sql_literal
-from datapilot.sql_guard import SQLRejected, run_readonly, table_columns
+from metriclens import rls
+from metriclens.baseline import GenerationResult
+from metriclens.llm import LLM
+from metriclens.schema import _sql_literal
+from metriclens.sql_guard import SQLRejected, run_readonly, table_columns
 
 METRICS_DIR = Path(__file__).with_name("metrics")
 FUZZY_MIN_COVERAGE = 0.6  # 兜底检索：同义词的字二元组至少有这么多出现在问题里，否则宁可不匹配

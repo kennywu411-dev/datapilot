@@ -59,7 +59,7 @@ export default function QualityPage() {
   return (
     <PageShell
       title="数据质量"
-      note="指标算得对的前提是数据本身没问题。主键、外键按库里声明的约束自动检查；空值、取值范围、业务规则、新鲜度按规则文件检查。问题行只给主键，不带其他列的取值。命令行：uv run python -m datapilot.quality <库名>。"
+      note="指标算得对的前提是数据本身没问题。主键、外键按库里声明的约束自动检查；空值、取值范围、业务规则、新鲜度按规则文件检查。问题行只给主键，不带其他列的取值。命令行：uv run python -m metriclens.quality <库名>。"
     >
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <select value={db} onChange={(e) => setDb(e.target.value)} className="rounded-md border bg-background px-2 py-1.5" aria-label="数据库">

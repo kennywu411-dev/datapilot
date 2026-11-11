@@ -1,4 +1,4 @@
-"""用 BIRD 官方 evaluation_ex.py 的判分函数逐题判分，与 datapilot.ex 对照。
+"""用 BIRD 官方 evaluation_ex.py 的判分函数逐题判分，与 metriclens.ex 对照。
 
 官方脚本只输出汇总分，这里直接调用它的 execute_model（含 func_timeout 与 set 比较），
 拿到逐题结果。三组输入：gold 自身、打乱行顺序、恒 SELECT 1。

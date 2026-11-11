@@ -3,7 +3,7 @@
 前提：后端（:8000）和前端（:3000）已启动。截图用的问题都问过，会命中缓存，不花钱。
 用法：uv run python scripts/screenshots.py
       uv run python scripts/screenshots.py attribution   # 只截归因视图（需要 retail_ops 库）
-前端不在 :3000 时用环境变量 DATAPILOT_WEB 指定，如 DATAPILOT_WEB=http://localhost:3010
+前端不在 :3000 时用环境变量 METRICLENS_WEB 指定，如 METRICLENS_WEB=http://localhost:3010
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "images"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 PORT = 9333
-BASE = os.environ.get("DATAPILOT_WEB", "http://localhost:3000")
+BASE = os.environ.get("METRICLENS_WEB", "http://localhost:3000")
 W, H, SCALE = 1440, 900, 2
 
 WHY_QUESTION = "2011 年 1 月退货率为什么比上个月高这么多？"

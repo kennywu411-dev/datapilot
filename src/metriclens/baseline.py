@@ -13,8 +13,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from datapilot.llm import LLM, LLMResult
-from datapilot.schema import schema_ddl
+from metriclens.llm import LLM, LLMResult
+from metriclens.schema import schema_ddl
 
 SYSTEM = "You are an expert in SQLite text-to-SQL."
 

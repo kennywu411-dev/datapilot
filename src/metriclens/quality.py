@@ -9,9 +9,9 @@
 不按角色裁剪，所以不能借它看到成本价、客户姓名。接口只对不受限的角色开放。
 
 命令行：
-  uv run python -m datapilot.quality shop_ops            # 打印报告
-  uv run python -m datapilot.quality shop_ops --json     # JSON
-  uv run python -m datapilot.quality shop_ops --as-of 2026-10-01 --strict   # 有 fail 时退出码 1
+  uv run python -m metriclens.quality shop_ops            # 打印报告
+  uv run python -m metriclens.quality shop_ops --json     # JSON
+  uv run python -m metriclens.quality shop_ops --as-of 2026-10-01 --strict   # 有 fail 时退出码 1
 """
 
 from __future__ import annotations
@@ -26,10 +26,10 @@ from typing import Literal
 
 import yaml
 
-from datapilot import config
-from datapilot.schema import _sql_literal as _lit
-from datapilot.sql_guard import connect_readonly
-from datapilot.tools import _q
+from metriclens import config
+from metriclens.schema import _sql_literal as _lit
+from metriclens.sql_guard import connect_readonly
+from metriclens.tools import _q
 
 RULES_DIR = Path(__file__).with_name("quality_rules")
 SAMPLE_KEYS = 5

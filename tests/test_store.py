@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from datapilot.store import MemoryStore, RedisStore, make_store
+from metriclens.store import MemoryStore, RedisStore, make_store
 
 REDIS_URL = "redis://localhost:6379/15"  # 测试专用库，跑前清空
 

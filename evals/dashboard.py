@@ -50,7 +50,7 @@ def main(argv=None) -> None:
     p.add_argument("runs", nargs="*", help="runs/ 下的运行目录名，默认 MANIFEST 登记的全部")
     p.add_argument("-o", "--output", default=str(ROOT / "site" / "eval.html"))
     args = p.parse_args(argv)
-    tmp = Path(tempfile.mkdtemp(prefix="datapilot-dashboard-")) / "datapilot"
+    tmp = Path(tempfile.mkdtemp(prefix="metriclens-dashboard-")) / "metriclens"
     dirs = []
     for name in args.runs or manifest_runs():
         try:
@@ -62,7 +62,7 @@ def main(argv=None) -> None:
         questions = store.load_config(RUNS / name).get("questions") or "bird-minidev"
         store.write_json(d / store.CONFIG, {"dataset": {"name": Path(questions).stem}})
         dirs.append(d)
-    out = build(dirs, Path(args.output), title="DataPilot 评测看板")
+    out = build(dirs, Path(args.output), title="MetricLens 评测看板")
     print(f"{len(dirs)} 次运行 → {out}")
 
 

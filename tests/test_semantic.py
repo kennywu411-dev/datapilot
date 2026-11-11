@@ -5,11 +5,11 @@ import sqlite3
 
 import pytest
 
-from datapilot import config, rls, tools
-from datapilot.baseline import SQLAnswer
-from datapilot.llm import ScriptedLLM
-from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.semantic import (
+from metriclens import config, rls, tools
+from metriclens.baseline import SQLAnswer
+from metriclens.llm import ScriptedLLM
+from metriclens.pipeline import FixedPipeline, PipelineConfig
+from metriclens.semantic import (
     DimFilter,
     NotCompilable,
     SemanticLayer,
@@ -17,7 +17,7 @@ from datapilot.semantic import (
     SemanticQuery,
     load_layer,
 )
-from datapilot.sql_guard import SQLRejected, run_readonly
+from metriclens.sql_guard import SQLRejected, run_readonly
 
 SHOP = config.DATA_DIR / "dev_databases" / "shop_ops" / "shop_ops.sqlite"
 needs_shop = pytest.mark.skipif(
@@ -340,8 +340,8 @@ def test_catalog_has_lineage_dimensions_and_restricted(layer):
 
 @needs_shop
 async def test_service_emits_metrics_event_before_sql():
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     tools._tables_cached.cache_clear()
     llm = ScriptedLLM([SQLAnswer(sql="SELECT SUM(amount) FROM orders"), "答案"])

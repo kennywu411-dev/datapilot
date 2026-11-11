@@ -7,8 +7,8 @@ from datetime import date
 import httpx
 import pytest
 
-from datapilot import config, tools
-from datapilot.quality import QualityChecker, main, render, report
+from metriclens import config, tools
+from metriclens.quality import QualityChecker, main, render, report
 
 SHOP = config.DATA_DIR / "dev_databases" / "shop_ops" / "shop_ops.sqlite"
 needs_shop = pytest.mark.skipif(
@@ -155,9 +155,9 @@ def test_injected_defects_all_detected():
 
 @needs_shop
 async def test_api_quality_and_metrics_respect_roles():
-    from datapilot.api import create_app
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.api import create_app
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     tools._tables_cached.cache_clear()
     app = create_app(service=ChatService(MemoryStore(), llm_factory=lambda: None))

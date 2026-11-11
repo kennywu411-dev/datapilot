@@ -1,10 +1,10 @@
-# DataPilot：经营问数与指标异动归因
+# MetricLens：经营问数与指标异动归因
 
-[![CI](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml/badge.svg)](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
+[![CI](https://github.com/kennywu411-dev/metriclens/actions/workflows/ci.yml/badge.svg)](https://github.com/kennywu411-dev/metriclens/actions/workflows/ci.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
 用中文问经营数据：能问"是多少"，也能问"为什么变了"。问一个数，系统写 SQL 查出来；问一个指标为什么变了，系统按国家、品类、客户、单据逐层拆开找原因，结论里的每个数字都能追溯到执行过的 SQL。
 
-**[在线回放](https://kennywu411-dev.github.io/datapilot/)**：11 个问题的真实运行记录（3 个"为什么"、8 个"是多少"），逐步看分解、下钻、数字核对、生成的 SQL、纠错和行列级权限，以及每一步的耗时与花费，不用装环境。
+**[在线回放](https://kennywu411-dev.github.io/metriclens/)**：11 个问题的真实运行记录（3 个"为什么"、8 个"是多少"），逐步看分解、下钻、数字核对、生成的 SQL、纠错和行列级权限，以及每一步的耗时与花费，不用装环境。
 
 | | |
 |---|---|
@@ -139,7 +139,7 @@ Haiku 的错题大多执行成功、没有报错，运行时看不出来，所�
 
 企业问数的瓶颈在口径：同样问"销售额"，含不含退款、按下单还是签收算，结果完全不同。真实用户提问时不会附带口径说明，所以口径要由系统维护（[ADR 006](docs/adr/006-指标语义层与数据质量.md)）。
 
-- 指标字典 `src/datapilot/metrics/shop_ops.yaml`：16 个指标、7 个业务术语、5 条通用约定（时间归属、天数差、金额分档、同比环比），每个指标写明口径、计算 SQL 片段、可用维度、同义词和依赖的表与列。
+- 指标字典 `src/metriclens/metrics/shop_ops.yaml`：16 个指标、7 个业务术语、5 条通用约定（时间归属、天数差、金额分档、同比环比），每个指标写明口径、计算 SQL 片段、可用维度、同义词和依赖的表与列。
 - 提问时用同义词加模糊检索匹配指标，把口径交给生成 SQL 的模型；回答里列出"本题用到的指标定义"，可以点开看口径。和行列级权限兼容，受限角色看不到依赖敏感列的指标。
 - 指标目录页：列出全部指标、口径、维度和血缘，按角色标出不可用的指标。
 - 数据质量检查：电商库 42 项检查，命令行、接口和页面都能看。在库的副本上注入 13 类缺陷，全部检出，干净库 0 误报。
@@ -179,8 +179,8 @@ Haiku 的错题大多执行成功、没有报错，运行时看不出来，所�
 压测用模拟模型（每次调用固定 1.5 秒，不调 API）：缓存命中路径 100 并发 P95 197 ms、0 错误；未命中路径吞吐 2.6–2.7/s，正好是名额 8 除以单题 3 秒的理论上限，50 并发时 36% 的请求被拒，下游没有被打穿。
 
 ```bash
-DATAPILOT_MODEL=simulated DATAPILOT_SIM_LATENCY_S=1.5 REDIS_URL=redis://localhost:6379/2 \
-  uv run uvicorn datapilot.api:app --port 8010
+METRICLENS_MODEL=simulated METRICLENS_SIM_LATENCY_S=1.5 REDIS_URL=redis://localhost:6379/2 \
+  uv run uvicorn metriclens.api:app --port 8010
 uv run python scripts/load_test.py --base http://127.0.0.1:8010
 ```
 
@@ -202,7 +202,7 @@ uv run python scripts/add_database.py retail_ops data/source/retail_ops.sqlite
 cp .env.example .env                        # 填 ANTHROPIC_API_KEY；不填也能启动，问数会报「未设置 ANTHROPIC_API_KEY」
 
 uv run pytest -q
-uv run uvicorn datapilot.api:app --port 8000
+uv run uvicorn metriclens.api:app --port 8000
 npm --prefix web run dev                    # http://localhost:3000
 ```
 

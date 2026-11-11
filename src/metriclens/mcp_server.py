@@ -1,12 +1,12 @@
-"""DataPilot 只读 MCP Server（stdio）。
+"""MetricLens 只读 MCP Server（stdio）。
 
 把 tools.py 的数据库工具按 MCP 协议暴露，任何 MCP 客户端（桌面客户端、IDE 插件、
 MCP Inspector）都能调用。所有工具只读：run_sql 走 sql_guard 的分层防御。
 
-启动：uv run python -m datapilot.mcp_server
-调试：npx @modelcontextprotocol/inspector uv run python -m datapilot.mcp_server
+启动：uv run python -m metriclens.mcp_server
+调试：npx @modelcontextprotocol/inspector uv run python -m metriclens.mcp_server
 
-行列级权限（v1.4）：角色由启动时的环境变量 DATAPILOT_ROLE 固定（在 .mcp.json 的 env 里配），
+行列级权限（v1.4）：角色由启动时的环境变量 METRICLENS_ROLE 固定（在 .mcp.json 的 env 里配），
 工具参数里不提供角色，否则模型可以自己传一个更高的角色给自己提权。
 """
 
@@ -17,16 +17,16 @@ import os
 from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
-from datapilot import tools
+from metriclens import tools
 
-ROLE = os.environ.get("DATAPILOT_ROLE") or None
+ROLE = os.environ.get("METRICLENS_ROLE") or None
 
 # 规范默认值是 read_only=False、open_world=True：不声明，客户端会把工具当成有外部副作用。
 # 这里的工具只读本地 SQLite，两个提示都和默认值相反，声明出来才有信息量。
 READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 
 server = MCPServer(
-    "datapilot",
+    "metriclens",
     instructions=(
         "只读 SQLite 问数工具。建议顺序：list_databases → list_tables → describe_table "
         "→ search_values（确认真实取值）→ run_sql。只允许单条 SELECT。"

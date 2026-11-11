@@ -1,5 +1,5 @@
 #!/bin/bash
-# DataPilot 启停（Docker 版）。DataPilot.app 调用它，也可以直接在终端用。
+# MetricLens 启停（Docker 版）。MetricLens.app 调用它，也可以直接在终端用。
 # 用法：bash scripts/app.sh start | stop | status
 set -euo pipefail
 # 从访达双击启动的应用拿不到终端里的 PATH，这里补上 Homebrew 路径

@@ -7,7 +7,7 @@ import anthropic
 import httpx2 as httpx
 from pydantic import BaseModel
 
-from datapilot.llm import ClaudeLLM, ScriptedLLM
+from metriclens.llm import ClaudeLLM, ScriptedLLM
 
 USAGE = {
     "input_tokens": 1000,
@@ -139,7 +139,7 @@ def test_scripted_llm_structured():
 
 def test_local_llm_request_and_parse():
     """LocalLLM（Ollama）：JSON schema 约束输出，content 块转成纯文本，花费为 0。"""
-    from datapilot.llm import LocalLLM
+    from metriclens.llm import LocalLLM
 
     seen = {}
 
@@ -175,7 +175,7 @@ def test_local_llm_request_and_parse():
 
 
 def test_local_llm_truncated_output_is_max_tokens():
-    from datapilot.llm import LocalLLM
+    from metriclens.llm import LocalLLM
 
     def handler(request):
         return httpx.Response(
@@ -196,7 +196,7 @@ def test_local_llm_rejects_prompt_over_context():
     """提示超过 num_ctx 时 Ollama 会静默截掉开头（schema 就在开头），必须提前报错。"""
     import pytest
 
-    from datapilot.llm import LocalLLM
+    from metriclens.llm import LocalLLM
 
     called = []
 
@@ -213,7 +213,7 @@ def test_local_llm_rejects_prompt_over_context():
 
 
 def test_local_llm_retries_once_on_length():
-    from datapilot.llm import LocalLLM
+    from metriclens.llm import LocalLLM
 
     seen = []
 
@@ -242,8 +242,8 @@ def test_local_llm_retries_once_on_length():
 async def test_simulated_llm_sleeps_and_returns_structured_sql():
     import time
 
-    from datapilot.baseline import SQLAnswer
-    from datapilot.llm import SimulatedLLM
+    from metriclens.baseline import SQLAnswer
+    from metriclens.llm import SimulatedLLM
 
     llm = SimulatedLLM(latency_s=0.1)
     start = time.perf_counter()
@@ -255,7 +255,7 @@ async def test_simulated_llm_sleeps_and_returns_structured_sql():
 
 
 def _compat(handler, **kw):
-    from datapilot.llm import OpenAICompatLLM
+    from metriclens.llm import OpenAICompatLLM
 
     client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
     return OpenAICompatLLM(
@@ -350,7 +350,7 @@ def test_openai_compat_bad_json_is_unparsed_not_crash():
 
 def test_openai_compat_retries_rate_limit(monkeypatch):
     """429 / 5xx 退避重试（Claude SDK 自带 max_retries，这里自己实现）。"""
-    import datapilot.llm as llm_mod
+    import metriclens.llm as llm_mod
 
     monkeypatch.setattr(llm_mod, "RETRY_BASE_S", 0)
     seen = []
@@ -375,7 +375,7 @@ def test_openai_compat_rejects_tools():
 
 
 def test_parse_loose_handles_fences_and_key_case():
-    from datapilot.llm import parse_loose
+    from metriclens.llm import parse_loose
 
     assert parse_loose('{"sql": "SELECT 1"}', SQLAnswer) == SQLAnswer(sql="SELECT 1")
     assert parse_loose('```json\n{"sql": "SELECT 2"}\n```', SQLAnswer) == SQLAnswer(sql="SELECT 2")
@@ -389,7 +389,7 @@ def test_openai_compat_fatal_status_not_retried():
     """403（如百炼"仅免费额度"用完）重试没用：直接抛 FatalAPIError，让评测停下。"""
     import pytest
 
-    from datapilot.llm import FatalAPIError
+    from metriclens.llm import FatalAPIError
 
     seen = []
 
@@ -406,7 +406,7 @@ def test_openai_compat_fatal_status_not_retried():
 
 def test_openai_compat_retries_transport_error(monkeypatch):
     """连接失败 / 读超时重试，不直接记成这一题失败。"""
-    import datapilot.llm as llm_mod
+    import metriclens.llm as llm_mod
 
     monkeypatch.setattr(llm_mod, "RETRY_BASE_S", 0)
     seen = []

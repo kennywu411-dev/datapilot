@@ -11,8 +11,8 @@ import sqlite3
 import time
 from functools import cache
 
-from datapilot import config, rls
-from datapilot.sql_guard import SQLRejected, connect_readonly, run_readonly, table_columns
+from metriclens import config, rls
+from metriclens.sql_guard import SQLRejected, connect_readonly, run_readonly, table_columns
 
 SAMPLE_ROWS = 3
 SEARCH_TIMEOUT_S = 5.0

@@ -1,9 +1,9 @@
 """问数服务：流式事件、追问、查询缓存、自动图表。"""
 
-from datapilot.baseline import SQLAnswer
-from datapilot.llm import ScriptedLLM
-from datapilot.service import ChatService, choose_chart, normalize_question
-from datapilot.store import MemoryStore
+from metriclens.baseline import SQLAnswer
+from metriclens.llm import ScriptedLLM
+from metriclens.service import ChatService, choose_chart, normalize_question
+from metriclens.store import MemoryStore
 
 # ---------- 规范化与图表 ----------
 
@@ -59,7 +59,7 @@ def test_chart_none_for_scalar_or_text():
 
 def test_answer_prompt_states_row_counts():
     """回答阶段要知道结果总行数与给出的行数，否则会误以为数据只有这么多（P11）。"""
-    from datapilot.service import ANSWER_PREVIEW_ROWS, ChatService
+    from metriclens.service import ANSWER_PREVIEW_ROWS, ChatService
 
     table = {
         "columns": ["year", "n"],
@@ -158,7 +158,7 @@ async def test_unknown_db_is_error(shop_db_dir):
 
 async def test_final_sql_executed_once_and_pipeline_rows_reused(shop_db_dir, monkeypatch):
     """流程里已经执行过最终 SQL，服务层不应再执行一遍（慢查询延迟会翻倍）。"""
-    import datapilot.sql_guard as guard
+    import metriclens.sql_guard as guard
 
     calls = []
     real = guard.run_readonly
@@ -167,7 +167,7 @@ async def test_final_sql_executed_once_and_pipeline_rows_reused(shop_db_dir, mon
         calls.append(sql)
         return real(path, sql, **kw)
 
-    monkeypatch.setattr("datapilot.pipeline.run_readonly", counting)
+    monkeypatch.setattr("metriclens.pipeline.run_readonly", counting)
     # 服务层已不再自己执行 SQL（没有 run_readonly 引用），只需统计流程里的执行次数
     svc, _ = make_service(
         [SQLAnswer(sql="SELECT city, count(*) AS n FROM users GROUP BY city"), "好。"]
@@ -224,7 +224,7 @@ async def test_sessions_are_isolated_per_user(shop_db_dir):
 async def test_inflight_limit_rejects_when_queue_times_out(shop_db_dir):
     import asyncio
 
-    from datapilot.llm import SimulatedLLM
+    from metriclens.llm import SimulatedLLM
 
     svc = ChatService(
         MemoryStore(),
@@ -245,7 +245,7 @@ async def test_inflight_limit_rejects_when_queue_times_out(shop_db_dir):
 async def test_cache_hits_bypass_inflight_limit(shop_db_dir):
     import asyncio
 
-    from datapilot.llm import SimulatedLLM
+    from metriclens.llm import SimulatedLLM
 
     svc = ChatService(
         MemoryStore(),
@@ -264,7 +264,7 @@ async def test_cache_hits_bypass_inflight_limit(shop_db_dir):
 async def test_queued_request_gets_queue_step_immediately(shop_db_dir):
     import asyncio
 
-    from datapilot.llm import SimulatedLLM
+    from metriclens.llm import SimulatedLLM
 
     svc = ChatService(
         MemoryStore(),
@@ -284,7 +284,7 @@ async def test_queued_request_gets_queue_step_immediately(shop_db_dir):
 
 
 async def test_no_queue_step_when_slot_is_free(shop_db_dir):
-    from datapilot.llm import SimulatedLLM
+    from metriclens.llm import SimulatedLLM
 
     svc = ChatService(MemoryStore(), llm_factory=lambda: SimulatedLLM(latency_s=0))
     events = await collect(svc.ask("s1", "shop", "问一"))
@@ -294,7 +294,7 @@ async def test_no_queue_step_when_slot_is_free(shop_db_dir):
 async def test_queued_request_rechecks_cache_after_getting_slot(shop_db_dir):
     import asyncio
 
-    from datapilot.llm import SimulatedLLM
+    from metriclens.llm import SimulatedLLM
 
     made = []
 

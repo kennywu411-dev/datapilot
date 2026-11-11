@@ -1,6 +1,6 @@
 """并发压测：对真实运行的 uvicorn 发真实 HTTP，读完整个 SSE 流，测服务端自身的并发表现。
 
-模型用 SimulatedLLM 代替（服务端以 DATAPILOT_MODEL=simulated 启动），每次模型调用只 sleep
+模型用 SimulatedLLM 代替（服务端以 METRICLENS_MODEL=simulated 启动），每次模型调用只 sleep
 固定时长，花费为 0。所以这里的数字反映的是事件循环、存储、限流、并发保护，
 **不是**真实模型的延迟分布。
 
@@ -11,8 +11,8 @@
 - ratelimit：同一用户顺序发 25 次，预期前 N 次 200、之后 429
 
 用法（先另开终端启动服务）：
-  DATAPILOT_MODEL=simulated DATAPILOT_SIM_LATENCY_S=1.5 REDIS_URL=redis://localhost:6379/2 \\
-    uv run uvicorn datapilot.api:app --port 8010
+  METRICLENS_MODEL=simulated METRICLENS_SIM_LATENCY_S=1.5 REDIS_URL=redis://localhost:6379/2 \\
+    uv run uvicorn metriclens.api:app --port 8010
   uv run python scripts/load_test.py --base http://127.0.0.1:8010
 """
 
@@ -32,8 +32,8 @@ import httpx
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from datapilot import config  # noqa: E402
 from evals.report import pct  # noqa: E402
+from metriclens import config  # noqa: E402
 
 DB_ID = "california_schools"
 QUESTION = "How many schools are there in total?"

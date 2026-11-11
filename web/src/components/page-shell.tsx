@@ -11,7 +11,7 @@ export function PageShell({ title, note, children }: { title: string; note?: str
   return (
     <div className="min-h-[100dvh]">
       <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background/90 px-4 backdrop-blur md:px-8">
-        <span className="font-medium tracking-tight">DataPilot</span>
+        <span className="font-medium tracking-tight">MetricLens</span>
         <div className="flex items-center gap-2">
           <TopNav />
           <button onClick={toggleTheme} aria-label="切换深浅色" className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground">

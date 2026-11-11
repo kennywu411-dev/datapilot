@@ -8,8 +8,8 @@ from pathlib import Path
 
 from rank_bm25 import BM25Okapi
 
-from datapilot import rls, tools
-from datapilot.sql_guard import connect_readonly
+from metriclens import rls, tools
+from metriclens.sql_guard import connect_readonly
 
 EXAMPLE_VALUES = 3
 DESC_MAX_CHARS = 300

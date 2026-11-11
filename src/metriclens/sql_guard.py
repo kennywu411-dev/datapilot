@@ -23,7 +23,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import SqlglotError
 
-from datapilot import rls
+from metriclens import rls
 
 DEFAULT_TIMEOUT_S = 30.0  # 与官方评测 meta_time_out 一致
 DEFAULT_MAX_ROWS = 1000

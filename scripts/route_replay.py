@@ -22,9 +22,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from datapilot.routing import RULES  # noqa: E402
 from evals.compare import mcnemar_exact  # noqa: E402
 from evals.report import load_rows, pct  # noqa: E402
+from metriclens.routing import RULES  # noqa: E402
 
 MANIFEST = json.loads((ROOT / "runs" / "MANIFEST.json").read_text(encoding="utf-8"))
 E4 = MANIFEST["ladder"][4][2]

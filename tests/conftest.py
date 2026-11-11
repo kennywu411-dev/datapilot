@@ -32,5 +32,5 @@ def shop_db_dir(tmp_path, monkeypatch):
         "gender,,user gender,text,F: female; M: male\n",
         encoding="utf-8",
     )
-    monkeypatch.setattr("datapilot.config.DB_DIR", d)
+    monkeypatch.setattr("metriclens.config.DB_DIR", d)
     return d

@@ -12,12 +12,12 @@ import json
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
-from datapilot import tools
-from datapilot.agent import TOOL_RESULT_MAX_CHARS, _tool
-from datapilot.baseline import clean_sql
-from datapilot.llm import LLM, LLMResult
-from datapilot.schema import enhanced_schema
-from datapilot.semantic import Match, SemanticLayer
+from metriclens import tools
+from metriclens.agent import TOOL_RESULT_MAX_CHARS, _tool
+from metriclens.baseline import clean_sql
+from metriclens.llm import LLM, LLMResult
+from metriclens.schema import enhanced_schema
+from metriclens.semantic import Match, SemanticLayer
 
 SYSTEM_TEMPLATE = """You are a senior business analyst. The user asks why a metric changed. \
 Investigate with SQL on a read-only SQLite database, then submit the causes.

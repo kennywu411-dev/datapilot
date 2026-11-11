@@ -4,7 +4,7 @@
 # 2. 单元测试（不调用 API）
 # 3. 改动了 web/ 时：前端 eslint + tsc
 # 4. 离线门禁：标准答案跑冒烟 20 题必须 100%（不花钱）
-# 5. 改动了 src/datapilot/ 时：Haiku 冒烟门禁（约 $0.006），跌破基线 10 个百分点拒绝提交
+# 5. 改动了 src/metriclens/ 时：Haiku 冒烟门禁（约 $0.006），跌破基线 10 个百分点拒绝提交
 # 临时跳过付费门禁：SKIP_GATE=1 git commit ...
 set -e
 
@@ -24,7 +24,7 @@ fi
 echo "[pre-commit] 离线门禁"
 uv run python evals/gate.py --offline
 
-if git diff --cached --name-only | grep -q '^src/datapilot/'; then
+if git diff --cached --name-only | grep -q '^src/metriclens/'; then
   if [ -n "$SKIP_GATE" ]; then
     echo "[pre-commit] SKIP_GATE 已设置，跳过付费门禁"
   elif [ ! -f .env ] && [ -z "$ANTHROPIC_API_KEY" ]; then

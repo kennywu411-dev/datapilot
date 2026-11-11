@@ -176,7 +176,7 @@ export default function Home() {
             <div className="mx-auto w-full max-w-3xl space-y-10 px-4 py-8 md:px-8">
               {backendDown && (
                 <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm">
-                  连不上后端。请先运行 <code className="font-mono">uv run uvicorn datapilot.api:app --port 8000</code>，再刷新页面。
+                  连不上后端。请先运行 <code className="font-mono">uv run uvicorn metriclens.api:app --port 8000</code>，再刷新页面。
                 </p>
               )}
 

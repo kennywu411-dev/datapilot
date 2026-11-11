@@ -21,8 +21,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from datapilot import config  # noqa: E402
 from evals.runner import Config, make_factory, run, stratified_sample  # noqa: E402
+from metriclens import config  # noqa: E402
 
 BASELINE = config.RUNS_DIR / "gate_baseline.json"
 SMOKE_N = 20
@@ -41,7 +41,7 @@ def offline_checks() -> list[str]:
     只跑"标准对标准"测不出顺序类 bug（两边顺序天然一致），所以同时检查：
     打乱行顺序必须全对；SELECT 1 命中的题必须与 gold-check 记录的完全一致。
     """
-    from datapilot.ex import evaluate_one
+    from metriclens.ex import evaluate_one
 
     failures = []
     if run_smoke("gold", mock=True) != 1.0:

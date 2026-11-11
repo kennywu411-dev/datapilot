@@ -9,15 +9,15 @@ import sqlite3
 
 import pytest
 
-from datapilot import attribution as at
-from datapilot.attribution import AttrConfig, AttributionPlan, Scope, run_attribution
-from datapilot.baseline import SQLAnswer
-from datapilot.llm import ScriptedLLM
-from datapilot.numcheck import check_numbers, extract_numbers
-from datapilot.semantic import DimFilter, load_layer
-from datapilot.service import ChatService
-from datapilot.sql_guard import check_sql
-from datapilot.store import MemoryStore
+from metriclens import attribution as at
+from metriclens.attribution import AttrConfig, AttributionPlan, Scope, run_attribution
+from metriclens.baseline import SQLAnswer
+from metriclens.llm import ScriptedLLM
+from metriclens.numcheck import check_numbers, extract_numbers
+from metriclens.semantic import DimFilter, load_layer
+from metriclens.service import ChatService
+from metriclens.sql_guard import check_sql
+from metriclens.store import MemoryStore
 from scripts.build_retail_ops import DDL, categorize, size_band
 
 MAY, JUN = ("2011-05-01", "2011-06-01"), ("2011-06-01", "2011-07-01")
@@ -79,7 +79,7 @@ def retail(tmp_path, monkeypatch):
     conn = sqlite3.connect(path)
     _fill(conn)
     conn.close()
-    monkeypatch.setattr("datapilot.config.DB_DIR", tmp_path / "dbs")
+    monkeypatch.setattr("metriclens.config.DB_DIR", tmp_path / "dbs")
     return path
 
 
@@ -614,7 +614,7 @@ def test_scoring_normalizes_values_and_requires_the_exact_grain(layer):
 
 
 def test_agent_runs_sql_then_submits_ranked_causes(retail, layer):
-    from datapilot.attr_agent import AttributionAgent, system_prompt
+    from metriclens.attr_agent import AttributionAgent, system_prompt
 
     _with_big_return(retail)
     llm = ScriptedLLM(
@@ -649,7 +649,7 @@ def test_agent_runs_sql_then_submits_ranked_causes(retail, layer):
 def test_examples_endpoint_falls_back_to_the_dictionary(retail):
     import httpx
 
-    from datapilot.api import create_app
+    from metriclens.api import create_app
 
     app = create_app(ChatService(MemoryStore(), llm_factory=lambda: ScriptedLLM([])))
 

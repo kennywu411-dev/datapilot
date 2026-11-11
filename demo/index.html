@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DataPilot：经营问数与指标异动归因</title>
+<title>MetricLens：经营问数与指标异动归因</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111826'/%3E%3Cpath d='M8 22V10h5a6 6 0 0 1 0 12z' fill='none' stroke='%23f6d548' stroke-width='3'/%3E%3Cpath d='M21 22V10' stroke='%23fbfcfd' stroke-width='3'/%3E%3C/svg%3E">
-<meta name="description" content="DataPilot 的真实运行记录回放：用中文问经营数据，既回答“是多少”，也回答“为什么变了”。归因按国家、品类、客户、单据逐层拆解，每个数字都能追溯到执行过的 SQL。">
+<meta name="description" content="MetricLens 的真实运行记录回放：用中文问经营数据，既回答“是多少”，也回答“为什么变了”。归因按国家、品类、客户、单据逐层拆解，每个数字都能追溯到执行过的 SQL。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
 <style>
-/* 版式沿用 UIPilot 展示页：冷色报告纸，正文墨蓝，唯一的强调色是荧光黄。 */
+/* 版式沿用 WebHands 展示页：冷色报告纸，正文墨蓝，唯一的强调色是荧光黄。 */
 :root {
   --paper: #f3f5f8;
   --surface: #fbfcfd;
@@ -207,11 +207,11 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
 <body id="top">
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top">DataPilot<span>问数 + 归因</span></a>
+    <a class="brand" href="#top">MetricLens<span>问数 + 归因</span></a>
     <nav class="nav" aria-label="页面导航">
       <a href="#replay">回放</a><a href="#numbers">数字</a><a href="#about">说明</a>
     </nav>
-    <a class="btn" href="https://github.com/kennywu411-dev/datapilot">GitHub</a>
+    <a class="btn" href="https://github.com/kennywu411-dev/metriclens">GitHub</a>
   </div>
 </header>
 
@@ -219,7 +219,7 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
   <section class="hero">
     <div class="wrap">
       <h1>问“是多少”，也问“为什么变了”</h1>
-      <p class="lede">DataPilot 用中文回答经营数据的问题。问一个数，它写 SQL 查出来；问一个指标为什么变了，它按国家、品类、客户、单据逐层拆开找原因，结论里的每个数字都能追溯到执行过的 SQL。下面 11 个问题各点一下，能按步骤看到全过程，每一步带当时的耗时和花费。</p>
+      <p class="lede">MetricLens 用中文回答经营数据的问题。问一个数，它写 SQL 查出来；问一个指标为什么变了，它按国家、品类、客户、单据逐层拆开找原因，结论里的每个数字都能追溯到执行过的 SQL。下面 11 个问题各点一下，能按步骤看到全过程，每一步带当时的耗时和花费。</p>
       <div class="notice" role="note">
         <b>回放</b>
         <p><mark>这是真实运行记录的回放，不是在线服务。</mark>页面是纯静态的，不连后端、不调模型；SQL、结果、回答、耗时和花费都是录制时问数服务的原始输出，没有改写。想自己提问，按仓库 README 在本地启动。</p>
@@ -265,55 +265,55 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
           <span class="num">31.8%</span>
           <h3>归因：第一原因命中（留出集）</h3>
           <p>真实交易数据上的 22 例留出题（注入已知原因），方案冻结后只跑一次：固定下钻流程 7/22，区间 16–53%；让问数流程直接回答是 0/22。dev 27 例上是 51.9%，调方案时用过，偏乐观。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 指标异动归因</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 指标异动归因</a>
         </div>
         <div class="fig">
           <span class="num">1,151 / 1,151</span>
           <h3>归因回答里的数字全部可追溯</h3>
           <p>固定下钻流程 98 个回答里的每个数字，都能在已执行的 SQL 结果或代码算出的事实表里找到。让模型拿 SQL 工具自主下钻时，只有 64–72% 直接出自它跑过的 SQL。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 三种做法对照</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 三种做法对照</a>
         </div>
         <div class="fig">
           <span class="num">42.9% · 38.8%</span>
           <h3>固定流程和自主 Agent 一样准，便宜 4–7 倍</h3>
           <p>49 例合并，第一原因命中固定流程 42.9%、Agent 38.8%（配对检验 p = 0.73）。Agent 单次成本是 3.8 倍（Sonnet）到 6.9 倍（Haiku）。Agent 的前三命中略高（53.1% 对 46.9%，不显著）。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/adr/007-指标异动归因.md">ADR 007 · 指标异动归因</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/adr/007-指标异动归因.md">ADR 007 · 指标异动归因</a>
         </div>
         <div class="fig">
           <span class="num">63.0% → 68.0%</span>
           <h3>取值核对加执行纠错，对小模型有用</h3>
           <p>BIRD Mini-Dev 500 题，Haiku。基线 63.0%（1 次运行），最终配置 E4 三次运行均值 68.0%（± 0.72）；基线对 E4 首次运行的配对检验 p = 0.008。同样的改进对 Sonnet 不显著。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#最终配置稳定性e4--3-次">numbers.md · 最终配置稳定性</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#最终配置稳定性e4--3-次">numbers.md · 最终配置稳定性</a>
         </div>
         <div class="fig">
           <span class="num">+56%</span>
           <h3>Agent 更贵，准确率一样</h3>
           <p>BIRD Mini-Dev 500 题，Sonnet。固定流程 E4 和让模型自己调工具的 Agent 都是 72.0%（配对检验 p = 1.00），Agent 成本高 56%，P50 延迟高 55%。所以线上用固定流程。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#e3--e4--agent">numbers.md · E3 / E4 / Agent</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#e3--e4--agent">numbers.md · E3 / E4 / Agent</a>
         </div>
         <div class="fig">
           <span class="num">0.9 ms / 3.71 s</span>
           <h3>缓存命中与未命中的 P50 延迟</h3>
           <p>问数服务全流程，Sonnet，Redis。200 次构造请求（140 道不重复问题加 60 次重复），重复请求命中率 98.3%。请求分布是构造的，不是真实用户数据。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#阶段-4-查询缓存实测">numbers.md · 查询缓存实测</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#阶段-4-查询缓存实测">numbers.md · 查询缓存实测</a>
         </div>
         <div class="fig">
           <span class="num">46 / 46</span>
           <h3>行列级权限的绕过测试全部拦截</h3>
           <p>46 个绕过测试（别名、子查询、JOIN、UNION、同名 CTE、元数据表等）全部通过。模型评测里越权 0 次：带权限说明 0 / 102（3 个角色），不带说明 0 / 68（2 个受限角色）。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v14-行列级权限模拟电商库">numbers.md · 行列级权限</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#v14-行列级权限模拟电商库">numbers.md · 行列级权限</a>
         </div>
         <div class="fig">
           <span class="num">65.8% → 92.5%</span>
           <h3>指标语义层把口径补回来</h3>
           <p>模拟电商库 40 题，题目里不写口径，Haiku，各 3 次运行的均值。提问时自动匹配指标口径并注入后从 65.8% 到 92.5%（Sonnet 64.2% → 95.0%），配对检验 p ≤ 0.002。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v15-指标语义层去掉口径说明的-40-题--19-道留出题">numbers.md · 指标语义层</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#v15-指标语义层去掉口径说明的-40-题--19-道留出题">numbers.md · 指标语义层</a>
         </div>
         <div class="fig">
           <span class="num">69.6% · 14%</span>
           <h3>路由：先用小模型，触发纠错再升级</h3>
           <p>BIRD Mini-Dev 500 题实跑。Haiku 先答，触发纠错的题交给 Sonnet 重跑：准确率 69.6%（全用 Haiku 67.4%、全用 Sonnet 72.0%），成本约为全用 Sonnet 的 14%。单次运行，相对两者都不显著。</p>
-          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v13-智能路由实跑验证">numbers.md · 智能路由实跑</a>
+          <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md#v13-智能路由实跑验证">numbers.md · 智能路由实跑</a>
         </div>
       </div>
     </div>
@@ -342,11 +342,11 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
 
 <footer>
   <div class="wrap">
-    <span>DataPilot · 经营问数与指标异动归因</span>
+    <span>MetricLens · 经营问数与指标异动归因</span>
     <nav>
-      <a href="https://github.com/kennywu411-dev/datapilot">GitHub 仓库</a>
-      <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md">数字登记表</a>
-      <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/%E9%97%AE%E9%A2%98%E6%97%A5%E5%BF%97.md">问题日志</a>
+      <a href="https://github.com/kennywu411-dev/metriclens">GitHub 仓库</a>
+      <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/numbers.md">数字登记表</a>
+      <a href="https://github.com/kennywu411-dev/metriclens/blob/main/docs/%E9%97%AE%E9%A2%98%E6%97%A5%E5%BF%97.md">问题日志</a>
     </nav>
     <p>代码使用 MIT 许可。归因回放用到的数据来自 UCI Online Retail II（Chen, D., 2019, DOI 10.24432/C5CG6D），按 CC BY 4.0 使用。本页是运行记录的静态回放，不提供在线问数。</p>
   </div>

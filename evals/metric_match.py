@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from datapilot.semantic import load_layer  # noqa: E402
+from metriclens.semantic import load_layer  # noqa: E402
 
 
 def score(questions: list[dict], labels: dict[str, list[str]]) -> dict:

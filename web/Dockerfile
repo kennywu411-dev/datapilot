@@ -1,4 +1,4 @@
-# DataPilot 前端（Next.js 生产模式）。浏览器直连宿主机 8000 端口的后端。
+# MetricLens 前端（Next.js 生产模式）。浏览器直连宿主机 8000 端口的后端。
 FROM node:20-alpine AS build
 WORKDIR /web
 COPY package.json package-lock.json ./

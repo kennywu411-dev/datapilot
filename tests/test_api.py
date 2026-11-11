@@ -5,11 +5,11 @@ import json
 import httpx
 import pytest
 
-from datapilot.api import create_app
-from datapilot.baseline import SQLAnswer
-from datapilot.llm import ScriptedLLM
-from datapilot.service import ChatService
-from datapilot.store import MemoryStore
+from metriclens.api import create_app
+from metriclens.baseline import SQLAnswer
+from metriclens.llm import ScriptedLLM
+from metriclens.service import ChatService
+from metriclens.store import MemoryStore
 
 
 @pytest.fixture

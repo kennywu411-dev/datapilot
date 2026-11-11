@@ -20,8 +20,8 @@ from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
-from datapilot.ex import evaluate_one
-from datapilot.sql_guard import run_readonly
+from metriclens.ex import evaluate_one
+from metriclens.sql_guard import run_readonly
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"

@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from datapilot import config  # noqa: E402
+from metriclens import config  # noqa: E402
 
 DIR = ROOT / "evals" / "zh100"
 SHEET = DIR / "校对表.csv"

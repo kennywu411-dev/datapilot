@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from datapilot.sql_guard import DEFAULT_TIMEOUT_S, SQLRejected, SQLUnparseable, run_readonly
+from metriclens.sql_guard import DEFAULT_TIMEOUT_S, SQLRejected, SQLUnparseable, run_readonly
 
 Status = Literal[
     "ok", "pred_error", "pred_rejected", "pred_timeout", "timeout", "gold_error", "denied_ok"

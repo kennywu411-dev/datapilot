@@ -17,7 +17,7 @@ def test_add_database_copies_and_drafts_descriptions(tmp_path, monkeypatch):
     )
     conn.commit()
     conn.close()
-    monkeypatch.setattr("datapilot.config.DB_DIR", tmp_path / "dbs")
+    monkeypatch.setattr("metriclens.config.DB_DIR", tmp_path / "dbs")
 
     out = add_database("shop2", src)
     assert out == tmp_path / "dbs" / "shop2" / "shop2.sqlite" and out.exists()
@@ -44,7 +44,7 @@ def test_add_database_includes_uncheckpointed_wal_rows(tmp_path, monkeypatch):
     writer.execute("CREATE TABLE t (a)")
     writer.executemany("INSERT INTO t VALUES (?)", [(i,) for i in range(5)])
     writer.commit()  # 不关闭、不 checkpoint：数据留在 -wal 文件里
-    monkeypatch.setattr("datapilot.config.DB_DIR", tmp_path / "dbs")
+    monkeypatch.setattr("metriclens.config.DB_DIR", tmp_path / "dbs")
     out = add_database("w", src)
     assert sqlite3.connect(out).execute("SELECT count(*) FROM t").fetchone() == (5,)
     writer.close()
@@ -55,7 +55,7 @@ def test_add_database_refuses_to_overwrite(tmp_path, monkeypatch):
 
     src = tmp_path / "src.db"
     sqlite3.connect(src).execute("CREATE TABLE t (a)").connection.commit()
-    monkeypatch.setattr("datapilot.config.DB_DIR", tmp_path / "dbs")
+    monkeypatch.setattr("metriclens.config.DB_DIR", tmp_path / "dbs")
     add_database("x", src)
     with pytest.raises(FileExistsError):
         add_database("x", src)

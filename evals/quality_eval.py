@@ -20,8 +20,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from datapilot import config  # noqa: E402
-from datapilot.quality import QualityChecker, load_rules  # noqa: E402
+from metriclens import config  # noqa: E402
+from metriclens.quality import QualityChecker, load_rules  # noqa: E402
 
 # 干净库的检查日期取数据截止后几天，新鲜度应通过
 CLEAN_AS_OF = date(2026, 10, 6)

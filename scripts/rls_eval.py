@@ -30,8 +30,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from datapilot import config, rls  # noqa: E402
-from datapilot.sql_guard import SQLRejected, run_readonly  # noqa: E402
+from metriclens import config, rls  # noqa: E402
+from metriclens.sql_guard import SQLRejected, run_readonly  # noqa: E402
 
 DB = "shop_ops"
 ROLES = ["analyst", "ops", "sh_manager"]
@@ -159,8 +159,8 @@ def judge(q: dict, role: str, out: dict, secrets: set[str]) -> dict:
 
 
 async def main_async(models: list[str], run_dir: Path) -> None:
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     qs = {
         q["question_id"]: q

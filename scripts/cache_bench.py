@@ -21,10 +21,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from datapilot import config  # noqa: E402
-from datapilot.service import ChatService  # noqa: E402
-from datapilot.store import make_store  # noqa: E402
 from evals.report import pct  # noqa: E402
+from metriclens import config  # noqa: E402
+from metriclens.service import ChatService  # noqa: E402
+from metriclens.store import make_store  # noqa: E402
 
 UNIQUE, REPEAT, SEED = 140, 60, 0
 MAX_COST = 1.6

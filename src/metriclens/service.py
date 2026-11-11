@@ -23,12 +23,12 @@ import unicodedata
 from collections import OrderedDict
 from collections.abc import AsyncIterator, Callable
 
-from datapilot import attribution, config, rls, tools
-from datapilot.llm import LLM, ClaudeLLM
-from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.semantic import Match, SemanticPipeline, load_layer
-from datapilot.sql_guard import SQLRejected
-from datapilot.store import Store
+from metriclens import attribution, config, rls, tools
+from metriclens.llm import LLM, ClaudeLLM
+from metriclens.pipeline import FixedPipeline, PipelineConfig
+from metriclens.semantic import Match, SemanticPipeline, load_layer
+from metriclens.sql_guard import SQLRejected
+from metriclens.store import Store
 
 CONFIG_VERSION = "e4-v6"  # 流程或提示词改了就升版本，旧缓存自然失效
 SESSION_TTL_S = 24 * 3600

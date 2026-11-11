@@ -24,10 +24,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from datapilot import config, rls, tools
-from datapilot.llm import ClaudeLLM, OpenAICompatLLM
-from datapilot.service import ChatService
-from datapilot.store import MemoryStore
+from metriclens import config, rls, tools
+from metriclens.llm import ClaudeLLM, OpenAICompatLLM
+from metriclens.service import ChatService
+from metriclens.store import MemoryStore
 
 DEMO_DIR = config.ROOT / "demo"
 MAX_ROWS = 50  # 结果表最多保留的行数

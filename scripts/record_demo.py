@@ -5,8 +5,8 @@
 
 前提：后端和前端已启动。新问题会真实调用模型（Sonnet 每题约 $0.005）；
 只想试录流程、不花钱时，用模拟模型另起一套服务：
-  DATAPILOT_MODEL=simulated DATAPILOT_CORS_ORIGINS=http://localhost:3001 \\
-    uv run uvicorn datapilot.api:app --port 8001
+  METRICLENS_MODEL=simulated METRICLENS_CORS_ORIGINS=http://localhost:3001 \\
+    uv run uvicorn metriclens.api:app --port 8001
   NEXT_PUBLIC_API_BASE=http://localhost:8001 npm --prefix web run dev -- -p 3001
   uv run python scripts/record_demo.py --base http://localhost:3001 --name demo-trial
 

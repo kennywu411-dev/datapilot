@@ -14,7 +14,7 @@ import anthropic
 import httpx2
 from pydantic import BaseModel, ValidationError
 
-from datapilot.config import DEFAULT_MODEL, cost_usd
+from metriclens.config import DEFAULT_MODEL, cost_usd
 
 
 @dataclass

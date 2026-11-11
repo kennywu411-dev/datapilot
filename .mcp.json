@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "datapilot": {
+    "metriclens": {
       "command": "uv",
-      "args": ["run", "python", "-m", "datapilot.mcp_server"]
+      "args": ["run", "python", "-m", "metriclens.mcp_server"]
     }
   }
 }

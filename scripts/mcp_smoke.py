@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 async def main() -> None:
-    spec = json.loads((ROOT / ".mcp.json").read_text())["mcpServers"]["datapilot"]
+    spec = json.loads((ROOT / ".mcp.json").read_text())["mcpServers"]["metriclens"]
     params = StdioServerParameters(command=spec["command"], args=spec["args"], cwd=str(ROOT))
     async with Client(params) as client:
         tools = (await client.list_tools()).tools

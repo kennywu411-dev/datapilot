@@ -2,12 +2,12 @@
 
 import asyncio
 
-from datapilot.baseline import SQLAnswer
-from datapilot.config import db_path
-from datapilot.llm import ScriptedLLM
-from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.schema import enhanced_schema, retrieve_tables
-from datapilot.value_check import check_values
+from metriclens.baseline import SQLAnswer
+from metriclens.config import db_path
+from metriclens.llm import ScriptedLLM
+from metriclens.pipeline import FixedPipeline, PipelineConfig
+from metriclens.schema import enhanced_schema, retrieve_tables
+from metriclens.value_check import check_values
 
 # ---------- Schema 增强 ----------
 
@@ -150,7 +150,7 @@ def test_retrieval_mode_limits_schema(shop_db_dir):
 
 def test_correction_without_sql_keeps_previous_sql(shop_db_dir):
     """纠错那次没产出 SQL（如 max_tokens）时，退回上一版而不是交白卷。"""
-    from datapilot.llm import LLMResult
+    from metriclens.llm import LLMResult
 
     class Flaky(ScriptedLLM):
         async def complete(self, system, messages, tools, output_format=None):
@@ -184,7 +184,7 @@ def test_enhanced_schema_examples_use_sql_literals(shop_db_dir):
     conn.commit()
     conn.close()
     enhanced_schema.cache_clear()
-    from datapilot import schema as schema_mod
+    from metriclens import schema as schema_mod
 
     schema_mod._examples.cache_clear()
     s = enhanced_schema("shop")

@@ -1,13 +1,13 @@
-"""DataPilot HTTP 接口（FastAPI）。问数走 SSE 流式返回。
+"""MetricLens HTTP 接口（FastAPI）。问数走 SSE 流式返回。
 
-启动：uv run uvicorn datapilot.api:app --reload --port 8000
+启动：uv run uvicorn metriclens.api:app --reload --port 8000
 环境变量：REDIS_URL（默认 redis://localhost:6379/0，连不上自动退回内存）
-          DATAPILOT_MODEL（默认 sonnet；simulated = 不调 API、只模拟延迟，压测用）
-          DATAPILOT_RATE_LIMIT（每用户每分钟问数次数，默认 20）
-          DATAPILOT_MAX_INFLIGHT（同时调用模型的请求上限，默认 8）
-          DATAPILOT_SIM_LATENCY_S（simulated 模式下每次模型调用的延迟，默认 2.0）
-          DATAPILOT_CORS_ORIGINS（允许跨域的前端地址，逗号分隔，默认 localhost:3000）
-          DATAPILOT_ROLE（默认角色，行列级权限用；请求头 X-Role 可覆盖）
+          METRICLENS_MODEL（默认 sonnet；simulated = 不调 API、只模拟延迟，压测用）
+          METRICLENS_RATE_LIMIT（每用户每分钟问数次数，默认 20）
+          METRICLENS_MAX_INFLIGHT（同时调用模型的请求上限，默认 8）
+          METRICLENS_SIM_LATENCY_S（simulated 模式下每次模型调用的延迟，默认 2.0）
+          METRICLENS_CORS_ORIGINS（允许跨域的前端地址，逗号分隔，默认 localhost:3000）
+          METRICLENS_ROLE（默认角色，行列级权限用；请求头 X-Role 可覆盖）
 
 用户识别：请求头 X-User-Id；没有时按客户端 IP。项目没有登录系统，这个头由前端或网关填，
 生产环境应换成网关校验过的身份（JWT 等），不能信任客户端自报。
@@ -33,12 +33,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
-from datapilot import config, rls, tools
-from datapilot.llm import SimulatedLLM
-from datapilot.quality import report as quality_report
-from datapilot.semantic import load_layer
-from datapilot.service import MAX_INFLIGHT, ChatService
-from datapilot.store import make_store
+from metriclens import config, rls, tools
+from metriclens.llm import SimulatedLLM
+from metriclens.quality import report as quality_report
+from metriclens.semantic import load_layer
+from metriclens.service import MAX_INFLIGHT, ChatService
+from metriclens.store import make_store
 
 log = logging.getLogger(__name__)
 
@@ -83,9 +83,9 @@ def _examples() -> dict[str, list[str]]:
 
 
 def role_of(request: Request) -> str | None:
-    """角色：请求头 X-Role，没有时用 DATAPILOT_ROLE。和 X-User-Id 一样是客户端自报，
+    """角色：请求头 X-Role，没有时用 METRICLENS_ROLE。和 X-User-Id 一样是客户端自报，
     项目没有登录系统；生产环境必须由网关根据登录身份填写，不能信任客户端。"""
-    role = request.headers.get("x-role") or os.environ.get("DATAPILOT_ROLE") or None
+    role = request.headers.get("x-role") or os.environ.get("METRICLENS_ROLE") or None
     if role is not None and not _USER_ID.fullmatch(role):
         raise HTTPException(400, "X-Role 格式不对")
     return role
@@ -103,10 +103,10 @@ def user_id_of(request: Request) -> str:
 
 
 def _make_service(store) -> ChatService:
-    model = os.environ.get("DATAPILOT_MODEL", "sonnet")
-    max_inflight = int(os.environ.get("DATAPILOT_MAX_INFLIGHT", MAX_INFLIGHT))
+    model = os.environ.get("METRICLENS_MODEL", "sonnet")
+    max_inflight = int(os.environ.get("METRICLENS_MAX_INFLIGHT", MAX_INFLIGHT))
     if model == "simulated":
-        latency = float(os.environ.get("DATAPILOT_SIM_LATENCY_S", "2.0"))
+        latency = float(os.environ.get("METRICLENS_SIM_LATENCY_S", "2.0"))
         return ChatService(
             store,
             model=model,
@@ -120,13 +120,13 @@ def create_app(
     service: ChatService | None = None, rate_limit_per_min: int | None = None
 ) -> FastAPI:
     if rate_limit_per_min is None:
-        rate_limit_per_min = int(os.environ.get("DATAPILOT_RATE_LIMIT", RATE_LIMIT_PER_MIN))
+        rate_limit_per_min = int(os.environ.get("METRICLENS_RATE_LIMIT", RATE_LIMIT_PER_MIN))
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if service is None:
             load_dotenv(config.ROOT / ".env")
-            if os.environ.get("DATAPILOT_MODEL", "sonnet") != "simulated" and api_key_missing():
+            if os.environ.get("METRICLENS_MODEL", "sonnet") != "simulated" and api_key_missing():
                 log.warning(
                     "未设置 ANTHROPIC_API_KEY：服务可以启动，但问数会失败。"
                     "请复制 .env.example 为 .env 并填写后重启"
@@ -135,7 +135,7 @@ def create_app(
             app.state.service = _make_service(store)
         yield
 
-    app = FastAPI(title="DataPilot", lifespan=lifespan)
+    app = FastAPI(title="MetricLens", lifespan=lifespan)
     if service is not None:
         app.state.service = service  # 测试注入；ASGI 传输不会触发 lifespan
     app.add_middleware(
@@ -143,7 +143,7 @@ def create_app(
         allow_origins=[
             o.strip()
             for o in os.environ.get(
-                "DATAPILOT_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+                "METRICLENS_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
             ).split(",")
             if o.strip()
         ],

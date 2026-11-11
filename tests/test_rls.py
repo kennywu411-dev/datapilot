@@ -4,9 +4,9 @@ import sqlite3
 
 import pytest
 
-from datapilot import rls, tools
-from datapilot.config import db_path
-from datapilot.sql_guard import SQLRejected, connect_readonly, run_readonly
+from metriclens import rls, tools
+from metriclens.config import db_path
+from metriclens.sql_guard import SQLRejected, connect_readonly, run_readonly
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def mini(tmp_path, monkeypatch):
     )
     conn.commit()
     conn.close()
-    monkeypatch.setattr("datapilot.config.DB_DIR", d)
+    monkeypatch.setattr("metriclens.config.DB_DIR", d)
     tools._tables_cached.cache_clear()
     sensitive = {"products": {"cost"}, "users": {"name"}}
     sh_rows = {
@@ -219,7 +219,7 @@ def test_run_sql_tool_returns_rejection(mini):
 
 
 def test_schema_prompt_marks_restricted(mini):
-    from datapilot.schema import enhanced_schema
+    from metriclens.schema import enhanced_schema
 
     s = enhanced_schema("mini", None, "ops")
     assert "cost" in s and "无权访问" in s  # 列名可见、标明受限，模型能如实告知
@@ -227,7 +227,7 @@ def test_schema_prompt_marks_restricted(mini):
 
 
 def test_value_check_does_not_leak_hidden_or_filtered_values(mini):
-    from datapilot.value_check import check_values
+    from metriclens.value_check import check_values
 
     issues = check_values("mini", "SELECT COUNT(*) FROM users WHERE city = '北京市'", role="sh")
     text = " ".join(issues)
@@ -240,10 +240,10 @@ def test_value_check_does_not_leak_hidden_or_filtered_values(mini):
 
 async def test_service_cache_is_per_role(mini):
     """分析师问过的成本价被缓存后，运营问同一句话不能直接拿到缓存（缓存泄露）。"""
-    from datapilot.baseline import SQLAnswer
-    from datapilot.llm import ScriptedLLM
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.baseline import SQLAnswer
+    from metriclens.llm import ScriptedLLM
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     cost_sql = SQLAnswer(sql="SELECT sku, cost FROM products ORDER BY sku")
     llm = ScriptedLLM([cost_sql, "P1 成本 111.11。"] + [cost_sql] * 4, model="claude-haiku-5-5")
@@ -258,8 +258,8 @@ async def test_service_cache_is_per_role(mini):
 
 
 async def test_service_rejects_unknown_role(mini):
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     svc = ChatService(MemoryStore(), llm_factory=lambda: None)
     out = [e async for e in svc.ask("s", "mini", "多少订单", role="ceo")]
@@ -269,9 +269,9 @@ async def test_service_rejects_unknown_role(mini):
 async def test_api_schema_and_roles_follow_header(mini):
     import httpx
 
-    from datapilot.api import create_app
-    from datapilot.service import ChatService
-    from datapilot.store import MemoryStore
+    from metriclens.api import create_app
+    from metriclens.service import ChatService
+    from metriclens.store import MemoryStore
 
     app = create_app(service=ChatService(MemoryStore(), llm_factory=lambda: None))
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
@@ -289,7 +289,7 @@ def test_mcp_tools_do_not_take_role_argument():
     """角色由启动环境固定；如果工具参数里有 role，模型就能自己给自己提权。"""
     import inspect
 
-    from datapilot import mcp_server
+    from metriclens import mcp_server
 
     for fn in (mcp_server.describe_table, mcp_server.search_values, mcp_server.run_sql):
         target = getattr(fn, "fn", fn)
@@ -318,7 +318,7 @@ def test_row_filter_tables_are_qualified():
 
 
 def test_unparseable_gold_is_gold_error_not_denied(mini):
-    from datapilot.ex import evaluate_one
+    from metriclens.ex import evaluate_one
 
     out = evaluate_one(
         mini, "SELECT 1", "SELECT cost FROM products WHERE ((", policy=rls.policy_for("mini", "ops")

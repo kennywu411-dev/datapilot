@@ -302,7 +302,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 运行 ID：`load-8f1f7f`（修复 P14 之后，作为最终结果）；对照 `load-29bd23`（修复前）。脚本 `scripts/load_test.py`，单个 uvicorn worker + 本机 Redis 8.10，M4 16GB，客户端与服务端同机。
 
-模型是模拟的：服务端以 `DATAPILOT_MODEL=simulated` 启动，每次模型调用固定 sleep 1.5 秒（未命中缓存时调用两次：生成 SQL、写回答），不调 API、花费 $0。这些数字反映服务端自身（事件循环、Redis、限流、并发保护），不代表真实模型的延迟分布。配置：`max_inflight=8`、排队超时 10 秒、每用户每分钟 20 次。
+模型是模拟的：服务端以 `METRICLENS_MODEL=simulated` 启动，每次模型调用固定 sleep 1.5 秒（未命中缓存时调用两次：生成 SQL、写回答），不调 API、花费 $0。这些数字反映服务端自身（事件循环、Redis、限流、并发保护），不代表真实模型的延迟分布。配置：`max_inflight=8`、排队超时 10 秒、每用户每分钟 20 次。
 
 缓存命中（每档 200 个请求，每个请求一个用户 id）：
 
@@ -440,7 +440,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 ## v1.5 指标语义层：去掉口径说明的 40 题 + 19 道留出题
 
-口径不再写进题目的 evidence，改由指标字典（`src/datapilot/metrics/shop_ops.yaml`）在提问时自动匹配、注入。设计见 ADR 006。
+口径不再写进题目的 evidence，改由指标字典（`src/metriclens/metrics/shop_ops.yaml`）在提问时自动匹配、注入。设计见 ADR 006。
 
 运行 ID（Haiku、Sonnet 各 3 次，E4 流程外包语义层）：
 - 去口径 40 题：无语义层 `shop-noev-094a10`（沿用口径消融的运行）；A 口径注入 `sem-ctx-4ceef7`（$0.339）；B 语义层直出 `sem-cmp-736ce2`（$0.384）。
@@ -523,7 +523,7 @@ colima 0.10.3（Ubuntu 24.04 虚拟机，4 核 4GB）+ Docker 29.5 / Compose 5.6
 
 ## v1.4 行列级权限（模拟电商库）
 
-角色（`src/datapilot/rls.py`）：分析师（全部可见）；运营（看不到 `products.cost` 成本价、`users.name` 客户姓名）；上海区域经理（同运营，且只看上海用户及其订单、售后）。强制方式：sqlglot 语法树改写 + 按列拒绝的 SQLite 授权回调（ADR 005）。
+角色（`src/metriclens/rls.py`）：分析师（全部可见）；运营（看不到 `products.cost` 成本价、`users.name` 客户姓名）；上海区域经理（同运营，且只看上海用户及其订单、售后）。强制方式：sqlglot 语法树改写 + 按列拒绝的 SQLite 授权回调（ADR 005）。
 
 ### 正确性自检（不花钱）
 

@@ -3,9 +3,9 @@
 import asyncio
 import json
 
-from datapilot.agent import TOOLS, SQLAgent
-from datapilot.config import db_path
-from datapilot.llm import ScriptedLLM
+from metriclens.agent import TOOLS, SQLAgent
+from metriclens.config import db_path
+from metriclens.llm import ScriptedLLM
 
 
 def run(agent, llm, q="q", e=""):

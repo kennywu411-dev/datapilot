@@ -3,9 +3,9 @@ import sqlite3
 
 import pytest
 
-from datapilot.baseline import SQLAnswer, build_prompt, generate_sql
-from datapilot.llm import ScriptedLLM
-from datapilot.schema import schema_ddl
+from metriclens.baseline import SQLAnswer, build_prompt, generate_sql
+from metriclens.llm import ScriptedLLM
+from metriclens.schema import schema_ddl
 
 
 @pytest.fixture

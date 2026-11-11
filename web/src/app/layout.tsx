@@ -6,7 +6,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DataPilot",
+  title: "MetricLens",
   description: "用中文提问，查询 BIRD 数据库并自动出图",
 };
 

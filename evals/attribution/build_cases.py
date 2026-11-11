@@ -27,8 +27,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from datapilot import config  # noqa: E402
 from evals.attribution.inject import DIMS, JOIN, Injector, apply, metric_value  # noqa: E402
+from metriclens import config  # noqa: E402
 
 OUT = Path(__file__).with_name("cases.json")
 WORK = config.DATA_DIR / "attribution_dbs" / "_work.sqlite"

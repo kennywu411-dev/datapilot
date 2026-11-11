@@ -2,11 +2,11 @@
 
 import asyncio
 
-from datapilot.baseline import SQLAnswer
-from datapilot.config import db_path
-from datapilot.llm import ScriptedLLM
-from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.routing import LLMPair, RoutedPipeline, any_fix, fix_or_complex, unresolved
+from metriclens.baseline import SQLAnswer
+from metriclens.config import db_path
+from metriclens.llm import ScriptedLLM
+from metriclens.pipeline import FixedPipeline, PipelineConfig
+from metriclens.routing import LLMPair, RoutedPipeline, any_fix, fix_or_complex, unresolved
 
 E4 = FixedPipeline(PipelineConfig(schema="enhanced", value_check=True, max_corrections=3))
 OK_TRACE = [{"step": "generate"}, {"step": "check", "issues": []}]

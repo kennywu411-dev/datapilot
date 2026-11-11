@@ -37,15 +37,15 @@ from evalkit.runner import AbortRun, TaskResult, Variant  # noqa: E402
 from evalkit.runner import arun as ek_arun  # noqa: E402
 from evalkit.scorers import Score  # noqa: E402
 
-from datapilot import config  # noqa: E402
-from datapilot.agent import SQLAgent  # noqa: E402
-from datapilot.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
-from datapilot.ex import evaluate_one  # noqa: E402
-from datapilot.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
-from datapilot.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
-from datapilot.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
-from datapilot.semantic import SemanticPipeline  # noqa: E402
 from evals.report import render, summarize  # noqa: E402
+from metriclens import config  # noqa: E402
+from metriclens.agent import SQLAgent  # noqa: E402
+from metriclens.baseline import SQLAnswer, build_prompt, generate_sql  # noqa: E402
+from metriclens.ex import evaluate_one  # noqa: E402
+from metriclens.llm import LLM, FatalAPIError, ScriptedLLM  # noqa: E402
+from metriclens.pipeline import FixedPipeline, PipelineConfig  # noqa: E402
+from metriclens.routing import RULES, LLMPair, RoutedPipeline  # noqa: E402
+from metriclens.semantic import SemanticPipeline  # noqa: E402
 
 # 实验序列见 docs/adr/002-改进实验设计.md
 PIPELINES = {
@@ -166,7 +166,7 @@ def score(q: dict, gen: dict, role: str | None = None) -> dict:
 
 
 def result_row(q: dict, cfg: Config, gen: dict, scored: dict) -> dict:
-    """结果行的 DataPilot 字段（report / compare / 看板 / 各脚本读的就是这些）。"""
+    """结果行的 MetricLens 字段（report / compare / 看板 / 各脚本读的就是这些）。"""
     row = {
         "question_id": q["question_id"],
         "db_id": q["db_id"],
@@ -386,13 +386,13 @@ def validate(models: list[str], pipeline: str) -> None:
 
 
 def _policy(db_id: str, role: str | None):
-    from datapilot import rls
+    from metriclens import rls
 
     return rls.policy_for(db_id, role)
 
 
 def config_role_check(db_id: str, role: str) -> None:
-    from datapilot import rls
+    from metriclens import rls
 
     try:
         rls.policy_for(db_id, role)
@@ -428,7 +428,7 @@ def make_factory(mock: bool):
     import anthropic
     import httpx2
 
-    from datapilot.llm import ClaudeLLM, LocalLLM, OpenAICompatLLM
+    from metriclens.llm import ClaudeLLM, LocalLLM, OpenAICompatLLM
 
     client = anthropic.AsyncAnthropic(max_retries=6)
     local_client = httpx2.AsyncClient(timeout=600)  # 与 Claude 一样共用一个客户端，不每题新建

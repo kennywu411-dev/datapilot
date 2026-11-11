@@ -5,7 +5,7 @@ import sqlite3
 
 import pytest
 
-from datapilot import tools
+from metriclens import tools
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def db_dir(tmp_path, monkeypatch):
         "gender,,user gender,text,F: female; M: male\n",
         encoding="utf-8",
     )
-    monkeypatch.setattr("datapilot.config.DB_DIR", d)
+    monkeypatch.setattr("metriclens.config.DB_DIR", d)
     return d
 
 
@@ -108,7 +108,7 @@ def test_run_sql_truncates(db_dir):
 def test_mcp_server_exposes_tools(db_dir):
     from mcp import Client
 
-    from datapilot.mcp_server import server
+    from metriclens.mcp_server import server
 
     async def go():
         async with Client(server) as client:
@@ -130,7 +130,7 @@ def test_mcp_server_exposes_tools(db_dir):
 def test_mcp_tools_declare_read_only_annotations(db_dir):
     from mcp import Client
 
-    from datapilot.mcp_server import server
+    from metriclens.mcp_server import server
 
     async def go():
         async with Client(server) as client:

@@ -44,12 +44,12 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from datapilot import rls
-from datapilot.llm import LLM
-from datapilot.numcheck import NumberCheck, check_numbers
-from datapilot.schema import _sql_literal
-from datapilot.semantic import Dimension, DimFilter, Metric, SemanticLayer, _columns
-from datapilot.sql_guard import SQLRejected, run_readonly
+from metriclens import rls
+from metriclens.llm import LLM
+from metriclens.numcheck import NumberCheck, check_numbers
+from metriclens.schema import _sql_literal
+from metriclens.semantic import Dimension, DimFilter, Metric, SemanticLayer, _columns
+from metriclens.sql_guard import SQLRejected, run_readonly
 
 EXEC_TIMEOUT_S = 30.0
 EVIDENCE_MAX_ROWS = 60

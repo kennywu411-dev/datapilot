@@ -19,12 +19,12 @@ from typing import Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
-from datapilot import rls
-from datapilot.baseline import GenerationResult, SQLAnswer, clean_sql
-from datapilot.llm import LLM, LLMResult
-from datapilot.schema import ddl_for, enhanced_schema, retrieve_tables, schema_ddl
-from datapilot.sql_guard import SQLRejected, run_readonly
-from datapilot.value_check import check_values
+from metriclens import rls
+from metriclens.baseline import GenerationResult, SQLAnswer, clean_sql
+from metriclens.llm import LLM, LLMResult
+from metriclens.schema import ddl_for, enhanced_schema, retrieve_tables, schema_ddl
+from metriclens.sql_guard import SQLRejected, run_readonly
+from metriclens.value_check import check_values
 
 SYSTEM_TEMPLATE = """You are an expert in SQLite text-to-SQL.
 Given the database schema below, write one SQLite SELECT query that answers the user's question.

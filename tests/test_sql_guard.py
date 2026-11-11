@@ -1,10 +1,10 @@
-"""只读安全层测试：先写测试，再写 src/datapilot/sql_guard.py。"""
+"""只读安全层测试：先写测试，再写 src/metriclens/sql_guard.py。"""
 
 import sqlite3
 
 import pytest
 
-from datapilot.sql_guard import QueryResult, SQLRejected, check_sql, run_readonly
+from metriclens.sql_guard import QueryResult, SQLRejected, check_sql, run_readonly
 
 
 @pytest.fixture

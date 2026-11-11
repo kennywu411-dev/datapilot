@@ -11,11 +11,11 @@ import asyncio
 import json
 from pathlib import Path
 
-from datapilot import tools
-from datapilot.baseline import GenerationResult, clean_sql
-from datapilot.llm import LLM
-from datapilot.pipeline import user_message
-from datapilot.schema import enhanced_schema
+from metriclens import tools
+from metriclens.baseline import GenerationResult, clean_sql
+from metriclens.llm import LLM
+from metriclens.pipeline import user_message
+from metriclens.schema import enhanced_schema
 
 SYSTEM_TEMPLATE = """You are a data analyst agent answering questions over a SQLite database.
 The schema is below. You have tools:
