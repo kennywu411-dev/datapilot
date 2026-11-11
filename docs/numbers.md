@@ -243,12 +243,12 @@
 
 ## 接入新库
 
-按 `docs/接入新数据库.md` 走一遍：一个电商售后库（5 张表，模拟数据）接入为 `opspilot`，15 道中文评测题（`data/custom/opspilot.json`，不进 git）。
+按 `docs/接入新数据库.md` 走一遍：一个电商售后库（5 张表，模拟数据）接入为 `aftersales`，15 道中文评测题（`data/custom/aftersales.json`，不进 git）。
 
 | 步骤 | 结果 | 运行 ID |
 |---|---|---|
-| 标准答案空跑全管线 | 100%（15/15） | selfcheck-opspilot-* |
-| Haiku E4 | 100%（15/15），CI 79.6–100% | opspilot-e0e8c3 |
+| 标准答案空跑全管线 | 100%（15/15） | selfcheck-aftersales-* |
+| Haiku E4 | 100%（15/15），CI 79.6–100% | aftersales-68b95c |
 | Sonnet E4 | 100%（15/15），CI 79.6–100% | 同上（花费合计 $0.041） |
 
 - 全对说明题太简单：口径都写在 evidence 里、schema 只有 5 张表，测不出模型差别。已把"评测题要有区分度"补进接入流程第 3 步。

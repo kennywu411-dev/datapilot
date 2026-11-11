@@ -135,7 +135,7 @@
 - 评测看板页：逐项改进、模型对比、失败分析与单题回放、评测可信度（数据由 runs/ 现算，运行 ID 集中在 runs/MANIFEST.json）
 - README：截图、核心数字、架构、结果、复现、诚实边界、数据许可
 - ROI 测算框架（实测与假设分开、盈亏平衡、敏感性分析）
-- 接入新库的流程文档与 scripts/add_database.py，并用它实际接入 opspilot 库；SOP
+- 接入新库的流程文档与 scripts/add_database.py，并用它实际接入 aftersales 库；SOP
 - MCP 客户端接入配置（项目级 .mcp.json）与冒烟脚本
 - 代码包脚本（文件清单检查 + 密钥扫描 + 解压自检）
 
