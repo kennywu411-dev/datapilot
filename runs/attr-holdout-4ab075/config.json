@@ -1,0 +1,16 @@
+{
+  "run_id": "attr-holdout-4ab075",
+  "split": "holdout",
+  "models": [
+    "sonnet",
+    "haiku"
+  ],
+  "arms": [
+    "plain",
+    "fixed",
+    "agent"
+  ],
+  "judge": "haiku",
+  "cases_file": "evals/attribution/cases.json",
+  "git_commit": "3034d1f-dirty"
+}

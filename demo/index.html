@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DataPilot 问数回放</title>
+<title>DataPilot：经营问数与指标异动归因</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111826'/%3E%3Cpath d='M8 22V10h5a6 6 0 0 1 0 12z' fill='none' stroke='%23f6d548' stroke-width='3'/%3E%3Cpath d='M21 22V10' stroke='%23fbfcfd' stroke-width='3'/%3E%3C/svg%3E">
-<meta name="description" content="DataPilot 中文问数的真实运行记录回放：读表结构、匹配指标口径、生成 SQL、只读执行、出错纠错、回答和图表，每一步带耗时和花费。">
+<meta name="description" content="DataPilot 的真实运行记录回放：用中文问经营数据，既回答“是多少”，也回答“为什么变了”。归因按国家、品类、客户、单据逐层拆解，每个数字都能追溯到执行过的 SQL。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
@@ -155,6 +155,24 @@ table.grid { border-collapse: collapse; width: 100%; font-size: 13px; }
 .answer { font-size: 15px; background: color-mix(in oklab, var(--mark) 16%, transparent); border-radius: 8px; padding: 12px 14px; }
 .total { display: flex; gap: 22px; flex-wrap: wrap; font-size: 13.5px; }
 .total span b { font-family: var(--mono); font-weight: 600; font-size: 15px; margin-left: 6px; }
+/* 归因 */
+.kpis { display: flex; gap: 10px 28px; flex-wrap: wrap; }
+.kpis div { min-width: 0; }
+.kpis small { display: block; font-size: 12px; color: var(--ink-2); }
+.kpis b { font-family: var(--mono); font-weight: 600; font-size: 20px; line-height: 1.3; }
+.kpis b.hl { background: linear-gradient(transparent 62%, var(--mark) 62%); }
+.dimtabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.dimtab { font: inherit; font-size: 12.5px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.dimtab[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.cause { border: 1px solid var(--line); border-left: 3px solid var(--mark); border-radius: 8px; padding: 10px 14px; display: grid; gap: 4px; background: var(--paper); }
+.cause .hd { display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: baseline; }
+.cause .hd b { font-weight: 700; font-size: 14.5px; }
+.cause .hd span { font-family: var(--mono); font-size: 12.5px; }
+.cause p { font-size: 13px; color: var(--ink-2); }
+.cause p.m { font-family: var(--mono); font-size: 12px; word-break: break-word; }
+.grid tr.hit td { background: color-mix(in oklab, var(--mark) 20%, transparent); }
+.legend { font-size: 12px; color: var(--ink-2); display: flex; gap: 14px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 14px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: baseline; }
 @media (max-width: 960px) {
   .replay { grid-template-columns: minmax(0, 1fr); }
   .cases { position: static; display: flex; overflow-x: auto; gap: 8px; padding-bottom: 6px; scroll-snap-type: x proximity; }
@@ -189,7 +207,7 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
 <body id="top">
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top">DataPilot<span>NL2SQL</span></a>
+    <a class="brand" href="#top">DataPilot<span>问数 + 归因</span></a>
     <nav class="nav" aria-label="页面导航">
       <a href="#replay">回放</a><a href="#numbers">数字</a><a href="#about">说明</a>
     </nav>
@@ -200,8 +218,8 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
 <main>
   <section class="hero">
     <div class="wrap">
-      <h1>用中文提问，看它怎么读表、写 SQL、执行、纠错、回答</h1>
-      <p class="lede">DataPilot 是一个中文问数（NL2SQL）系统。下面 8 个问题各点一下，就能按步骤看到一次问数从提问到出图的全过程，每一步都带当时的耗时和花费。</p>
+      <h1>问“是多少”，也问“为什么变了”</h1>
+      <p class="lede">DataPilot 用中文回答经营数据的问题。问一个数，它写 SQL 查出来；问一个指标为什么变了，它按国家、品类、客户、单据逐层拆开找原因，结论里的每个数字都能追溯到执行过的 SQL。下面 11 个问题各点一下，能按步骤看到全过程，每一步带当时的耗时和花费。</p>
       <div class="notice" role="note">
         <b>回放</b>
         <p><mark>这是真实运行记录的回放，不是在线服务。</mark>页面是纯静态的，不连后端、不调模型；SQL、结果、回答、耗时和花费都是录制时问数服务的原始输出，没有改写。想自己提问，按仓库 README 在本地启动。</p>
@@ -212,8 +230,8 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
   <section class="block" id="replay">
     <div class="wrap">
       <div class="head">
-        <h2>问数回放</h2>
-        <p class="lede">数据库是固定种子生成的模拟电商库 <code>shop_ops</code>（用户、商品、订单、活动、售后 5 张表）。左边选问题，右边逐步播放。</p>
+        <h2>回放</h2>
+        <p class="lede">前 3 个是“为什么”：跑在真实交易数据上（UCI Online Retail II，一家英国礼品电商两年的交易，<code>retail_ops</code> 库）。后 8 个是“是多少”：跑在固定种子生成的模拟电商库 <code>shop_ops</code> 上。左边选问题，右边逐步播放。</p>
       </div>
       <div class="replay">
         <div class="cases" id="cases" role="tablist" aria-label="回放问题"></div>
@@ -240,9 +258,27 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
     <div class="wrap">
       <div class="head">
         <h2>几个关键数字</h2>
-        <p class="lede">都来自仓库里的数字登记表，每个数字写明口径和出处。准确率指执行准确率（EX）。</p>
+        <p class="lede">都来自仓库里的数字登记表，每个数字写明口径和出处。前三个是归因，后六个是问数（准确率指执行准确率 EX）。</p>
       </div>
       <div class="figs">
+        <div class="fig">
+          <span class="num">31.8%</span>
+          <h3>归因：第一原因命中（留出集）</h3>
+          <p>真实交易数据上的 22 例留出题（注入已知原因），方案冻结后只跑一次：固定下钻流程 7/22，区间 16–53%；让问数流程直接回答是 0/22。dev 27 例上是 51.9%，调方案时用过，偏乐观。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 指标异动归因</a>
+        </div>
+        <div class="fig">
+          <span class="num">1,151 / 1,151</span>
+          <h3>归因回答里的数字全部可追溯</h3>
+          <p>固定下钻流程 98 个回答里的每个数字，都能在已执行的 SQL 结果或代码算出的事实表里找到。让模型拿 SQL 工具自主下钻时，只有 64–72% 直接出自它跑过的 SQL。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md#v16-指标异动归因真实交易数据-retail_ops">numbers.md · 三种做法对照</a>
+        </div>
+        <div class="fig">
+          <span class="num">42.9% · 38.8%</span>
+          <h3>固定流程和自主 Agent 一样准，便宜 4–7 倍</h3>
+          <p>49 例合并，第一原因命中固定流程 42.9%、Agent 38.8%（配对检验 p = 0.73）。Agent 单次成本是 3.8 倍（Sonnet）到 6.9 倍（Haiku）。Agent 的前三命中略高（53.1% 对 46.9%，不显著）。</p>
+          <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/adr/007-指标异动归因.md">ADR 007 · 指标异动归因</a>
+        </div>
         <div class="fig">
           <span class="num">63.0% → 68.0%</span>
           <h3>取值核对加执行纠错，对小模型有用</h3>
@@ -293,11 +329,11 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
         </div>
         <div>
           <h3>耗时和花费的口径</h3>
-          <p>每一步的耗时是这一步的事件比上一步晚到多少；花费按该次模型调用的 token 用量和价目表计算，合计与服务返回的总花费一致。通义千问的花费按标价估算。表结构随生成请求一起发送，不单独计时。</p>
+          <p>每一步的耗时是这一步的事件比上一步晚到多少；花费按该次模型调用的 token 用量和价目表计算，合计与服务返回的总花费一致。通义千问的花费按标价估算。表结构随生成请求一起发送，不单独计时。归因里的分解、排序、下钻由 SQL 和代码完成，这几步花费是 0。</p>
         </div>
         <div>
           <h3>数据范围</h3>
-          <p>8 个问题、15 次提问全部在模拟电商库上完成，数据由固定种子脚本生成，不含真实用户信息，也不含 BIRD 的数据库内容。结果表最多展示前 8 行。</p>
+          <p>归因的 3 个问题跑在 UCI Online Retail II 公开数据上（CC BY 4.0，客户编号已重新编号）；其中标了“注入”的那一个，是在库的副本里人为制造了一个已知原因再提问，页面上写明了注入的是什么。其余 8 个问题在模拟电商库上完成。结果表最多展示前 8 行。</p>
         </div>
       </div>
     </div>
@@ -306,19 +342,25 @@ footer p { flex-basis: 100%; font-size: 12.5px; }
 
 <footer>
   <div class="wrap">
-    <span>DataPilot · 中文问数（NL2SQL）</span>
+    <span>DataPilot · 经营问数与指标异动归因</span>
     <nav>
       <a href="https://github.com/kennywu411-dev/datapilot">GitHub 仓库</a>
       <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/numbers.md">数字登记表</a>
       <a href="https://github.com/kennywu411-dev/datapilot/blob/main/docs/%E9%97%AE%E9%A2%98%E6%97%A5%E5%BF%97.md">问题日志</a>
     </nav>
-    <p>代码使用 MIT 许可。本页是运行记录的静态回放，不提供在线问数。</p>
+    <p>代码使用 MIT 许可。归因回放用到的数据来自 UCI Online Retail II（Chen, D., 2019, DOI 10.24432/C5CG6D），按 CC BY 4.0 使用。本页是运行记录的静态回放，不提供在线问数。</p>
   </div>
 </footer>
 
 <script>
 // 每个回放例子对应 replays.json 里的哪几次运行。标题就是当时的提问原文，从记录里读。
 const EXAMPLES = [
+  { tag: "为什么 · 真实数据", why: "真实交易数据里，2011 年 1 月的退货率从 2.26% 跳到 13.65%。系统按 9 个维度拆开后发现，全部变化来自一张退货单 C541433（£77,183.60）；把它拿掉，1 月的退货率是 2.14%，和上月持平。这和看板项目人工分析得到的结论一致。结论里 17 个数字逐个核对通过。",
+    tracks: [["attr-real", 0, "提问"]] },
+  { tag: "为什么 · 注入已知原因", why: "这一例的原因是人为制造的：在库的副本里删掉了 2010 年 5 月 90% 的新客订单，再问“GMV 为什么降了”。系统找到的第一原因是“新老客 = 新客”，占总变化的 109.9%（超过 100% 是因为其余客户其实在涨）。注入的评测题共 44 道，这是其中一道（dev-16）。",
+    tracks: [["attr-inject", 0, "提问"]] },
+  { tag: "为什么 · 没有突出原因", why: "旺季 9–11 月的 GMV 比 6–8 月高 66.7%，但各国家、品类、客户分组基本是同比例上涨，没有哪一格的超额贡献过得了门槛。系统如实说“没有突出的原因”，不硬挑一个出来。",
+    tracks: [["attr-none", 0, "提问"]] },
   { tag: "一次成功", why: "匹配到指标“售后工单数”，一次生成、执行通过。第二个标签是换一个会话再问同一句：命中查询缓存，不调用模型，花费为 0。",
     tracks: [["ok", 0, "首次提问"], ["ok", 1, "再问一次（缓存命中）"]] },
   { tag: "业务口径", why: "问题里只说“销售额”，没说怎么算。指标字典匹配到“销售额”，把“有效订单的实付金额之和”这条口径交给模型，生成的 SQL 带上了排除 cancelled、pending 订单的条件。",
@@ -363,6 +405,7 @@ let DATA = null, cur = { ex: 0, track: 0, shown: 0, steps: [], timer: 0 };
 
 // 把一轮的事件流整理成页面上的步骤，耗时取相邻事件的时间差
 function buildSteps(scn, turn) {
+  if (turn.events.some((e) => e.event === "step" && e.data.name === "attr_plan")) return buildAttrSteps(scn, turn);
   const steps = [];
   const done = turn.events[turn.events.length - 1].data;
   const calls = turn.llm_calls.slice();
@@ -404,9 +447,163 @@ function buildSteps(scn, turn) {
   return steps;
 }
 
-const NAMES = { question: "问题", schema: "读表结构", cache: "查询缓存命中", semantic: "匹配指标口径", generate: "生成 SQL", exec: "只读执行并检查", correct: "带着反馈重写 SQL", result: "结果和图表", answer: "回答", error: "出错", total: "合计" };
+const NAMES = { question: "问题", schema: "读表结构", cache: "查询缓存命中", semantic: "匹配指标口径", generate: "生成 SQL", exec: "只读执行并检查", correct: "带着反馈重写 SQL", result: "结果和图表", answer: "回答", error: "出错", total: "合计",
+  plan: "识别指标和对比区间", atotal: "用 SQL 算总变化", decompose: "按维度分解贡献", rank: "排序、下钻、逐个剥离", conclusion: "写结论并核对数字" };
+
+// ---------- 归因回放 ----------
+// 数字的写法和后端 Formatter 一致：回答里的数字和这里显示的是同一个字符串
+const money = (v) => v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function fmtV(m, v) { return m.unit === "percent" ? (v * 100).toFixed(2) + "%" : m.unit === "money" ? m.currency + money(v) : v.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+function fmtChg(m, v) { const sg = v >= 0 ? "+" : "−", a = Math.abs(v); return m.unit === "percent" ? sg + (a * 100).toFixed(2) + " 个百分点" : m.unit === "money" ? sg + m.currency + money(a) : sg + a.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+const pct1 = (v) => (v * 100).toFixed(1) + "%";
+const dayBefore = (d) => { const t = new Date(d + "T00:00:00Z"); t.setUTCDate(t.getUTCDate() - 1); return t.toISOString().slice(0, 10); };
+const periodText = (p) => p[0] + " 至 " + dayBefore(p[1]);
+
+function buildAttrSteps(scn, turn) {
+  const steps = [{ kind: "question", q: turn.question, scn }];
+  const done = turn.events[turn.events.length - 1].data;
+  const attr = (turn.events.find((e) => e.event === "attribution") || {}).data;
+  const defs = ((turn.events.find((e) => e.event === "metrics") || {}).data || {}).items || [];
+  const planCall = turn.llm_calls.find((c) => c.kind === "plan");
+  const answerCalls = turn.llm_calls.filter((c) => c.kind === "answer");
+  let prev = 0, sqlBefore = 0;
+  for (const e of turn.events) {
+    const dt = e.t - prev; prev = e.t;
+    const d = e.data;
+    if (e.event === "step") {
+      if (d.name === "attr_plan") steps.push({ kind: "plan", dt, d, call: planCall, defs, scn });
+      else if (d.name === "attr_total") steps.push({ kind: "atotal", dt, attr, n: 0 });
+      else if (d.name === "attr_decompose") { steps.push({ kind: "decompose", dt, attr, n: d.queries }); sqlBefore = d.queries; }
+      else if (d.name === "attr_rank") steps.push({ kind: "rank", dt, attr, n: d.queries - sqlBefore });
+    } else if (e.event === "answer") {
+      steps.push({ kind: "conclusion", dt, text: d.text, check: d.number_check, source: d.source, calls: answerCalls });
+    } else if (e.event === "error") steps.push({ kind: "error", message: d.message });
+    else if (e.event === "done") steps.push({ kind: "total", done, scn, calls: turn.llm_calls.length, sql: attr ? attr.evidence.length : 0 });
+  }
+  const tot = steps.find((x) => x.kind === "atotal");
+  if (tot && attr) tot.n = attr.total.evidence.length;
+  return steps;
+}
+
+function sqlDetails(attr, ids, label) {
+  const list = attr.evidence.filter((e) => ids.includes(e.id));
+  if (!list.length) return null;
+  const box = el("details", {}, el("summary", { text: (label || "对应的 SQL") + "（" + list.map((e) => e.id).join("、") + "）" }));
+  for (const e of list) {
+    box.append(el("p", { class: "txt", text: e.id + " · " + e.purpose + " · " + fmtTime(e.elapsed_s) + " · " + (e.total_rows ?? e.rows.length) + " 行" }), el("pre", { class: "sql", text: e.sql }));
+  }
+  return box;
+}
+
+function contributionChart(b) {
+  const rows = b.segments.slice().sort((x, y) => Math.abs(y.contribution) - Math.abs(x.contribution)).slice(0, 8);
+  const W = 420, rowH = 26, H = rows.length * rowH + 6, L = 112, R = 58;
+  const lo = Math.min(0, ...rows.map((s) => s.contribution)), hi = Math.max(0, ...rows.map((s) => Math.max(s.contribution, s.expected)));
+  const span = hi - lo || 1, x = (v) => L + ((v - lo) / span) * (W - L - R);
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": b.name + "各分组占总变化的比例" });
+  svg.append(svgEl("line", { x1: x(0), x2: x(0), y1: 2, y2: H - 2, stroke: "var(--line)" }));
+  rows.forEach((s, i) => {
+    const y = i * rowH + 7, a = x(Math.min(0, s.contribution)), w = Math.max(2, Math.abs(x(s.contribution) - x(0)));
+    const name = s.label.length > 9 ? s.label.slice(0, 8) + "…" : s.label;
+    svg.append(svgEl("text", { x: L - 8, y: y + 12, "text-anchor": "end" }, name));
+    svg.append(svgEl("rect", { x: a, y, width: w, height: 14, rx: 3, fill: s.contribution >= 0 ? "var(--ink)" : "var(--ink-2)", opacity: s.contribution >= 0 ? 1 : .5 }));
+    svg.append(svgEl("rect", { x: x(s.expected) - 1.5, y: y - 3, width: 3, height: 20, fill: "var(--mark)", stroke: "var(--ink)", "stroke-width": .5 }));
+    svg.append(svgEl("text", { x: Math.max(x(s.contribution), x(0), x(s.expected)) + 7, y: y + 12 }, pct1(s.contribution)));
+  });
+  return svg;
+}
+
+function breakdownTable(b, m) {
+  const head = el("tr");
+  [b.name, "基期", "本期", "变化", "占总变化", "预期份额", "正常波动", "得分"].forEach((c) => head.append(el("th", { text: c })));
+  const tb = el("tbody");
+  for (const s of b.segments.slice(0, 8)) {
+    const doc = b.kind === "document";
+    const cells = [s.label, doc && s.period !== "base" ? "—" : fmtV(m, s.base), doc && s.period !== "current" ? "—" : fmtV(m, s.current), fmtChg(m, s.change), pct1(s.contribution), pct1(s.expected), s.noise ? "±" + pct1(s.noise) : "—", pct1(s.score)];
+    const tr = el("tr", s.score >= 0.2 && s.contribution > 0 ? { class: "hit" } : {});
+    cells.forEach((v, i) => tr.append(el("td", i ? { class: "n", text: v } : { text: v })));
+    tb.append(tr);
+  }
+  const wrap = el("div", {}, el("div", { class: "grid-wrap" }, el("table", { class: "grid" }, el("thead", {}, head), tb)));
+  const n = b.total_segments ?? b.segments.length;
+  wrap.append(el("p", { class: "foot-note", text: (n > 8 ? `共 ${n} 个分组，显示变化最大的 8 个。` : "") + "贡献项：可加指标就是分组的值；比率是分组分子 ÷ 整体分母，各组相加等于整体。" }));
+  return wrap;
+}
+
+function breakdownTabs(list, attr) {
+  const box = el("div", { class: "body" }), tabs = el("div", { class: "dimtabs", role: "tablist" }), pane = el("div", { class: "body" });
+  const show = (i) => {
+    [...tabs.children].forEach((t, k) => t.setAttribute("aria-selected", String(k === i)));
+    const b = list[i];
+    const chart = el("div", { class: "chart" }, el("div", { class: "legend" },
+      el("span", {}, el("i", { style: "background:var(--ink)" }), document.createTextNode("占总变化")),
+      el("span", {}, el("i", { style: "background:var(--mark);outline:.5px solid var(--ink)" }), document.createTextNode("按基期份额该分到的（预期）"))), contributionChart(b));
+    pane.replaceChildren(el("div", { class: "result" }, chart, breakdownTable(b, attr.metric)), sqlDetails(attr, b.evidence) || "");
+  };
+  list.forEach((b, i) => { const t = el("button", { class: "dimtab", type: "button", role: "tab", text: b.name }); t.onclick = () => show(i); tabs.append(t); });
+  box.append(tabs, pane);
+  // 默认打开排第一的原因所在的维度
+  const first = attr.causes[0] ? attr.causes[0].conditions[attr.causes[0].conditions.length - 1].dimension : null;
+  show(Math.max(0, list.findIndex((b) => b.dimension === first)));
+  return box;
+}
+
+function renderAttr(s, body, row) {
+  const a = s.attr, m = a && a.metric;
+  if (s.kind === "plan") {
+    body.append(el("p", { class: "txt" }, document.createTextNode("指标 "), el("b", { text: s.d.metric }), document.createTextNode("；本期 "), el("b", { text: periodText(s.d.current) }), document.createTextNode("；基期 "), el("b", { text: periodText(s.d.base) })));
+    body.append(el("p", { class: "txt", text: "模型只负责把问题映射成“哪个指标、比较哪两个时间段”，由代码校验（指标在字典里、日期合法、两段不重叠）。后面的 SQL 和所有算术都不经过模型。" }));
+    for (const d of s.defs) {
+      const mm = el("div", { class: "metric" }, el("b", { text: d.name }), document.createTextNode("　" + d.description));
+      const calc = [d.expr].concat(d.filters.map((f) => f.sql)).filter(Boolean).join("　WHERE ");
+      if (calc) mm.append(el("code", { text: calc }));
+      body.append(mm);
+    }
+  } else if (s.kind === "atotal") {
+    const t = a.total;
+    body.append(el("div", { class: "kpis" },
+      el("div", {}, el("small", { text: "基期 " + periodText(a.scope.base) }), el("b", { text: fmtV(m, t.base) })),
+      el("div", {}, el("small", { text: "本期 " + periodText(a.scope.current) }), el("b", { text: fmtV(m, t.current) })),
+      el("div", {}, el("small", { text: m.name + "变化" }), el("b", { class: "hl", text: fmtChg(m, t.change) }))));
+    if (a.role_note) body.append(el("p", { class: "txt", text: "当前角色只能看到部分数据，以上只代表有权限的范围。" }));
+    body.append(sqlDetails(a, t.evidence));
+  } else if (s.kind === "decompose") {
+    body.append(el("p", { class: "txt", text: `${a.breakdowns.length} 个维度各发 SQL，代码算每个分组占总变化的比例，再减去它按基期份额该分到的比例和历史月度的正常波动。高亮的行得分 ≥ 20%。` }));
+    body.append(breakdownTabs(a.breakdowns, a));
+    if (a.skipped.length) body.append(el("p", { class: "txt", text: "没有用上的维度：" + a.skipped.join("；") }));
+  } else if (s.kind === "rank") {
+    if (!a.causes.length) body.append(el("p", { class: "txt" }, el("b", { text: "没有找到突出的原因。" })));
+    a.causes.forEach((c, i) => {
+      const box = el("div", { class: "cause" }, el("div", { class: "hd" }, el("b", { text: `原因 ${i + 1}：${c.label}` }), el("span", { text: "占总变化 " + pct1(c.contribution) })));
+      box.append(el("p", { text: `贡献项变化 ${fmtChg(m, c.change)}；预期份额 ${pct1(c.expected)}` + (c.noise ? `；正常波动 ±${pct1(c.noise)}` : "") + (c.note ? `；${c.note}` : "") }));
+      const det = Object.entries(c.detail);
+      if (det.length) box.append(el("p", { class: "m", text: det.map(([k, v]) => k + " = " + v).join(" · ") }));
+      const sq = sqlDetails(a, c.evidence);
+      if (sq) box.append(sq);
+      body.append(box);
+    });
+    a.rounds.forEach((r) => body.append(el("p", { class: "txt", text: `去掉 ${r.removed} 之后重新量：剩余变化 ${fmtChg(m, r.change)}` })));
+    if (a.stop_reason) body.append(el("p", { class: "txt" }, document.createTextNode("停下来的理由："), el("b", { text: a.stop_reason + "。" })));
+    if (a.drill.length) {
+      body.append(el("details", {}, el("summary", { text: "在 " + a.drill[0].within.map((w) => w.name + "=" + w.label).join(" × ") + " 之内再拆的一层" }), breakdownTabs(a.drill, a)));
+    }
+  } else if (s.kind === "conclusion") {
+    body.append(el("p", { class: "answer", text: s.text }));
+    const k = s.check;
+    if (k) {
+      row.append(el("span", { class: "chip " + (k.unmatched.length ? "fail" : "pass"), text: k.unmatched.length ? "有数字对不上" : "数字核对通过" }));
+      body.append(el("p", { class: "txt", text: `回答里 ${k.total} 个数字，${k.from_sql} 个直接出自 SQL 结果，${k.derived} 个由代码按公式从 SQL 结果算出` + (k.unmatched.length ? "；对不上的：" + k.unmatched.join("、") : "，没有对不上的") + "。" + (s.source === "rewrite" ? "第一次没通过，带着对不上的数字让模型重写了一次。" : s.source === "template" ? "两次都没通过，这段结论改由模板生成。" : "") }));
+    }
+  }
+}
+
 
 function costLine(s) {
+  if (["atotal", "decompose", "rank"].includes(s.kind)) return fmtTime(s.dt) + " · $0 · " + s.n + " 条 SQL";
+  if (s.kind === "conclusion") {
+    const cost = s.calls.reduce((a, c) => a + c.cost_usd, 0);
+    return fmtTime(s.dt) + " · " + fmtCost(cost) + " · " + s.calls.length + " 次模型调用";
+  }
   const parts = [];
   if (s.dt != null && s.kind !== "answer" || (s.kind === "answer" && s.call)) parts.push(fmtTime(s.dt));
   if (s.call) parts.push(fmtCost(s.call.cost_usd), tokens(s.call.usage) + " → " + s.call.usage.output_tokens + " tok");
@@ -529,12 +726,15 @@ function renderStep(s, i) {
     body.append(el("p", { class: "answer", text: s.text }));
   } else if (s.kind === "error") {
     body.append(el("p", { class: "err", text: s.message }));
+  } else if (["plan", "atotal", "decompose", "rank", "conclusion"].includes(s.kind)) {
+    renderAttr(s, body, row);
   } else if (s.kind === "total") {
     const d = s.done;
     body.append(el("div", { class: "total" },
       el("span", { text: "总耗时" }, el("b", { text: d.cached ? fmtTime(turnLast().t) : fmtTime(d.latency_s) })),
       el("span", { text: "总花费" }, el("b", { text: d.cost_usd ? fmtCost(d.cost_usd) : "$0" })),
       el("span", { text: "模型调用" }, el("b", { text: s.calls + " 次" })),
+      s.sql ? el("span", { text: "执行 SQL" }, el("b", { text: s.sql + " 条" })) : null,
       el("span", { text: "来源" }, el("b", { text: "replays.json · " + s.scn.id }))));
   }
   const c = costLine(s);

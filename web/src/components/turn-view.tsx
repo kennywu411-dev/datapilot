@@ -14,12 +14,13 @@ import {
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
+import { AttributionView, NumberCheckBadge } from "@/components/attribution-view";
 import { ChartView } from "@/components/chart-view";
 import { DataTable } from "@/components/data-table";
 import { SqlBlock } from "@/components/sql-block";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MetricDetail, MetricTypeBadge } from "@/components/metric-card";
-import type { ChartSpec, Done, MetricDef, Step, TableData } from "@/lib/api";
+import type { Attribution, ChartSpec, Done, MetricDef, NumberCheck, Step, TableData } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export type Turn = {
@@ -31,7 +32,10 @@ export type Turn = {
   sql?: string;
   table?: TableData;
   chart?: ChartSpec;
+  attribution?: Attribution;
   answer?: string;
+  numberCheck?: NumberCheck;
+  answerSource?: string;
   error?: string;
   done?: Done;
 };
@@ -83,6 +87,18 @@ function Steps({ turn }: { turn: Turn }) {
                 {s.matched && (
                   <span className="ml-2 text-xs">{s.matched.length > 0 ? s.matched.join("、") : "没有匹配到指标"}</span>
                 )}
+                {s.name === "attr_plan" && s.current && s.base && (
+                  <span className="ml-2 text-xs">
+                    {s.metric}：{s.current[0]} 起（本期）对比 {s.base[0]} 起（基期）
+                  </span>
+                )}
+                {s.name === "attr_decompose" && s.dimensions && (
+                  <span className="ml-2 text-xs">{s.dimensions.join("、")}（{s.queries} 条 SQL）</span>
+                )}
+                {s.name === "attr_rank" && s.causes && (
+                  <span className="ml-2 text-xs">{s.causes.length > 0 ? s.causes.join("；") : "没有突出的原因"}</span>
+                )}
+                {s.name === "attr_fallback" && s.reason && <span className="ml-2 text-xs">{s.reason}</span>}
               </div>
             </li>
           ))}
@@ -204,7 +220,7 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void })
       <h2 className="text-[15px] font-medium leading-relaxed">{turn.question}</h2>
       <Steps turn={turn} />
 
-      {turn.status === "running" && !turn.table && (
+      {turn.status === "running" && !turn.table && !turn.attribution && (
         <div className="space-y-2" aria-hidden>
           <Skeleton className="h-4 w-2/3" />
           <Skeleton className="h-56 w-full" />
@@ -212,8 +228,9 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void })
       )}
 
       {turn.answer && <p className="leading-relaxed text-foreground/95">{turn.answer}</p>}
+      {turn.numberCheck && <NumberCheckBadge check={turn.numberCheck} source={turn.answerSource} />}
       {turn.metrics && turn.metrics.length > 0 && <UsedMetrics metrics={turn.metrics} />}
-      <Result turn={turn} />
+      {turn.attribution ? <AttributionView data={turn.attribution} /> : <Result turn={turn} />}
 
       {(turn.status === "error" || turn.status === "disconnected") && (
         <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm">
@@ -241,7 +258,7 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: () => void })
           <span>${turn.done.cost_usd.toFixed(4)}</span>
           <span className="inline-flex items-center gap-1">
             <Table size={12} />
-            {turn.table?.rows.length ?? 0} 行
+            {turn.attribution ? `${turn.attribution.evidence.length} 条 SQL` : `${turn.table?.rows.length ?? 0} 行`}
           </span>
         </div>
       )}

@@ -63,7 +63,8 @@ def add_database(db_id: str, source: Path) -> Path:
     conn = sqlite3.connect(f"{target.resolve().as_uri()}?mode=ro", uri=True)
     try:
         tables = conn.execute(
-            "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name != 'sqlite_sequence'"
+            "SELECT name, sql FROM sqlite_master WHERE type = 'table' "
+            "AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\'"
         ).fetchall()
         for name, sql in tables:
             comments = _column_comments(sql or "")

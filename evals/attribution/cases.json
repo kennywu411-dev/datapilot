@@ -1,0 +1,2697 @@
+[
+ {
+  "id": "real-01",
+  "split": "dev",
+  "kind": "real",
+  "type": "return_spike",
+  "metric": "return_rate",
+  "current": [
+   "2011-01-01",
+   "2011-02-01"
+  ],
+  "base": [
+   "2010-12-01",
+   "2011-01-01"
+  ],
+  "question": "2011 年 1 月退货率为什么比上个月高这么多？",
+  "primary": [
+   [
+    "invoice",
+    "C541433"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "invoice",
+     "C541433"
+    ]
+   ],
+   [
+    [
+     "market",
+     "UK"
+    ]
+   ],
+   [
+    [
+     "country",
+     "United Kingdom"
+    ]
+   ],
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ],
+   [
+    [
+     "customer_type",
+     "returning"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "10001"
+    ]
+   ],
+   [
+    [
+     "product",
+     "23166"
+    ]
+   ]
+  ],
+  "source": "看板 site/data.json：当月退货率环比 +11.39 个百分点，最大的 1 张退货单占当月退货额 84.3%（按看板发现 3 的方法）",
+  "base_value": 0.022626,
+  "current_value": 0.136531
+ },
+ {
+  "id": "real-02",
+  "split": "dev",
+  "kind": "real",
+  "type": "return_spike",
+  "metric": "return_rate",
+  "current": [
+   "2011-04-01",
+   "2011-05-01"
+  ],
+  "base": [
+   "2011-03-01",
+   "2011-04-01"
+  ],
+  "question": "2011 年 4 月退货率为什么比上个月高这么多？",
+  "primary": [
+   [
+    "invoice",
+    "C550456"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "invoice",
+     "C550456"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "13343"
+    ]
+   ]
+  ],
+  "source": "看板 site/data.json：当月退货率环比 +4.94 个百分点，最大的 1 张退货单占当月退货额 69.0%（按看板发现 3 的方法）",
+  "base_value": 0.01523,
+  "current_value": 0.064647
+ },
+ {
+  "id": "real-03",
+  "split": "dev",
+  "kind": "real",
+  "type": "return_spike",
+  "metric": "return_rate",
+  "current": [
+   "2011-08-01",
+   "2011-09-01"
+  ],
+  "base": [
+   "2011-07-01",
+   "2011-08-01"
+  ],
+  "question": "2011 年 8 月退货率为什么比上个月高这么多？",
+  "primary": [
+   [
+    "invoice",
+    "C562375"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "invoice",
+     "C562375"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C565044"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C564940"
+    ]
+   ]
+  ],
+  "source": "看板 site/data.json：当月退货率环比 +1.51 个百分点，最大的 3 张退货单占当月退货额 51.5%（按看板发现 3 的方法）",
+  "base_value": 0.016577,
+  "current_value": 0.031658
+ },
+ {
+  "id": "real-04",
+  "split": "dev",
+  "kind": "real",
+  "type": "return_concentration",
+  "metric": "return_rate",
+  "current": [
+   "2010-12-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2009-12-01",
+   "2010-12-01"
+  ],
+  "question": "近 12 个月的退货率为什么比前 12 个月高？",
+  "primary": [
+   [
+    "invoice",
+    "C541433"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "invoice",
+     "C541433"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C550456"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C570556"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C562375"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C565044"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C567527"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C571499"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C564940"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C572343"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C569743"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "10001"
+    ]
+   ],
+   [
+    [
+     "product",
+     "23166"
+    ]
+   ]
+  ],
+  "source": "看板发现 3（findings.json returns.top10_share_p2 = 0.4462，return_rate_ex_top10_p2 = 0.0174）：答出前 10 张里的任意一张、或“大额退货单”这一档，算命中",
+  "base_value": 0.0256,
+  "current_value": 0.0313
+ },
+ {
+  "id": "real-05",
+  "split": "dev",
+  "kind": "real",
+  "type": "growth_source",
+  "metric": "gmv",
+  "current": [
+   "2010-12-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2009-12-01",
+   "2010-12-01"
+  ],
+  "question": "近 12 个月 GMV 比前 12 个月涨了，主要是什么带来的？",
+  "primary": [
+   [
+    "market",
+    "Overseas"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "market",
+     "Overseas"
+    ]
+   ],
+   [
+    [
+     "customer_type",
+     "guest"
+    ]
+   ]
+  ],
+  "source": "看板发现 1（country.ov_yoy = 0.1208，uk_yoy = 0.0095）和发现 5（no_id_gmv_share 0.1133 → 0.1461）：答海外市场或无编号订单都算命中",
+  "base_value": 9395871.28,
+  "current_value": 9632333.24
+ },
+ {
+  "id": "dev-01",
+  "split": "dev",
+  "kind": "injected",
+  "type": "country_drop",
+  "metric": "gmv",
+  "current": [
+   "2011-10-01",
+   "2011-11-01"
+  ],
+  "base": [
+   "2010-10-01",
+   "2010-11-01"
+  ],
+  "seed": 20261111016,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Germany'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Germany"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "Germany"
+    ]
+   ]
+  ],
+  "effect": -28412.92,
+  "delta": -19459.64,
+  "effect_share": 1.4601,
+  "base_value": 1094357.68,
+  "current_value": 1074898.04,
+  "question": "帮我分析一下 2011 年 10 月 GMV 降是什么导致的（对比去年同期（2010 年 10 月））",
+  "attempts": 14
+ },
+ {
+  "id": "dev-02",
+  "split": "dev",
+  "kind": "injected",
+  "type": "country_drop",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111020,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Netherlands'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Netherlands"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "Netherlands"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "12255"
+    ]
+   ]
+  ],
+  "effect": -26753.09,
+  "delta": -29108.46,
+  "effect_share": 0.9191,
+  "base_value": 739914.35,
+  "current_value": 710805.89,
+  "question": "2011 年 6 月销售额为什么比 2011 年 5 月掉了这么多？",
+  "attempts": 50
+ },
+ {
+  "id": "dev-03",
+  "split": "dev",
+  "kind": "injected",
+  "type": "country_drop",
+  "metric": "order_count",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261111030,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Germany'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Germany"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "Germany"
+    ]
+   ]
+  ],
+  "effect": -64.0,
+  "delta": -32.0,
+  "effect_share": 2.0,
+  "base_value": 2719.0,
+  "current_value": 2687.0,
+  "question": "2011 年 11 月订单数为什么比去年同期（2010 年 11 月）降了这么多？",
+  "attempts": 176
+ },
+ {
+  "id": "dev-04",
+  "split": "dev",
+  "kind": "injected",
+  "type": "country_surge",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111040,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.country = 'France'",
+    "times": 1.0
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "France"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "France"
+    ]
+   ]
+  ],
+  "effect": 14962.41,
+  "delta": 12607.04,
+  "effect_share": 1.1868,
+  "base_value": 739914.35,
+  "current_value": 752521.39,
+  "question": "成交额在 2011 年 6 月上升的原因是什么？对比 2011 年 5 月",
+  "attempts": 57
+ },
+ {
+  "id": "dev-05",
+  "split": "dev",
+  "kind": "injected",
+  "type": "country_surge",
+  "metric": "gmv",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261111050,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.country = 'France'",
+    "times": 2.0
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "France"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "France"
+    ]
+   ]
+  ],
+  "effect": 26597.1,
+  "delta": 23838.2,
+  "effect_share": 1.1157,
+  "base_value": 646233.18,
+  "current_value": 670071.38,
+  "question": "2010 年 5 月 GMV 上升了，为什么？和 2010 年 4 月比",
+  "attempts": 1
+ },
+ {
+  "id": "dev-06",
+  "split": "dev",
+  "kind": "injected",
+  "type": "category_price_cut",
+  "metric": "gmv",
+  "current": [
+   "2010-12-01",
+   "2011-01-01"
+  ],
+  "base": [
+   "2009-12-01",
+   "2010-01-01"
+  ],
+  "seed": 20261111065,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '包袋收纳'",
+    "price": 0.5
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "包袋收纳"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ]
+  ],
+  "effect": -77805.04,
+  "delta": -99970.83,
+  "effect_share": 0.7783,
+  "base_value": 797738.02,
+  "current_value": 697767.19,
+  "question": "帮我分析一下 2010 年 12 月 GMV 下滑是什么导致的（对比去年同期（2009 年 12 月））",
+  "attempts": 6
+ },
+ {
+  "id": "dev-07",
+  "split": "dev",
+  "kind": "injected",
+  "type": "category_price_cut",
+  "metric": "gmv",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261111070,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '家居装饰'",
+    "price": 0.5
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": -177075.19,
+  "delta": -154515.97,
+  "effect_share": 1.146,
+  "base_value": 1429553.47,
+  "current_value": 1275037.5,
+  "question": "帮我分析一下 2011 年 11 月 GMV 掉是什么导致的（对比去年同期（2010 年 11 月））",
+  "attempts": 15
+ },
+ {
+  "id": "dev-08",
+  "split": "dev",
+  "kind": "injected",
+  "type": "category_price_cut",
+  "metric": "aov",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261111082,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '包袋收纳'",
+    "price": 0.6
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "包袋收纳"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ]
+  ],
+  "effect": -37.325903,
+  "delta": -54.054608,
+  "effect_share": 0.6905,
+  "base_value": 450.336711,
+  "current_value": 396.282102,
+  "question": "2010 年 5 月的客单价怎么回事，环比下滑得厉害",
+  "attempts": 10
+ },
+ {
+  "id": "dev-09",
+  "split": "dev",
+  "kind": "injected",
+  "type": "category_promo",
+  "metric": "gmv",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261111094,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '家居装饰'",
+    "qty": 1.5
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": 177090.3,
+  "delta": 199649.52,
+  "effect_share": 0.887,
+  "base_value": 1429553.47,
+  "current_value": 1629202.99,
+  "question": "2011 年 11 月成交额为什么比去年同期（2010 年 11 月）上升了这么多？",
+  "attempts": 5
+ },
+ {
+  "id": "dev-10",
+  "split": "dev",
+  "kind": "injected",
+  "type": "category_promo",
+  "metric": "gmv",
+  "current": [
+   "2011-10-01",
+   "2011-11-01"
+  ],
+  "base": [
+   "2011-09-01",
+   "2011-10-01"
+  ],
+  "seed": 20261111101,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '家居装饰'",
+    "qty": 3.0
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": 569973.26,
+  "delta": 644970.42,
+  "effect_share": 0.8837,
+  "base_value": 1028313.8,
+  "current_value": 1673284.22,
+  "question": "帮我分析一下 2011 年 10 月成交额上升是什么导致的（对比 2011 年 9 月）",
+  "attempts": 2
+ },
+ {
+  "id": "dev-11",
+  "split": "dev",
+  "kind": "injected",
+  "type": "large_returns",
+  "metric": "return_rate",
+  "current": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "base": [
+   "2010-03-01",
+   "2010-04-01"
+  ],
+  "seed": 20261111110,
+  "ops": [
+   {
+    "op": "insert_returns",
+    "customer_id": 15431,
+    "lines": [
+     [
+      "21212",
+      67013,
+      0.66
+     ]
+    ],
+    "days": [
+     5
+    ]
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "C537371"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "C537371"
+    ]
+   ],
+   [
+    [
+     "market",
+     "UK"
+    ]
+   ],
+   [
+    [
+     "country",
+     "United Kingdom"
+    ]
+   ],
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ],
+   [
+    [
+     "customer_type",
+     "returning"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "15431"
+    ]
+   ],
+   [
+    [
+     "product",
+     "21212"
+    ]
+   ]
+  ],
+  "effect": 0.068441,
+  "delta": 0.071345,
+  "effect_share": 0.9593,
+  "base_value": 0.012609,
+  "current_value": 0.083954,
+  "question": "2010 年 4 月退货率为什么比 2010 年 3 月上升了这么多？",
+  "attempts": 1
+ },
+ {
+  "id": "dev-12",
+  "split": "dev",
+  "kind": "injected",
+  "type": "large_returns",
+  "metric": "return_rate",
+  "current": [
+   "2010-03-01",
+   "2010-04-01"
+  ],
+  "base": [
+   "2010-02-01",
+   "2010-03-01"
+  ],
+  "seed": 20261111120,
+  "ops": [
+   {
+    "op": "insert_returns",
+    "customer_id": 14301,
+    "lines": [
+     [
+      "21843",
+      625,
+      11.89
+     ],
+     [
+      "37503",
+      600,
+      12.39
+     ],
+     [
+      "21984",
+      21233,
+      0.35
+     ]
+    ],
+    "days": [
+     4,
+     16,
+     21
+    ]
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "C580856"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "C580856"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C504868"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "C547191"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "14301"
+    ]
+   ]
+  ],
+  "effect": 0.029274,
+  "delta": 0.018504,
+  "effect_share": 1.582,
+  "base_value": 0.023379,
+  "current_value": 0.041883,
+  "question": "2010 年 3 月的退货率怎么回事，环比升高得厉害",
+  "attempts": 1
+ },
+ {
+  "id": "dev-13",
+  "split": "dev",
+  "kind": "injected",
+  "type": "large_returns",
+  "metric": "net_sales",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111131,
+  "ops": [
+   {
+    "op": "insert_returns",
+    "customer_id": 10505,
+    "lines": [
+     [
+      "23175",
+      8974,
+      3.56
+     ]
+    ],
+    "days": [
+     7
+    ]
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "C573135"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "C573135"
+    ]
+   ],
+   [
+    [
+     "category",
+     "厨房餐饮"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "10505"
+    ]
+   ],
+   [
+    [
+     "product",
+     "23175"
+    ]
+   ]
+  ],
+  "effect": -31947.44,
+  "delta": -39068.42,
+  "effect_share": 0.8177,
+  "base_value": 730966.12,
+  "current_value": 691897.7,
+  "question": "2011 年 6 月净销售额为什么比 2011 年 5 月降了这么多？",
+  "attempts": 9
+ },
+ {
+  "id": "dev-14",
+  "split": "dev",
+  "kind": "injected",
+  "type": "key_account_churn",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111140,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_id = 15662"
+   }
+  ],
+  "primary": [
+   [
+    "customer",
+    "15662"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer",
+     "15662"
+    ]
+   ]
+  ],
+  "effect": -41959.44,
+  "delta": -44314.81,
+  "effect_share": 0.9468,
+  "base_value": 739914.35,
+  "current_value": 695599.54,
+  "question": "成交额在 2011 年 6 月下滑的原因是什么？对比 2011 年 5 月",
+  "attempts": 22
+ },
+ {
+  "id": "dev-15",
+  "split": "dev",
+  "kind": "injected",
+  "type": "key_account_churn",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111155,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_id = 15662"
+   }
+  ],
+  "primary": [
+   [
+    "customer",
+    "15662"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer",
+     "15662"
+    ]
+   ]
+  ],
+  "effect": -41959.44,
+  "delta": -44314.81,
+  "effect_share": 0.9468,
+  "base_value": 739914.35,
+  "current_value": 695599.54,
+  "question": "帮我分析一下 2011 年 6 月销售额降是什么导致的（对比 2011 年 5 月）",
+  "attempts": 20
+ },
+ {
+  "id": "dev-16",
+  "split": "dev",
+  "kind": "injected",
+  "type": "new_customer_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261111163,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_type = 'new'",
+    "fraction": 0.9
+   }
+  ],
+  "primary": [
+   [
+    "customer_type",
+    "new"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer_type",
+     "new"
+    ]
+   ]
+  ],
+  "effect": -102433.17,
+  "delta": -105192.07,
+  "effect_share": 0.9738,
+  "base_value": 646233.18,
+  "current_value": 541041.11,
+  "question": "帮我分析一下 2010 年 5 月 GMV 下滑是什么导致的（对比 2010 年 4 月）",
+  "attempts": 4
+ },
+ {
+  "id": "dev-17",
+  "split": "dev",
+  "kind": "injected",
+  "type": "new_customer_drop",
+  "metric": "order_count",
+  "current": [
+   "2010-02-01",
+   "2010-03-01"
+  ],
+  "base": [
+   "2010-01-01",
+   "2010-02-01"
+  ],
+  "seed": 20261111171,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_type = 'new'",
+    "fraction": 1.0
+   }
+  ],
+  "primary": [
+   [
+    "customer_type",
+    "new"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer_type",
+     "new"
+    ]
+   ]
+  ],
+  "effect": -437.0,
+  "delta": -297.0,
+  "effect_share": 1.4714,
+  "base_value": 1049.0,
+  "current_value": 752.0,
+  "question": "2010 年 2 月订单量为什么比 2010 年 1 月下滑了这么多？",
+  "attempts": 9
+ },
+ {
+  "id": "dev-18",
+  "split": "dev",
+  "kind": "injected",
+  "type": "guest_surge",
+  "metric": "gmv",
+  "current": [
+   "2011-07-01",
+   "2011-08-01"
+  ],
+  "base": [
+   "2010-07-01",
+   "2010-08-01"
+  ],
+  "seed": 20261111180,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.customer_type = 'guest'",
+    "times": 1.5
+   }
+  ],
+  "primary": [
+   [
+    "customer_type",
+    "guest"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer_type",
+     "guest"
+    ]
+   ]
+  ],
+  "effect": 151644.76,
+  "delta": 206806.04,
+  "effect_share": 0.7333,
+  "base_value": 632983.51,
+  "current_value": 839789.55,
+  "question": "2011 年 7 月销售额涨了，为什么？和去年同期（2010 年 7 月）比",
+  "attempts": 1
+ },
+ {
+  "id": "dev-19",
+  "split": "dev",
+  "kind": "injected",
+  "type": "product_stockout",
+  "metric": "gmv",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261111196,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "l.stock_code = '85123A'"
+   }
+  ],
+  "primary": [
+   [
+    "product",
+    "85123A"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "product",
+     "85123A"
+    ]
+   ]
+  ],
+  "effect": -11952.74,
+  "delta": -14711.64,
+  "effect_share": 0.8125,
+  "base_value": 646233.18,
+  "current_value": 631521.54,
+  "question": "帮我分析一下 2010 年 5 月 GMV 降是什么导致的（对比 2010 年 4 月）",
+  "attempts": 7
+ },
+ {
+  "id": "dev-20",
+  "split": "dev",
+  "kind": "injected",
+  "type": "product_stockout",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111203,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "l.stock_code = '47566'"
+   }
+  ],
+  "primary": [
+   [
+    "product",
+    "47566"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "product",
+     "47566"
+    ]
+   ]
+  ],
+  "effect": -12556.12,
+  "delta": -14911.49,
+  "effect_share": 0.842,
+  "base_value": 739914.35,
+  "current_value": 725002.86,
+  "question": "2011 年 6 月的销售额怎么回事，环比降得厉害",
+  "attempts": 4
+ },
+ {
+  "id": "dev-21",
+  "split": "dev",
+  "kind": "injected",
+  "type": "cross_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-07-01",
+   "2010-08-01"
+  ],
+  "base": [
+   "2010-06-01",
+   "2010-07-01"
+  ],
+  "seed": 20261111216,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "i.country = 'United Kingdom' AND l.category = '包袋收纳'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "United Kingdom"
+   ],
+   [
+    "category",
+    "包袋收纳"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "United Kingdom"
+    ],
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ],
+   [
+    [
+     "market",
+     "UK"
+    ],
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ],
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ]
+  ],
+  "effect": -132317.83,
+  "delta": -195773.79,
+  "effect_share": 0.6759,
+  "base_value": 696439.47,
+  "current_value": 500665.68,
+  "question": "帮我分析一下 2010 年 7 月成交额降是什么导致的（对比 2010 年 6 月）",
+  "attempts": 7
+ },
+ {
+  "id": "dev-22",
+  "split": "dev",
+  "kind": "injected",
+  "type": "two_causes",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261111220,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Australia'"
+   },
+   {
+    "op": "scale_lines",
+    "where": "l.category = '灯饰蜡烛'",
+    "price": 0.6
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Australia"
+   ]
+  ],
+  "secondary": [
+   [
+    "category",
+    "灯饰蜡烛"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "country",
+     "Australia"
+    ]
+   ],
+   [
+    [
+     "category",
+     "灯饰蜡烛"
+    ]
+   ]
+  ],
+  "effect": -44281.23,
+  "delta": -46636.6,
+  "effect_share": 0.9495,
+  "base_value": 739914.35,
+  "current_value": 693277.75,
+  "question": "2011 年 6 月销售额掉了，为什么？和 2011 年 5 月比",
+  "attempts": 8
+ },
+ {
+  "id": "holdout-01",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "country_drop",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112016,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'France'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "France"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "France"
+    ]
+   ]
+  ],
+  "effect": -14962.41,
+  "delta": -17317.78,
+  "effect_share": 0.864,
+  "base_value": 739914.35,
+  "current_value": 722596.57,
+  "question": "2011 年 6 月销售额下滑了，为什么？和 2011 年 5 月比",
+  "attempts": 112
+ },
+ {
+  "id": "holdout-02",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "country_drop",
+  "metric": "order_count",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261112026,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Germany'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Germany"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "Germany"
+    ]
+   ]
+  ],
+  "effect": -64.0,
+  "delta": -32.0,
+  "effect_share": 2.0,
+  "base_value": 2719.0,
+  "current_value": 2687.0,
+  "question": "2011 年 11 月订单数为什么比去年同期（2010 年 11 月）下滑了这么多？",
+  "attempts": 21
+ },
+ {
+  "id": "holdout-03",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "country_surge",
+  "metric": "gmv",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261112034,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.country = 'Germany'",
+    "times": 1.5
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Germany"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "Germany"
+    ]
+   ]
+  ],
+  "effect": 36205.49,
+  "delta": 58764.71,
+  "effect_share": 0.6161,
+  "base_value": 1429553.47,
+  "current_value": 1488318.18,
+  "question": "2011 年 11 月成交额为什么比去年同期（2010 年 11 月）涨了这么多？",
+  "attempts": 26
+ },
+ {
+  "id": "holdout-04",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "category_price_cut",
+  "metric": "gmv",
+  "current": [
+   "2011-10-01",
+   "2011-11-01"
+  ],
+  "base": [
+   "2010-10-01",
+   "2010-11-01"
+  ],
+  "seed": 20261112045,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '包袋收纳'",
+    "price": 0.7
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "包袋收纳"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "包袋收纳"
+    ]
+   ]
+  ],
+  "effect": -67287.81,
+  "delta": -58334.53,
+  "effect_share": 1.1535,
+  "base_value": 1094357.68,
+  "current_value": 1036023.15,
+  "question": "成交额在 2011 年 10 月降的原因是什么？对比去年同期（2010 年 10 月）",
+  "attempts": 20
+ },
+ {
+  "id": "holdout-05",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "category_price_cut",
+  "metric": "aov",
+  "current": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "base": [
+   "2010-03-01",
+   "2010-04-01"
+  ],
+  "seed": 20261112054,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '家居装饰'",
+    "price": 0.6
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": -47.165979,
+  "delta": -59.285625,
+  "effect_share": 0.7956,
+  "base_value": 462.456357,
+  "current_value": 403.170732,
+  "question": "2010 年 4 月客单价为什么比 2010 年 3 月掉了这么多？",
+  "attempts": 12
+ },
+ {
+  "id": "holdout-06",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "category_promo",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112060,
+  "ops": [
+   {
+    "op": "scale_lines",
+    "where": "l.category = '家居装饰'",
+    "qty": 1.5
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": 81863.69,
+  "delta": 79508.32,
+  "effect_share": 1.0296,
+  "base_value": 739914.35,
+  "current_value": 819422.67,
+  "question": "2011 年 6 月成交额上升了，为什么？和 2011 年 5 月比",
+  "attempts": 1
+ },
+ {
+  "id": "holdout-07",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "large_returns",
+  "metric": "return_rate",
+  "current": [
+   "2011-10-01",
+   "2011-11-01"
+  ],
+  "base": [
+   "2011-09-01",
+   "2011-10-01"
+  ],
+  "seed": 20261112070,
+  "ops": [
+   {
+    "op": "insert_returns",
+    "customer_id": 12311,
+    "lines": [
+     [
+      "23284",
+      7721,
+      8.99
+     ]
+    ],
+    "days": [
+     21
+    ]
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "C541976"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "C541976"
+    ]
+   ],
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "12311"
+    ]
+   ],
+   [
+    [
+     "product",
+     "23284"
+    ]
+   ]
+  ],
+  "effect": 0.062912,
+  "delta": 0.084116,
+  "effect_share": 0.7479,
+  "base_value": 0.016513,
+  "current_value": 0.100629,
+  "question": "帮我分析一下 2011 年 10 月退货率升高是什么导致的（对比 2011 年 9 月）",
+  "attempts": 1
+ },
+ {
+  "id": "holdout-08",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "large_returns",
+  "metric": "net_sales",
+  "current": [
+   "2010-12-01",
+   "2011-01-01"
+  ],
+  "base": [
+   "2009-12-01",
+   "2010-01-01"
+  ],
+  "seed": 20261112084,
+  "ops": [
+   {
+    "op": "insert_returns",
+    "customer_id": 14591,
+    "lines": [
+     [
+      "22111",
+      8904,
+      5.74
+     ]
+    ],
+    "days": [
+     17
+    ]
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "C533137"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "C533137"
+    ]
+   ],
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ],
+   [
+    [
+     "value_tier",
+     "A"
+    ]
+   ],
+   [
+    [
+     "size_band",
+     "large"
+    ]
+   ],
+   [
+    [
+     "customer",
+     "14591"
+    ]
+   ],
+   [
+    [
+     "product",
+     "22111"
+    ]
+   ]
+  ],
+  "effect": -51108.96,
+  "delta": -71264.53,
+  "effect_share": 0.7172,
+  "base_value": 778179.94,
+  "current_value": 706915.41,
+  "question": "2010 年 12 月净销售额为什么比去年同期（2009 年 12 月）下滑了这么多？",
+  "attempts": 5
+ },
+ {
+  "id": "holdout-09",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "key_account_churn",
+  "metric": "gmv",
+  "current": [
+   "2011-10-01",
+   "2011-11-01"
+  ],
+  "base": [
+   "2010-10-01",
+   "2010-11-01"
+  ],
+  "seed": 20261112095,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_id = 15662"
+   }
+  ],
+  "primary": [
+   [
+    "customer",
+    "15662"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer",
+     "15662"
+    ]
+   ]
+  ],
+  "effect": -52681.27,
+  "delta": -43727.99,
+  "effect_share": 1.2047,
+  "base_value": 1094357.68,
+  "current_value": 1050629.69,
+  "question": "GMV 在 2011 年 10 月下滑的原因是什么？对比去年同期（2010 年 10 月）",
+  "attempts": 13
+ },
+ {
+  "id": "holdout-10",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "key_account_churn",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112106,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_id = 10067"
+   }
+  ],
+  "primary": [
+   [
+    "customer",
+    "10067"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer",
+     "10067"
+    ]
+   ],
+   [
+    [
+     "country",
+     "Australia"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "556917"
+    ]
+   ]
+  ],
+  "effect": -23426.81,
+  "delta": -25782.18,
+  "effect_share": 0.9086,
+  "base_value": 739914.35,
+  "current_value": 714132.17,
+  "question": "2011 年 6 月销售额降了，为什么？和 2011 年 5 月比",
+  "attempts": 7
+ },
+ {
+  "id": "holdout-11",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "new_customer_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-06-01",
+   "2010-07-01"
+  ],
+  "base": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "seed": 20261112114,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.customer_type = 'new'",
+    "fraction": 0.9
+   }
+  ],
+  "primary": [
+   [
+    "customer_type",
+    "new"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer_type",
+     "new"
+    ]
+   ]
+  ],
+  "effect": -106257.52,
+  "delta": -53292.33,
+  "effect_share": 1.9939,
+  "base_value": 643474.28,
+  "current_value": 590181.95,
+  "question": "2010 年 6 月的 GMV 怎么回事，环比降得厉害",
+  "attempts": 5
+ },
+ {
+  "id": "holdout-12",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "guest_surge",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112121,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.customer_type = 'guest'",
+    "times": 2.0
+   }
+  ],
+  "primary": [
+   [
+    "customer_type",
+    "guest"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "customer_type",
+     "guest"
+    ]
+   ]
+  ],
+  "effect": 168588.12,
+  "delta": 166232.75,
+  "effect_share": 1.0142,
+  "base_value": 739914.35,
+  "current_value": 906147.1,
+  "question": "帮我分析一下 2011 年 6 月销售额涨是什么导致的（对比 2011 年 5 月）",
+  "attempts": 2
+ },
+ {
+  "id": "holdout-13",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "product_stockout",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112133,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "l.stock_code = '47566'"
+   }
+  ],
+  "primary": [
+   [
+    "product",
+    "47566"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "product",
+     "47566"
+    ]
+   ]
+  ],
+  "effect": -12556.12,
+  "delta": -14911.49,
+  "effect_share": 0.842,
+  "base_value": 739914.35,
+  "current_value": 725002.86,
+  "question": "帮我分析一下 2011 年 6 月销售额下滑是什么导致的（对比 2011 年 5 月）",
+  "attempts": 4
+ },
+ {
+  "id": "holdout-14",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "cross_drop",
+  "metric": "gmv",
+  "current": [
+   "2011-08-01",
+   "2011-09-01"
+  ],
+  "base": [
+   "2011-07-01",
+   "2011-08-01"
+  ],
+  "seed": 20261112144,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "i.country = 'United Kingdom' AND l.category = '厨房餐饮'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "United Kingdom"
+   ],
+   [
+    "category",
+    "厨房餐饮"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "United Kingdom"
+    ],
+    [
+     "category",
+     "厨房餐饮"
+    ]
+   ],
+   [
+    [
+     "market",
+     "UK"
+    ],
+    [
+     "category",
+     "厨房餐饮"
+    ]
+   ]
+  ],
+  "effect": -78709.53,
+  "delta": -42657.56,
+  "effect_share": 1.8451,
+  "base_value": 688144.79,
+  "current_value": 645487.23,
+  "question": "2011 年 8 月成交额掉了，为什么？和 2011 年 7 月比",
+  "attempts": 19
+ },
+ {
+  "id": "holdout-15",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "cross_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-06-01",
+   "2010-07-01"
+  ],
+  "base": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "seed": 20261112150,
+  "ops": [
+   {
+    "op": "delete_lines",
+    "where": "i.country = 'United Kingdom' AND l.category = '家居装饰'"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "United Kingdom"
+   ],
+   [
+    "category",
+    "家居装饰"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "United Kingdom"
+    ],
+    [
+     "category",
+     "家居装饰"
+    ]
+   ],
+   [
+    [
+     "market",
+     "UK"
+    ],
+    [
+     "category",
+     "家居装饰"
+    ]
+   ],
+   [
+    [
+     "category",
+     "家居装饰"
+    ]
+   ]
+  ],
+  "effect": -139370.39,
+  "delta": -86405.2,
+  "effect_share": 1.613,
+  "base_value": 643474.28,
+  "current_value": 557069.08,
+  "question": "帮我分析一下 2010 年 6 月 GMV 下滑是什么导致的（对比 2010 年 5 月）",
+  "attempts": 1
+ },
+ {
+  "id": "holdout-16",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "two_causes",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112162,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'Netherlands'"
+   },
+   {
+    "op": "scale_lines",
+    "where": "l.category = '节日派对'",
+    "price": 0.7
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "Netherlands"
+   ]
+  ],
+  "secondary": [
+   [
+    "category",
+    "节日派对"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "country",
+     "Netherlands"
+    ]
+   ],
+   [
+    [
+     "category",
+     "节日派对"
+    ]
+   ]
+  ],
+  "effect": -39807.18,
+  "delta": -42162.55,
+  "effect_share": 0.9441,
+  "base_value": 739914.35,
+  "current_value": 697751.8,
+  "question": "销售额在 2011 年 6 月降的原因是什么？对比 2011 年 5 月",
+  "attempts": 38
+ },
+ {
+  "id": "holdout-17",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "two_causes",
+  "metric": "gmv",
+  "current": [
+   "2011-06-01",
+   "2011-07-01"
+  ],
+  "base": [
+   "2011-05-01",
+   "2011-06-01"
+  ],
+  "seed": 20261112172,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "i.country = 'France'"
+   },
+   {
+    "op": "scale_lines",
+    "where": "l.category = '节日派对'",
+    "price": 0.6
+   }
+  ],
+  "primary": [
+   [
+    "category",
+    "节日派对"
+   ]
+  ],
+  "secondary": [
+   [
+    "country",
+    "France"
+   ]
+  ],
+  "gold": [
+   [
+    [
+     "category",
+     "节日派对"
+    ]
+   ],
+   [
+    [
+     "country",
+     "France"
+    ]
+   ]
+  ],
+  "effect": -32417.79,
+  "delta": -34773.16,
+  "effect_share": 0.9323,
+  "base_value": 739914.35,
+  "current_value": 705141.19,
+  "question": "帮我分析一下 2011 年 6 月销售额降是什么导致的（对比 2011 年 5 月）",
+  "attempts": 3
+ },
+ {
+  "id": "holdout-18",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "tier_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261112180,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "cu.value_tier = 'B'",
+    "fraction": 0.8
+   }
+  ],
+  "primary": [
+   [
+    "value_tier",
+    "B"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "value_tier",
+     "B"
+    ]
+   ]
+  ],
+  "effect": -141256.16,
+  "delta": -144015.06,
+  "effect_share": 0.9808,
+  "base_value": 646233.18,
+  "current_value": 502218.12,
+  "question": "2010 年 5 月成交额为什么比 2010 年 4 月下滑了这么多？",
+  "attempts": 1
+ },
+ {
+  "id": "holdout-19",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "tier_drop",
+  "metric": "gmv",
+  "current": [
+   "2010-05-01",
+   "2010-06-01"
+  ],
+  "base": [
+   "2010-04-01",
+   "2010-05-01"
+  ],
+  "seed": 20261112193,
+  "ops": [
+   {
+    "op": "delete_invoices",
+    "where": "cu.value_tier = 'C'",
+    "fraction": 1.0
+   }
+  ],
+  "primary": [
+   [
+    "value_tier",
+    "C"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "value_tier",
+     "C"
+    ]
+   ]
+  ],
+  "effect": -37769.74,
+  "delta": -40528.64,
+  "effect_share": 0.9319,
+  "base_value": 646233.18,
+  "current_value": 605704.54,
+  "question": "2010 年 5 月的销售额怎么回事，环比降得厉害",
+  "attempts": 18
+ },
+ {
+  "id": "holdout-20",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "large_sale_orders",
+  "metric": "gmv",
+  "current": [
+   "2011-11-01",
+   "2011-12-01"
+  ],
+  "base": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "seed": 20261112201,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.invoice_no IN ('574941', '576365')",
+    "times": 2.0
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "554430"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "554430"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "580388"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "526133"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "579889"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "574941"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "576365"
+    ]
+   ]
+  ],
+  "effect": 207189.7,
+  "delta": 229748.92,
+  "effect_share": 0.9018,
+  "base_value": 1429553.47,
+  "current_value": 1659302.39,
+  "question": "GMV 在 2011 年 11 月上升的原因是什么？对比去年同期（2010 年 11 月）",
+  "attempts": 9
+ },
+ {
+  "id": "holdout-21",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "large_sale_orders",
+  "metric": "aov",
+  "current": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "base": [
+   "2010-10-01",
+   "2010-11-01"
+  ],
+  "seed": 20261112214,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.invoice_no IN ('533027', '531516')",
+    "times": 2.0
+   }
+  ],
+  "primary": [
+   [
+    "invoice",
+    "492459"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "invoice",
+     "492459"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "509067"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "506788"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "549004"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "531516"
+    ]
+   ],
+   [
+    [
+     "invoice",
+     "533027"
+    ]
+   ]
+  ],
+  "effect": 69.13436,
+  "delta": 107.217109,
+  "effect_share": 0.6448,
+  "base_value": 487.681676,
+  "current_value": 594.898784,
+  "question": "2010 年 11 月的客单价怎么回事，环比涨得厉害",
+  "attempts": 12
+ },
+ {
+  "id": "holdout-22",
+  "split": "holdout",
+  "kind": "injected",
+  "type": "country_return_wave",
+  "metric": "return_rate",
+  "current": [
+   "2010-11-01",
+   "2010-12-01"
+  ],
+  "base": [
+   "2010-10-01",
+   "2010-11-01"
+  ],
+  "seed": 20261112222,
+  "ops": [
+   {
+    "op": "clone_invoices",
+    "where": "i.country = 'EIRE'",
+    "times": 1.0,
+    "as_type": "return"
+   }
+  ],
+  "primary": [
+   [
+    "country",
+    "EIRE"
+   ]
+  ],
+  "secondary": null,
+  "gold": [
+   [
+    [
+     "country",
+     "EIRE"
+    ]
+   ]
+  ],
+  "effect": 0.021137,
+  "delta": 0.022433,
+  "effect_share": 0.9422,
+  "base_value": 0.023257,
+  "current_value": 0.045689,
+  "question": "退货率在 2010 年 11 月上升的原因是什么？对比 2010 年 10 月",
+  "attempts": 3
+ }
+]

@@ -213,7 +213,12 @@ def create_app(
 
     @app.get("/api/databases/{db_id}/examples")
     async def examples(db_id: str):
-        return _examples().get(db_id, [])
+        """示例问题：BIRD 库从题库里抽；自己接入的库用指标字典里写的。"""
+        found = _examples().get(db_id)
+        if found:
+            return found
+        layer = load_layer(db_id) if db_id in tools.list_databases() else None
+        return layer.examples if layer else []
 
     async def check_rate(svc: ChatService, user_id: str) -> None:
         """固定窗口：每个用户每分钟一个计数 key。缓存命中也计数，限制的是请求频率而不只是花费。"""

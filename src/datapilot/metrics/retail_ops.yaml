@@ -1,0 +1,303 @@
+# 跨境礼品电商库 retail_ops 的指标字典。数据是 UCI Online Retail II 真实交易（CC BY 4.0），
+# 口径与同一作者的"跨境电商经营分析看板"的指标定义文档保持一致：
+# https://github.com/kennywu411-dev/ecommerce-dashboard/blob/main/docs/指标定义.md
+#
+# 结构同 shop_ops.yaml，另有两处归因用的扩展（v1.6，ADR 007）：
+# - derived 指标可以写 formula（ratio / diff + 两个 simple 指标），归因时据此拆成可加的分组贡献
+# - attribution：归因流程的基准日期、下钻维度、按实体查集中度的维度
+
+db_id: retail_ops
+
+# 问数界面的示例问题：前两个问"是多少"，后两个问"为什么"
+examples:
+  - 近 12 个月各国家的 GMV 和退货率分别是多少？
+  - 2011 年每个月的净销售额是多少？
+  - 2011 年 1 月退货率为什么比上个月高这么多？
+  - 近 12 个月的退货率为什么比前 12 个月高？
+
+conventions:
+  - 数据范围是 2009-12-01 至 2011-11-30（24 个完整自然月），"今天"按 2011-12-01 理解；"近 12 个月"指 2010-12 至 2011-11，"前 12 个月"指 2009-12 至 2010-11
+  - 一律按开票时间 invoices.invoice_date 归属月份；退货按退货单自己的日期归属，不回溯到原订单（原数据没有退货单和原订单的对应关系）
+  - 金额单位是英镑；退货单的金额、件数在库里也记正数，用 invoices.invoice_type 区分销售和退货
+  - 没有客户编号的订单（invoices.customer_id 为 NULL）计入 GMV 和订单数，不计入客户数和复购率
+  - 比率类指标用百分比表示时乘以 100，小数位按问题要求 ROUND
+  - 环比 =（本期 − 上期）÷ 上期 × 100；同比 =（本期 − 去年同期）÷ 去年同期 × 100；下降为负数
+
+terms:
+  sale_order:
+    name: 销售订单
+    synonyms: [销售订单, 销售单, 正向订单]
+    description: 发票号不以 C 开头的发票，一张发票算一单
+    sql: invoices.invoice_type = 'sale'
+  return_order:
+    name: 退货单
+    synonyms: [退货单, 退单, 退货订单]
+    description: 发票号以 C 开头的发票（含取消和退货）
+    sql: invoices.invoice_type = 'return'
+  guest_order:
+    name: 无编号订单
+    synonyms: [无编号订单, 无客户编号, 没有客户编号, 匿名订单, 未登记客户]
+    description: 没有客户编号的单据
+    sql: invoices.customer_id IS NULL
+  overseas:
+    name: 海外
+    synonyms: [海外, 海外市场, 境外, 英国以外]
+    description: 买家国家不是英国
+    sql: invoices.country <> 'United Kingdom'
+  uk:
+    name: 英国本土
+    synonyms: [英国本土, 英国市场, 本土]
+    description: 买家国家是英国
+    sql: invoices.country = 'United Kingdom'
+
+metrics:
+  gmv:
+    name: GMV
+    unit: money
+    kind: simple
+    synonyms: [GMV, gmv, 下单金额, 销售额, 成交额, 成交金额, 营业额, 销售金额]
+    description: 销售订单商品行的 件数 × 单价 之和；不扣退货、不含邮费（邮费等非商品行已在清洗时去掉）
+    base: invoice_lines
+    expr: SUM(invoice_lines.amount)
+    filters: [sale_order]
+  return_amount:
+    name: 退货额
+    unit: money
+    kind: simple
+    synonyms: [退货额, 退货金额, 退款额, 退了多少钱]
+    description: 退货单商品行金额之和，按退货单日期归属
+    base: invoice_lines
+    expr: SUM(invoice_lines.amount)
+    filters: [return_order]
+  net_sales:
+    name: 净销售额
+    unit: money
+    kind: derived
+    synonyms: [净销售额, 净成交额, 扣除退货后的销售额, 净收入]
+    description: GMV − 退货额，同一时间段内相减
+    formula: {op: diff, a: gmv, b: return_amount}
+    reference_sql: >-
+      SELECT SUM(CASE WHEN invoices.invoice_type = 'sale' THEN invoices.amount ELSE -invoices.amount END)
+      FROM invoices
+  return_rate:
+    name: 退货率
+    unit: percent
+    kind: derived
+    synonyms: [退货率, 退货比例, 金额退货率]
+    description: 退货额 ÷ GMV（按金额，不按单数），同一时间段、同一筛选条件
+    formula: {op: ratio, a: return_amount, b: gmv}
+    reference_sql: >-
+      SELECT 100.0 * SUM(CASE WHEN invoices.invoice_type = 'return' THEN invoices.amount ELSE 0 END)
+      / SUM(CASE WHEN invoices.invoice_type = 'sale' THEN invoices.amount ELSE 0 END) FROM invoices
+  order_count:
+    name: 订单数
+    unit: count
+    kind: simple
+    synonyms: [订单数, 订单量, 下单数, 单量, 多少单]
+    description: 销售订单的发票数，一张发票算一单
+    base: invoices
+    expr: COUNT(*)
+    filters: [sale_order]
+  return_order_count:
+    name: 退货单数
+    unit: count
+    kind: simple
+    synonyms: [退货单数, 退单数, 退货单量]
+    description: 退货单的发票数
+    base: invoices
+    expr: COUNT(*)
+    filters: [return_order]
+  return_order_share:
+    name: 退货单占比
+    unit: percent
+    kind: derived
+    synonyms: [退货单占比, 退单占比, 退单率]
+    description: 退货单数 ÷ 销售订单数；和金额退货率互相印证的辅助指标
+    formula: {op: ratio, a: return_order_count, b: order_count}
+    reference_sql: >-
+      SELECT 100.0 * SUM(invoices.invoice_type = 'return') / SUM(invoices.invoice_type = 'sale')
+      FROM invoices
+  aov:
+    name: 客单价
+    unit: money
+    kind: derived
+    synonyms: [客单价, 笔单价, 平均订单金额, 平均每单, AOV]
+    description: GMV ÷ 订单数，按"每单"而不是"每人"
+    formula: {op: ratio, a: gmv, b: order_count}
+    reference_sql: >-
+      SELECT SUM(invoices.amount) / COUNT(*) FROM invoices WHERE invoices.invoice_type = 'sale'
+  items_sold:
+    name: 销量
+    unit: count
+    kind: simple
+    synonyms: [销量, 卖出, 售出, 卖了多少件, 件数]
+    description: 销售订单的商品件数之和
+    base: invoice_lines
+    expr: SUM(invoice_lines.quantity)
+    filters: [sale_order]
+  customers:
+    name: 客户数
+    unit: count
+    kind: simple
+    synonyms: [客户数, 下单客户数, 购买客户数, 买家数, 活跃客户]
+    description: 下过销售订单、有客户编号的去重客户数；不含无编号订单
+    base: invoices
+    expr: COUNT(DISTINCT invoices.customer_id)
+    filters: [sale_order]
+  guest_gmv:
+    name: 无编号订单 GMV
+    unit: money
+    kind: simple
+    synonyms: [无编号订单GMV, 无编号GMV, 匿名订单金额]
+    description: 没有客户编号的销售订单的 GMV
+    base: invoice_lines
+    expr: SUM(invoice_lines.amount)
+    filters: [sale_order, guest_order]
+  guest_gmv_share:
+    name: 无编号 GMV 占比
+    unit: percent
+    kind: derived
+    synonyms: [无编号GMV占比, 无编号订单占比, 无编号占比, 匿名订单占比]
+    description: 无编号订单 GMV ÷ GMV；数据质量护栏指标，占比越高，复购和客户分析越不可靠
+    formula: {op: ratio, a: guest_gmv, b: gmv}
+    reference_sql: >-
+      SELECT 100.0 * SUM(CASE WHEN invoices.customer_id IS NULL THEN invoices.amount ELSE 0 END)
+      / SUM(invoices.amount) FROM invoices WHERE invoices.invoice_type = 'sale'
+  repeat_rate:
+    name: 复购率
+    unit: percent
+    kind: derived
+    synonyms: [复购率, 回购率, 回头客比例, 复购]
+    description: 统计期内下过 2 次及以上销售订单的客户数 ÷ 下过销售订单的客户数 × 100；只算有编号的客户；时间段越长复购率天然越高，只能同长度时间段之间比较
+    reference_sql: >-
+      SELECT 100.0 * SUM(n >= 2) / COUNT(*) FROM (SELECT invoices.customer_id, COUNT(*) AS n
+      FROM invoices WHERE invoices.invoice_type = 'sale' AND invoices.customer_id IS NOT NULL
+      GROUP BY invoices.customer_id)
+
+dimensions:
+  year:
+    name: 年份
+    expr: substr({time}, 1, 4)
+    synonyms: [每年, 各年, 年度]
+  month:
+    name: 月份
+    expr: substr({time}, 1, 7)
+    synonyms: [每个月, 各月, 月份, 哪个月]
+    description: 格式 YYYY-MM
+  market:
+    name: 市场
+    expr: countries.market
+    synonyms: [市场, 本土和海外]
+    values: {UK: 英国本土, Overseas: 海外}
+  country:
+    name: 国家
+    expr: invoices.country
+    synonyms: [国家, 哪个国家, 各国]
+    description: 英文写法，如 United Kingdom、EIRE（爱尔兰）、Germany、France、Netherlands；中文名在 countries.country_zh
+    values:
+      United Kingdom: 英国
+      EIRE: 爱尔兰
+      Netherlands: 荷兰
+      Germany: 德国
+      France: 法国
+      Australia: 澳大利亚
+      Spain: 西班牙
+      Switzerland: 瑞士
+      Sweden: 瑞典
+      Denmark: 丹麦
+      Belgium: 比利时
+      Norway: 挪威
+      Portugal: 葡萄牙
+      Japan: 日本
+      Channel Islands: 海峡群岛
+      Italy: 意大利
+      Finland: 芬兰
+      Cyprus: 塞浦路斯
+      Austria: 奥地利
+      Greece: 希腊
+      Singapore: 新加坡
+      Hong Kong: 中国香港
+      Israel: 以色列
+      Poland: 波兰
+      United Arab Emirates: 阿联酋
+      Unspecified: 未注明
+      Canada: 加拿大
+      Iceland: 冰岛
+      USA: 美国
+      Malta: 马耳他
+      Lithuania: 立陶宛
+      Bahrain: 巴林
+      RSA: 南非
+      Thailand: 泰国
+      Korea: 韩国
+      Czech Republic: 捷克
+      Brazil: 巴西
+      Lebanon: 黎巴嫩
+      European Community: 欧洲共同体
+      Saudi Arabia: 沙特阿拉伯
+      Bermuda: 百慕大
+      Nigeria: 尼日利亚
+      West Indies: 西印度群岛
+  category:
+    name: 品类
+    expr: invoice_lines.category
+    synonyms: [品类, 类目]
+    description: 按商品名关键词归类的近似分类，共 9 个：节日派对、灯饰蜡烛、家居装饰、包袋收纳、厨房餐饮、文具纸品、儿童玩具、饰品配饰、其他
+  customer_type:
+    name: 新老客
+    expr: invoices.customer_type
+    synonyms: [新老客, 新客老客, 客户类型]
+    values: {new: 新客（首单当月）, returning: 老客, guest: 无客户编号}
+  value_tier:
+    name: 客户分层
+    expr: customers.value_tier
+    synonyms: [客户分层, 客户等级, 客户价值]
+    description: 没有客户编号的单据这一维为空
+    values: {A: 前 10% 大客户, B: 其后 40%, C: 其余}
+  size_band:
+    name: 单据金额分档
+    expr: invoices.size_band
+    synonyms: [单据金额分档, 大额订单, 大单, 订单金额分档]
+    values: {large: 大额（≥ 5000 英镑）, medium: 中额（1000–5000）, small: 小额（< 1000）}
+  customer:
+    name: 客户
+    expr: invoices.customer_id
+    synonyms: [哪个客户, 各客户]
+    description: 客户编号；无编号订单为空
+  product:
+    name: 商品
+    expr: invoice_lines.stock_code
+    synonyms: [商品, 产品, 哪个商品]
+    description: 商品编码；名称在 products.description
+  invoice:
+    name: 单据
+    expr: invoices.invoice_no
+    synonyms: [哪张单, 哪张发票]
+    description: 发票号
+
+time_columns:
+  invoice_lines: invoices.invoice_date
+  invoices: invoices.invoice_date
+
+# [子表, 父表, 关联条件]
+joins:
+  - [invoice_lines, invoices, invoice_lines.invoice_no = invoices.invoice_no]
+  - [invoice_lines, products, invoice_lines.stock_code = products.stock_code]
+  - [invoices, customers, invoices.customer_id = customers.customer_id]
+  - [invoices, countries, invoices.country = countries.country]
+
+# 指标异动归因（ADR 007）
+attribution:
+  as_of: "2011-11-30"            # 数据截止日；"上个月""近 12 个月"等相对时间以它为准
+  dimensions: [market, country, category, customer_type, value_tier, size_band]
+  entities: [customer, product]   # 取值很多的维度：只取变化最大的若干个，查是否集中在少数实体
+  document: invoice               # 单据维度：查是否由少数几张大额单据造成
+  currency: "£"
+  # 找到原因后补查的明细（{values} 由代码替换成转义后的取值列表）
+  details:
+    invoice: >-
+      SELECT invoices.invoice_no, invoices.invoice_date, invoices.customer_id, invoices.country,
+      invoices.amount FROM invoices WHERE invoices.invoice_no IN ({values})
+    product: >-
+      SELECT products.stock_code, products.description FROM products
+      WHERE products.stock_code IN ({values})

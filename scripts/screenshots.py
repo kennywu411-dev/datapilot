@@ -2,6 +2,8 @@
 
 前提：后端（:8000）和前端（:3000）已启动。截图用的问题都问过，会命中缓存，不花钱。
 用法：uv run python scripts/screenshots.py
+      uv run python scripts/screenshots.py attribution   # 只截归因视图（需要 retail_ops 库）
+前端不在 :3000 时用环境变量 DATAPILOT_WEB 指定，如 DATAPILOT_WEB=http://localhost:3010
 """
 
 from __future__ import annotations
@@ -9,8 +11,10 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.request
@@ -22,9 +26,10 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "images"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 PORT = 9333
-BASE = "http://localhost:3000"
+BASE = os.environ.get("DATAPILOT_WEB", "http://localhost:3000")
 W, H, SCALE = 1440, 900, 2
 
+WHY_QUESTION = "2011 年 1 月退货率为什么比上个月高这么多？"
 QUESTIONS = [
     "各出版商的超级英雄数量，前 8 名是哪些？",
     "那只看 Marvel Comics，男女各多少人？占比如何？",
@@ -138,6 +143,27 @@ async def main():
             await page.wait_for(
                 "document.querySelector('select') && document.querySelector('select').value"
             )
+            if "attribution" in sys.argv[1:]:
+                # 归因视图：真实交易库上问一个"为什么"，截到"第一层分解"为止
+                await page.call(
+                    "Emulation.setDeviceMetricsOverride",
+                    width=W,
+                    height=1500,
+                    deviceScaleFactor=SCALE,
+                    mobile=False,
+                )
+                await page.js(
+                    "(() => { const s = document.querySelector('select');"
+                    "const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "
+                    "'value').set; set.call(s, 'retail_ops');"
+                    "s.dispatchEvent(new Event('change', {bubbles: true})); })()"
+                )
+                await asyncio.sleep(1.0)
+                await ask(page, WHY_QUESTION, 1)
+                await page.js("document.querySelector('article').scrollIntoView({block: 'start'})")
+                await asyncio.sleep(1.0)
+                await page.shot("attribution.png")
+                return
             for i, q in enumerate(QUESTIONS, 1):
                 await ask(page, q, i)
             await page.shot("chat.png")

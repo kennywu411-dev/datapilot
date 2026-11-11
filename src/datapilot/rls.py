@@ -87,6 +87,21 @@ ROLES: dict[str, dict[str, Policy]] = {
             },
         ),
     },
+    # 真实交易库（v1.6）：海外市场经理只看得到英国以外的单据、明细行和客户
+    "retail_ops": {
+        "analyst": Policy("分析师"),
+        "overseas_manager": Policy(
+            "海外市场经理",
+            note="only invoices, invoice lines and customers outside the UK are visible",
+            rows={
+                "invoices": "country <> 'United Kingdom'",
+                "invoice_lines": "invoice_no IN (SELECT invoice_no FROM invoices "
+                "WHERE country <> 'United Kingdom')",
+                "customers": "country <> 'United Kingdom'",
+                "countries": "market = 'Overseas'",
+            },
+        ),
+    },
 }
 
 # 是否把权限说明告诉模型（只影响模型能否如实告知；强制靠改写和授权回调，与此无关）。

@@ -1,12 +1,26 @@
-# DataPilot
+# DataPilot：经营问数与指标异动归因
 
 [![CI](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml/badge.svg)](https://github.com/kennywu411-dev/datapilot/actions/workflows/ci.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-中文问数（NL2SQL）。输入一个问题，系统读表结构、写 SQL、在只读库上执行，报错或结果可疑时带着反馈重写，最后返回答案、SQL、表格和图表，支持追问。
+用中文问经营数据：能问"是多少"，也能问"为什么变了"。问一个数，系统写 SQL 查出来；问一个指标为什么变了，系统按国家、品类、客户、单据逐层拆开找原因，结论里的每个数字都能追溯到执行过的 SQL。
 
-这个项目的重点不在功能多，而在每个选型都有对照实验：用固定流程还是 Agent、要不要 schema 检索、用哪个模型、要不要路由、要不要指标语义层，都在同一批题上做了配对检验。评测由 [evalkit](https://github.com/kennywu411-dev/evalkit) 运行和统计，所有数字和运行 ID 在 [docs/numbers.md](docs/numbers.md)。
+**[在线回放](https://kennywu411-dev.github.io/datapilot/)**：11 个问题的真实运行记录（3 个"为什么"、8 个"是多少"），逐步看分解、下钻、数字核对、生成的 SQL、纠错和行列级权限，以及每一步的耗时与花费，不用装环境。
 
-**[在线回放](https://kennywu411-dev.github.io/datapilot/)**：8 个问题的真实运行记录，逐步看生成的 SQL、纠错、行列级权限和每一步的耗时与花费，不用装环境。
+| | |
+|---|---|
+| 给谁用 | 每周看数的经营负责人和运营：不会写 SQL，但需要知道"掉了多少"和"掉在哪" |
+| 解决什么 | 问数工具只回答"是多少"；追问"为什么"时，通用做法是让模型自己看着数字说，说得对不对、数字哪来的都没有保证 |
+| 怎么做 | 归因的分解、排序、下钻由 SQL 和代码完成，模型不做算术；回答里的每个数字逐个和 SQL 结果核对，对不上不输出；跑在真实交易数据上（UCI Online Retail II，107 万行） |
+
+| 归因找得准不准 | 数字靠不靠得住 | 花多少钱 |
+|---|---|---|
+| 第一原因命中 31.8%（留出集 22 例，区间 16–53%）；让问数流程直接回答是 0% | 98 个回答、1,151 个数字 100% 能对上 SQL 结果或事实表；让模型自主下钻时只有 64–72% | 单次归因 $0.0007（Haiku），是自主 Agent 的 1/7；两者命中率没有显著差别 |
+
+命中率不高，没有回避：真实数据里大客户、畅销品每个月本来就有进有出，量级和这种进出差不多的异常（大客户流失、单品断货），三种做法都找不到。详见下面"指标异动归因"一节和 [docs/numbers.md](docs/numbers.md)。
+
+![归因视图](docs/images/attribution.png)
+
+问数部分的重点不在功能多，而在每个选型都有对照实验：用固定流程还是 Agent、要不要 schema 检索、用哪个模型、要不要路由、要不要指标语义层，都在同一批题上做了配对检验。评测由 [evalkit](https://github.com/kennywu411-dev/evalkit) 运行和统计，所有数字和运行 ID 在 [docs/numbers.md](docs/numbers.md)。
 
 ![演示](docs/images/demo.gif)
 
@@ -24,6 +38,7 @@
 | 指标语义层有没有用 | 有。用户提问时自动匹配指标口径并注入，去口径题集上 Haiku 65.8% → 92.5%、Sonnet 64.2% → 95.0%；19 道新问法留出题 60–65% → 100% | 各 3 次运行，McNemar p ≤ 0.002 |
 | 怎么防止查到敏感数据 | 行列级权限由代码强制，越权 0/170 | 46 个绕过测试，3 个角色 |
 | 标准答案靠得住吗 | 失败题里 56% 是标准答案本身有问题（审计论文报告 52.8%） | 50 道人工判定 |
+| "为什么变了"怎么答 | 固定下钻流程。第一原因命中和自主 Agent 没有显著差别（42.9% 对 38.8%，p = 0.73），成本是它的 1/4 到 1/7，数字 100% 可追溯（Agent 64–72%）；让问数流程直接回答只有 10–18% | 真实交易数据 49 例，留出 22 例只跑一次 |
 
 ![问数界面](docs/images/chat.png)
 
@@ -46,10 +61,39 @@ FastAPI ── Redis：会话（按用户隔离，保留最近 3 轮）、查询
 模型：Claude（Haiku / Sonnet / Opus）、DeepSeek 和通义千问（OpenAI 兼容接口）、Ollama 本地模型
 MCP Server：list_tables / describe_table / search_values / run_sql，只读
 指标语义层：指标字典（口径、计算、维度、同义词、血缘）→ 提问时匹配 → 口径注入生成 SQL
+指标归因："为什么"类问题 → 计划（模型）→ SQL 分解 9 个维度 → 超额贡献排序 → 再拆一层 → 逐个剥离
+          → 结论（模型）→ 数字核对；和问数共用限流、排队、缓存、行列级权限
 数据质量：主键、重复、空值、枚举、范围、外键、业务规则、新鲜度检查
 ```
 
-设计决策记录在 `docs/adr/`：[数据来源与评测口径](docs/adr/001-数据来源与评测口径.md)、[改进实验设计](docs/adr/002-改进实验设计.md)、[国产模型与中文评测](docs/adr/003-国产模型与中文评测.md)、[智能路由](docs/adr/004-智能路由.md)、[行列级权限](docs/adr/005-行列级权限.md)、[指标语义层与数据质量](docs/adr/006-指标语义层与数据质量.md)。
+设计决策记录在 `docs/adr/`：[数据来源与评测口径](docs/adr/001-数据来源与评测口径.md)、[改进实验设计](docs/adr/002-改进实验设计.md)、[国产模型与中文评测](docs/adr/003-国产模型与中文评测.md)、[智能路由](docs/adr/004-智能路由.md)、[行列级权限](docs/adr/005-行列级权限.md)、[指标语义层与数据质量](docs/adr/006-指标语义层与数据质量.md)、[指标异动归因](docs/adr/007-指标异动归因.md)。
+
+## 指标异动归因
+
+用户问"2011 年 1 月退货率为什么比上个月高这么多"，流程是（[ADR 007](docs/adr/007-指标异动归因.md)）：
+
+1. 模型把问题映射成"哪个指标、本期、基期"，代码校验。
+2. SQL 算两个时间段的指标值和总变化。
+3. 市场、国家、品类、新老客、客户分层、单据金额分档、客户、商品、单据 9 个维度各发 SQL，代码算每个分组占总变化的比例。
+4. 排序看的是"超额"：占总变化的比例减去它按基期份额本该分到的比例，再扣掉它历史上的正常波动。英国常年占 GMV 的 85%，贡献了 85% 的下降不算原因；只占 2% 的德国贡献了 60% 才是。
+5. 对排第一的原因再拆一层；找到一个原因就把它从数据里去掉，对剩余变化重复，最多 3 个。没有分组过门槛时如实说"没有突出的原因"。
+6. 模型只把事实表写成结论；回答里的每个数字逐个和 SQL 结果、事实表核对，对不上重写一次，再不行改用模板。
+
+这个例子的结果：全部变化来自一张退货单 C541433（£77,183.60），拿掉它之后 1 月退货率是 2.14%，和上月持平。这和[看板项目](https://github.com/kennywu411-dev/ecommerce-dashboard)人工分析的结论一致。
+
+评测集 49 例：5 个真实案例（标准答案取自看板项目的分析产物）加 44 个注入异常（在库的副本里制造一个已知原因，如删掉某国某月的订单、插入几张大额退货单、某品类降价）。构造方法和判定标准在跑模型之前写好并提交，见 [evals/attribution/评测方案.md](evals/attribution/评测方案.md)。三种做法对照，留出集 22 例在方案冻结后只跑一次：
+
+| 做法（Sonnet） | 第一原因命中 | 前三命中 | 数字能对上 SQL 结果 | 单次成本 | P50 耗时 |
+|---|---|---|---|---|---|
+| 问数流程直接回答 | 0/22 | 1/22 | 76.5% | $0.0093 | 5.3 s |
+| 固定下钻流程 | 7/22 = 31.8% | 8/22 | 100% | $0.0078 | 6.7 s |
+| 模型拿 SQL 工具自主下钻 | 6/22 = 27.3% | 9/22 | 72.1% | $0.0288 | 12.0 s |
+
+- 49 例合并：固定流程 42.9%、Agent 38.8%、直接回答 10.2%。固定流程和 Agent 没有显著差别（McNemar p = 0.73），两者都显著好于直接回答。
+- Agent 的前三命中略高（53.1% 对 46.9%，不显著）：它每次报 2–3 个候选，固定流程解释到 80% 就停。
+- 固定流程的命中和模型无关：换成 Haiku 同样是 21/49，单次 $0.0007。
+- 留出集比 dev（51.9%）低，dev 上调过方案，有拟合成分；对外以留出集为准。
+- 大客户流失、单品断货这几类，三种做法都找不到。
 
 ## 评测结果
 
@@ -152,6 +196,9 @@ npm --prefix web install
 uv run python scripts/download_data.py      # BIRD Mini-Dev，数据库约 801MB
 uv run python scripts/gen_shop_ops.py       # 可选：模拟电商库 shop_ops（口径消融、行列级权限演示用）
 uv run python scripts/add_database.py shop_ops data/source/shop_ops.sqlite
+# 可选：真实交易库 retail_ops（归因用；UCI Online Retail II，原始文件约 45 MB，脚本会下载）
+uv run --with pandas --with openpyxl python scripts/build_retail_ops.py --download
+uv run python scripts/add_database.py retail_ops data/source/retail_ops.sqlite
 cp .env.example .env                        # 填 ANTHROPIC_API_KEY；不填也能启动，问数会报「未设置 ANTHROPIC_API_KEY」
 
 uv run pytest -q
@@ -169,6 +216,8 @@ Docker：先下载数据，再 `docker compose up --build`，打开 http://local
 uv run python evals/runner.py --models sonnet,haiku --pipeline e4_correct --max-cost 3 --yes
 uv run python evals/compare.py <run_a> <run_b> --model haiku
 uv run python scripts/build_dashboard.py
+uv run python evals/attribution_eval.py --ablation --split dev    # 归因：不花钱比较下钻方案
+uv run python evals/attribution_eval.py --split dev --models sonnet --max-cost 2 --yes
 ```
 
 ## MCP Server
@@ -195,7 +244,10 @@ uv run python scripts/mcp_smoke.py   # 拉起服务，列工具、查询，确�
 
 ## 局限
 
-- 数据来自公开基准 BIRD Mini-Dev 和一个固定种子生成的模拟电商库，不是真实业务数据。
+- 归因的第一原因命中只有三成到五成（留出集 31.8%，区间 16–53%；dev 51.9%），评测集 49 例，只能检出大差距，三种做法各只跑了 1 次。
+- 归因评测的标准答案大多是注入的，真实案例只有 5 例。注入题的入选规则和默认排序方法用的是同一类统计量。第一版评测集的标准答案站不住，重做过一次（问题日志 P23）。
+- 归因只支持可加指标及其比率和差，只比较两个时间段；"新老客"维度在数据起点附近失真（[docs/badcases.md](docs/badcases.md) 第 4 个）。
+- 问数的评测数据来自公开基准 BIRD Mini-Dev 和一个固定种子生成的模拟电商库；归因用的是 UCI Online Retail II 公开数据（CC BY 4.0），一家公司两年的交易，不代表行业水平。
 - 缓存和压测的请求是构造的，压测用的是模拟模型，客户端和服务端在同一台机器上。
 - 用户身份是前端生成的匿名 id，换一个就能绕过限流。真正防滥用需要网关校验身份。
 - "真实准确率约 90%"是根据 50 道人工判定外推的估计值。

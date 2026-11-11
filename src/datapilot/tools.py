@@ -37,8 +37,10 @@ def _tables_cached(db_file: str) -> tuple[tuple[str, int], ...]:
         names = [
             r[0]
             for r in conn.execute(
+                # sqlite_ 开头的是 SQLite 自己的表（sqlite_sequence、ANALYZE 留下的 sqlite_stat1），
+                # 不是业务表，不交给模型（下划线在 LIKE 里是通配符，要转义）
                 "SELECT name FROM sqlite_master WHERE type = 'table' "
-                "AND name != 'sqlite_sequence' ORDER BY name"
+                "AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\' ORDER BY name"
             )
         ]
         return tuple(

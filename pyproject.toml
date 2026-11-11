@@ -1,7 +1,7 @@
 [project]
 name = "datapilot"
-version = "1.5.0"
-description = "DataPilot：面向 ChatBI 场景的智能问数系统（BIRD Mini-Dev 评测）"
+version = "1.6.0"
+description = "DataPilot：经营问数与指标异动归因（能问是多少，也能问为什么变了）"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "anthropic>=2.1.0",

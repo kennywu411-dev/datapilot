@@ -1,5 +1,30 @@
 [
  {
+  "id": "attr-real",
+  "model": "sonnet",
+  "db_id": "retail_ops",
+  "turns": [
+   "2011 年 1 月退货率为什么比上个月高这么多？"
+  ]
+ },
+ {
+  "id": "attr-inject",
+  "model": "sonnet",
+  "db_id": "retail_ops",
+  "inject": "dev-16",
+  "turns": [
+   "帮我分析一下 2010 年 5 月 GMV 下滑是什么导致的（对比 2010 年 4 月）"
+  ]
+ },
+ {
+  "id": "attr-none",
+  "model": "sonnet",
+  "db_id": "retail_ops",
+  "turns": [
+   "2011 年 9–11 月的 GMV 为什么比 6–8 月高这么多？"
+  ]
+ },
+ {
   "id": "ok",
   "model": "sonnet",
   "db_id": "shop_ops",

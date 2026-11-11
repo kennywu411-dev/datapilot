@@ -1,0 +1,16 @@
+{
+  "run_id": "attr-dev-3b5232",
+  "split": "dev",
+  "models": [
+    "sonnet",
+    "haiku"
+  ],
+  "arms": [
+    "plain",
+    "fixed",
+    "agent"
+  ],
+  "judge": "haiku",
+  "cases_file": "evals/attribution/cases.json",
+  "git_commit": "3034d1f-dirty"
+}

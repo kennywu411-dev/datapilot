@@ -64,6 +64,9 @@ class Metric:
     filters: tuple[str, ...] = ()  # 引用 terms
     filters_sql: tuple[str, ...] = ()  # 指标自带、不值得单列为术语的条件
     reference_sql: str = ""
+    # derived 指标由两个 simple 指标算出时写明（op: ratio = a ÷ b，diff = a − b），归因据此分解
+    formula: tuple[str, str, str] | None = None
+    unit: str = ""  # money / count / percent，归因结果展示用；不写按 count
 
 
 @dataclass(frozen=True)
@@ -142,6 +145,8 @@ class SemanticLayer:
         dimensions: dict[str, Dimension],
         time_columns: dict[str, str],
         joins: list[tuple[str, str, str]],
+        attribution: dict | None = None,
+        examples: list[str] | None = None,
     ):
         self.db_id = db_id
         self.conventions = conventions
@@ -150,6 +155,8 @@ class SemanticLayer:
         self.dimensions = dimensions
         self.time_columns = time_columns
         self.joins = joins
+        self.attribution = attribution or {}  # 归因配置（基准日期、下钻维度），没有则该库不支持归因
+        self.examples = list(examples or [])  # 问数界面的示例问题
         self._defs: dict[tuple[str, str], tuple[dict, set]] = {}
         self._check_refs()
         # 同义词按长度倒序：最长匹配，"有效订单数"不会再拆出"订单数"
@@ -190,6 +197,8 @@ class SemanticLayer:
                 tup(v.get("filters")),
                 tup(v.get("filters_sql")),
                 v.get("reference_sql", ""),
+                (f["op"], f["a"], f["b"]) if (f := v.get("formula")) else None,
+                v.get("unit", ""),
             )
             for k, v in (d.get("metrics") or {}).items()
         }
@@ -213,6 +222,8 @@ class SemanticLayer:
             dims,
             {k.lower(): v for k, v in (d.get("time_columns") or {}).items()},
             joins,
+            d.get("attribution"),
+            d.get("examples"),
         )
 
     def _check_refs(self) -> None:
@@ -226,6 +237,21 @@ class SemanticLayer:
             if unknown:
                 raise ValueError(f"指标 {m.id} 引用了不存在或没有条件的术语：{unknown}")
             self.columns_of_metric(m)
+            if m.formula is not None:
+                op, a, b = m.formula
+                parts = [self.metrics.get(a), self.metrics.get(b)]
+                bad = any(x is None or x.kind != "simple" for x in parts)
+                if op not in ("ratio", "diff") or bad:
+                    raise ValueError(
+                        f"指标 {m.id} 的 formula 要写成 ratio / diff + 两个 simple 指标"
+                    )
+        for key in ("dimensions", "entities"):
+            unknown = [x for x in self.attribution.get(key, []) if x not in self.dimensions]
+            if unknown:
+                raise ValueError(f"attribution.{key} 引用了不存在的维度：{unknown}")
+        doc = self.attribution.get("document")
+        if doc and doc not in self.dimensions:
+            raise ValueError(f"attribution.document 引用了不存在的维度：{doc}")
         for t in self.terms.values():
             _columns(t.sql, strict=True) if t.sql else None
         for dim in self.dimensions.values():
@@ -417,6 +443,15 @@ class SemanticLayer:
                 ]
                 + [{"id": "", "name": "指标自带条件", "sql": f} for f in m.filters_sql],
                 "reference_sql": m.reference_sql,
+                "formula": (
+                    {
+                        "op": m.formula[0],
+                        "a": self.metrics[m.formula[1]].name,
+                        "b": self.metrics[m.formula[2]].name,
+                    }
+                    if m.formula
+                    else None
+                ),
                 "time_column": self.time_columns.get(m.base, "") if m.kind == "simple" else "",
                 # 语义层直出的整体 SQL（含 JOIN）；展示用，按不受限生成，权限标在 restricted
                 "example_sql": (
@@ -552,6 +587,8 @@ class SemanticLayer:
             return d.expr.replace("{time}", time_col)
 
         cols = self.columns_of_metric(m)
+        if q.time_from or q.time_to or uses_time:
+            cols |= _columns(time_col, strict=True)  # 时间列可以在父表上（明细行的时间在发票表）
         for d in [*dims, *(d for d, _ in filters)]:
             cols |= _columns(expr_of(d), strict=True)
         for t in terms:

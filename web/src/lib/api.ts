@@ -20,7 +20,79 @@ export type TableInfo = {
 };
 export type ChartSpec = { type: "kpi" | "line" | "bar" | "pie" | "table"; x?: string; y?: string[] };
 export type TableData = { columns: string[]; rows: unknown[][]; truncated: boolean };
-export type Step = { name: string; label: string; sql?: string; issues?: string[]; matched?: string[] };
+export type Step = {
+  name: string;
+  label: string;
+  sql?: string;
+  issues?: string[];
+  matched?: string[];
+  // 归因流程的步骤详情
+  metric?: string;
+  base?: string[];
+  current?: string[];
+  dimensions?: string[];
+  causes?: string[];
+  queries?: number;
+  stop_reason?: string;
+  reason?: string;
+};
+
+// 指标异动归因（"为什么"类问题）
+export type AttrCondition = { dimension: string; name: string; value: unknown; label: string };
+export type AttrSegment = {
+  value: unknown;
+  label: string;
+  base: number;
+  current: number;
+  change: number;
+  contribution: number;
+  expected: number;
+  score: number;
+  noise: number;
+  evidence: string[];
+  period: string;
+};
+export type AttrBreakdown = {
+  dimension: string;
+  name: string;
+  kind: "dimension" | "entity" | "document";
+  segments: AttrSegment[];
+  evidence: string[];
+  within: AttrCondition[];
+  partial: boolean;
+};
+export type AttrCause = {
+  conditions: AttrCondition[];
+  label: string;
+  kind: string;
+  base: number;
+  current: number;
+  change: number;
+  contribution: number;
+  expected: number;
+  score: number;
+  noise: number;
+  note: string;
+  detail: Record<string, unknown>;
+  evidence: string[];
+};
+export type AttrEvidence = { id: string; purpose: string; sql: string; columns: string[]; rows: unknown[][]; elapsed_s: number };
+export type AttrFact = { label: string; value: number; display: string; formula: string; evidence: string[] };
+export type Attribution = {
+  scope: { metric: string; base: string[]; current: string[]; filters: { dimension: string; values: string[] }[] };
+  metric: { id: string; name: string; unit: "money" | "count" | "percent"; description: string; currency: string; formula: { op: string; a: string; b: string } | null };
+  total: { base: number; current: number; change: number; pct_change: number | null; evidence: string[] };
+  breakdowns: AttrBreakdown[];
+  drill: AttrBreakdown[];
+  causes: AttrCause[];
+  evidence: AttrEvidence[];
+  facts: AttrFact[];
+  rounds: { removed: string; base: number; current: number; change: number; evidence: string[] }[];
+  stop_reason: string;
+  skipped: string[];
+  role_note: string;
+};
+export type NumberCheck = { total: number; matched: number; from_sql: number; derived: number; unmatched: string[] };
 export type Done = { cached: boolean; latency_s: number; cost_usd: number; model: string };
 
 // 指标语义层（指标目录、问数回答里"用到的指标"）
@@ -87,7 +159,8 @@ export type AskEvent =
   | { event: "sql"; data: { sql: string } }
   | { event: "table"; data: TableData }
   | { event: "chart"; data: ChartSpec }
-  | { event: "answer"; data: { text: string } }
+  | { event: "attribution"; data: Attribution }
+  | { event: "answer"; data: { text: string; number_check?: NumberCheck; source?: string } }
   | { event: "error"; data: { message: string; sql?: string } }
   | { event: "done"; data: Done };
 

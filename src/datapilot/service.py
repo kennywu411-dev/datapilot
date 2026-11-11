@@ -2,6 +2,9 @@
 
 事件（按顺序）：step* → metrics（本题用到的指标定义，有才发）→ sql → table → chart → answer → done；
 出错时 error → done。
+"为什么"类问题且该库配置了归因（v1.6，ADR 007）时走归因流程：
+step* → metrics → sql（总变化的 SQL）→ attribution（分解表、原因、全部 SQL）→ answer
+（带 number_check）→ done。计划映射不了时退回上面的普通问数。限流、排队、缓存、权限两条路径共用。
 - 追问：会话保存最近几轮的问题和 SQL（Redis / 内存），同库追问时一并交给模型
 - 查询缓存：key = 库 + 配置版本 + 模型 + hash(规范化问题 + 追问上下文)，命中直接返回
 - 图表：按结果列类型用规则选，稳定、可解释，前端可手动切换
@@ -14,18 +17,20 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import re
+import sqlite3
 import time
 import unicodedata
 from collections import OrderedDict
 from collections.abc import AsyncIterator, Callable
 
-from datapilot import config, rls, tools
+from datapilot import attribution, config, rls, tools
 from datapilot.llm import LLM, ClaudeLLM
 from datapilot.pipeline import FixedPipeline, PipelineConfig
-from datapilot.semantic import SemanticPipeline
+from datapilot.semantic import Match, SemanticPipeline, load_layer
+from datapilot.sql_guard import SQLRejected
 from datapilot.store import Store
 
-CONFIG_VERSION = "e4-v5"  # 流程或提示词改了就升版本，旧缓存自然失效
+CONFIG_VERSION = "e4-v6"  # 流程或提示词改了就升版本，旧缓存自然失效
 SESSION_TTL_S = 24 * 3600
 CACHE_TTL_S = 3600
 KEEP_TURNS = 3
@@ -55,6 +60,12 @@ STEP_LABELS = {
     "execute": "执行查询",
     "check": "检查结果",
     "correct": "根据反馈修正 SQL",
+    "attr_plan": "识别指标和对比区间",
+    "attr_total": "计算总变化",
+    "attr_decompose": "按维度分解贡献",
+    "attr_rank": "排序、下钻、逐个剥离",
+    "attr_answer": "写结论并核对数字",
+    "attr_fallback": "不是指标归因问题，按普通问数回答",
 }
 
 ANSWER_SYSTEM = """你是数据分析助手。根据用户问题和 SQL 查询结果，
@@ -133,9 +144,12 @@ class ChatService:
         llm_factory: Callable[[], LLM] | None = None,
         max_inflight: int = MAX_INFLIGHT,
         queue_timeout_s: float = QUEUE_TIMEOUT_S,
+        attribution_enabled: bool = True,
     ):
         self.store = store
         self.model = model
+        # 关掉后"为什么"类问题也走普通问数（对照评测里的"不下钻"一组用）
+        self.attribution_enabled = attribution_enabled
         self._client = None  # 共享一个 Anthropic 客户端，复用连接池
         self.llm_factory = llm_factory or self._default_llm
         # 同一会话的请求排队：会话读改写不是原子的，并发时后写会覆盖先写。
@@ -269,6 +283,26 @@ class ChatService:
         )
         path = config.db_path(db_id)
         result, cost = None, 0.0
+        why = self.attribution_enabled and attribution.is_why_question(question)
+        if why and attribution.supports(load_layer(db_id)):
+            fallback = False
+            async for e in self._attribute(
+                start, llm, session_key, session, db_id, question, full_question, cache_key, role
+            ):
+                if e["event"] == "_fallback":
+                    cost, fallback = e["data"]["cost"], True
+                    break
+                yield e
+            if not fallback:
+                return
+            yield {
+                "event": "step",
+                "data": {
+                    "name": "attr_fallback",
+                    "label": STEP_LABELS["attr_fallback"],
+                    "reason": e["data"]["reason"],
+                },
+            }
         definitions: list[dict] = []
         async for node, update in PIPELINE.astream(
             llm, path, full_question, "", role, match_on=question
@@ -342,6 +376,96 @@ class ChatService:
 
         await self.store.set_json(cache_key, {"sql": result.sql, "events": events}, CACHE_TTL_S)
         await self._remember(session_key, session, db_id, question, result.sql)
+        yield {"event": "done", "data": self._done(start, False, cost)}
+
+    async def _attribute(
+        self,
+        start: float,
+        llm: LLM,
+        session_key: str,
+        session: dict,
+        db_id: str,
+        question: str,
+        full_question: str,
+        cache_key: str,
+        role: str | None,
+    ) -> AsyncIterator[dict]:
+        """归因流程。计划映射不了时产出 _fallback（内部事件，不发给前端），由调用方退回普通问数。"""
+        layer = load_layer(db_id)
+
+        def step(name: str, **detail) -> dict:
+            return {"event": "step", "data": {"name": name, "label": STEP_LABELS[name], **detail}}
+
+        plan, res = await attribution.make_plan(llm, layer, full_question)
+        cost = res.cost_usd
+        try:
+            scope = attribution.resolve_plan(layer, plan)
+        except attribution.PlanError as e:
+            yield {"event": "_fallback", "data": {"cost": cost, "reason": str(e)}}
+            return
+        metric = layer.metrics[scope.metric]
+        yield step(
+            "attr_plan",
+            metric=metric.name,
+            base=list(scope.base),
+            current=list(scope.current),
+            filters=[{"dimension": k, "values": list(v)} for k, v in scope.filters],
+        )
+        events = []
+        used = {metric.id: metric} | {m.id: m for m in attribution.components(layer, metric)}
+        matches = [Match(m.id, "metric", "synonym", m.name) for m in used.values()]
+        events.append({"event": "metrics", "data": {"items": layer.definitions(matches, role)}})
+        yield events[-1]
+
+        engine = attribution.Attributor(layer, config.db_path(db_id), scope, role)
+        try:
+            total = await asyncio.to_thread(engine.total)
+            yield step("attr_total", sql=engine.res.evidence[0].sql, total=total)
+            if engine.significant():
+                await asyncio.to_thread(engine.decompose)
+                yield step(
+                    "attr_decompose",
+                    dimensions=[b.name for b in engine.res.breakdowns],
+                    queries=len(engine.res.evidence),
+                )
+                causes = await asyncio.to_thread(engine.rank)
+                yield step(
+                    "attr_rank",
+                    causes=[c.label for c in causes],
+                    stop_reason=engine.res.stop_reason,
+                    queries=len(engine.res.evidence),
+                )
+            else:
+                engine.res.stop_reason = (
+                    f"总变化不到基期的 {engine.cfg.min_relative_change:.1%}，视为基本没变，不做归因"
+                )
+            await asyncio.to_thread(engine.build_facts)
+        except (attribution.PlanError, SQLRejected, TimeoutError, sqlite3.Error) as e:
+            message = (
+                f"当前角色无权查看这部分数据：{e}" if "无权访问" in str(e) else f"归因失败：{e}"
+            )
+            yield {"event": "error", "data": {"message": message}}
+            await self._remember(session_key, session, db_id, question, "", error=str(e))
+            yield {"event": "done", "data": self._done(start, False, cost)}
+            return
+        result = engine.res
+        sql = result.evidence[0].sql
+        events.append({"event": "sql", "data": {"sql": sql}})
+        yield events[-1]
+        events.append({"event": "attribution", "data": result.to_json()})
+        yield events[-1]
+        yield step("attr_answer")
+        text, check, source, calls = await attribution.write_answer(llm, question, result)
+        cost += sum(c.cost_usd for c in calls)
+        events.append(
+            {
+                "event": "answer",
+                "data": {"text": text, "number_check": check.to_json(), "source": source},
+            }
+        )
+        yield events[-1]
+        await self.store.set_json(cache_key, {"sql": sql, "events": events}, CACHE_TTL_S)
+        await self._remember(session_key, session, db_id, question, sql)
         yield {"event": "done", "data": self._done(start, False, cost)}
 
     @staticmethod

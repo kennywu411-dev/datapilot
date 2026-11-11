@@ -31,7 +31,9 @@ export default function Home() {
       .then(([d, h]) => {
         setDbs(d);
         setHealth(h);
-        setDb((cur) => cur || (d.find((x) => x.db_id === "superhero") ?? d[0])?.db_id || "");
+        // 有真实交易库就默认用它（能问"为什么"），否则退回原来的默认库
+        const first = d.find((x) => x.db_id === "retail_ops") ?? d.find((x) => x.db_id === "superhero") ?? d[0];
+        setDb((cur) => cur || first?.db_id || "");
       })
       .catch(() => setBackendDown(true));
   }, []);
@@ -76,8 +78,10 @@ export default function Home() {
                 return { ...t, table: e.data };
               case "chart":
                 return { ...t, chart: e.data };
+              case "attribution":
+                return { ...t, attribution: e.data };
               case "answer":
-                return { ...t, answer: e.data.text };
+                return { ...t, answer: e.data.text, numberCheck: e.data.number_check, answerSource: e.data.source };
               case "error":
                 return { ...t, status: "error", error: e.data.message, sql: e.data.sql ?? t.sql };
               case "done":
@@ -178,9 +182,10 @@ export default function Home() {
 
               {turns.length === 0 && !backendDown && (
                 <section className="pt-[12vh]">
-                  <h1 className="text-2xl font-medium tracking-tight">用中文问数据</h1>
+                  <h1 className="text-2xl font-medium tracking-tight">问“是多少”，也问“为什么”</h1>
                   <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-muted-foreground">
-                    系统会读表结构、写 SQL、在只读库上执行，出错时自动修正，最后给出答案、表格和图表。可以接着追问。
+                    问一个数：系统读表结构、写 SQL、在只读库上执行，给出答案、表格和图表，可以接着追问。
+                    问一个指标为什么变了：系统按国家、品类、客户、单据逐层拆开，找出原因，每个数字都能点开对应的 SQL。
                   </p>
                   {examples.length > 0 && (
                     <div className="mt-8 grid gap-2 sm:grid-cols-2">
@@ -227,7 +232,7 @@ export default function Home() {
                     submit();
                   }
                 }}
-                placeholder={turns.length ? "接着追问，比如：那按年份分开呢？" : "问一个关于这个数据库的问题"}
+                placeholder={turns.length ? "接着追问，比如：那按年份分开呢？" : "问一个数，或者问某个指标为什么变了"}
                 className="max-h-40 min-h-[2.25rem] flex-1 resize-none bg-transparent py-1.5 text-sm outline-none placeholder:text-muted-foreground/80"
               />
               <button
